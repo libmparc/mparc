@@ -1,9 +1,10 @@
 # spoopy scarey skellingtons
 
 *.exe*
-*.o.*
-*.so.*
-*.a.*
+*.o*
+*.so*
+*.so
+*.a*
 
 *.mpar*
 
