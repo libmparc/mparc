@@ -3,10 +3,21 @@
 #include <string.h>
 #include <stdlib.h>
 #include <inttypes.h>
-#include <unistd.h>
+#include <sys/stat.h>
 #include <errno.h>
 
 #include "mparc.h"
+
+void xhandler(const char* key){
+    printf("x> %s\n", key);
+}
+
+int mkdirer(char* dir){
+    #if defined(_WIN32) || defined(_WIN64)
+    #else
+    return mkdir(dir, 0777);
+    #endif
+}
 
 int main(int argc, char** argv){
     MXPSQL_MPARC_t* archive = NULL;
@@ -123,34 +134,17 @@ int main(int argc, char** argv){
             goto exit_handler;
         }
 
-        if(argc < 3){
+        if(argc < 4){
             fprintf(stderr, "%s\n", "We need the destination directory please");
             exit_c = EXIT_FAILURE;
             goto exit_handler;
         }
 
-        int run = 1;
-        while(run == 1){
-            char* basedir2make = NULL;
-            MXPSQL_MPARC_err status = MPARC_OK;
-
-            status = MPARC_extract(archive, "", &basedir2make);
-
-            if(status == MPARC_OK){
-                run = 0;
-            }
-            else if(status == MPARC_OPPART){
-                // make directory somehow
-                #if defined(_WIN32) || defined(_WIN64)
-                #else
-                #endif
-                continue;
-            }
-            else if(status != MPARC_OK || status != MPARC_OPPART){
-                MPARC_perror(err);
-                exit_c = EXIT_FAILURE;
-                goto exit_handler;
-            }
+        err = MPARC_extract_advance(archive, argv[3], NULL, xhandler, mkdirer);
+        if(err != MPARC_OK){
+            MPARC_perror(err);
+            exit_c = EXIT_FAILURE;
+            goto exit_handler;
         }
     }
     else{

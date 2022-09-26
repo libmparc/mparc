@@ -2675,13 +2675,32 @@ static char* const_strdup(const char* src){
 		return str;
 }
 
-static char *mybasename(char const *path)
+static char *mydirname(char *path)
 {
-    char *rs = strrchr(path, '/');
-    if (!rs)
-        return const_strdup(path);
-    else
-        return const_strdup(rs + 1);
+  static const char dot[] = ".";
+  char *last_slash;
+
+  /* Find last '/'.  */
+  last_slash = path != NULL ? strrchr (path, '/') : NULL;
+
+  if (last_slash == path)
+    /* The last slash is the first character in the string.  We have to
+       return "/".  */
+    ++last_slash;
+  else if (last_slash != NULL && last_slash[1] == '\0')
+    /* The '/' is the last character, we have to look further.  */
+    last_slash = memchr (path, last_slash - path, '/');
+
+  if (last_slash != NULL)
+    /* Terminate the path.  */
+    last_slash[0] = '\0';
+  else
+    /* This assignment is ill-designed but the XPG specs require to
+       return a string containing "." in any case no directory part is
+       found and so a static and constant string is required.  */
+    path = (char *) dot;
+
+  return path;
 }
 
 /* END OF SNIPPETS */
@@ -2720,7 +2739,7 @@ static char *mybasename(char const *path)
 				char end_file_marker;
 
 				/* metadata */
-				long int version;
+				unsigned long long int version;
 
 				/* storage actually */
 				map_blob_t globby;
@@ -2760,6 +2779,10 @@ static char *mybasename(char const *path)
     	        case MPARC_CHKSUM:
     	        *out = const_strdup("My content is gone because it failed the CRC32 test :P");
     	        break;
+
+				case MPARC_OPPART:
+				*out = const_strdup("Operation was not complete, continue the operation after giving it the remedy it needs.");
+				break;
 
     	        case MPARC_FERROR:
     	        *out = const_strdup("FILE.exe has stopped responding as there is a problem with the FILE IO operation");
@@ -2809,7 +2832,7 @@ static char *mybasename(char const *path)
 		}
 
 		static char* MPARC_i_construct_header(MXPSQL_MPARC_t* structure){
-				static char* fmt = STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25"%c%d%c";
+				static char* fmt = STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25"%c%llu%c";
 				int sps = snprintf(NULL, 0, fmt, structure->magic_byte_sep, structure->version, structure->begin_entry_marker);
 				if(sps < 0){
 						return NULL;
@@ -2981,7 +3004,7 @@ static char *mybasename(char const *path)
 					long int lversion = 0;
 					char* endptr = NULL;
 					char* stok = tok;
-					lversion = strtol(stok, &endptr, 10);
+					lversion = strtoull(stok, &endptr, 10);
 					if(stok == endptr){
 						return MPARC_NOTARCHIVE;
 					}
@@ -3169,6 +3192,20 @@ static char *mybasename(char const *path)
 			}
 
 			return err;
+		}
+
+		static MXPSQL_MPARC_err MPARC_i_parse_ender(MXPSQL_MPARC_t* structure, char* stringy){
+			char sep[2] = {structure->end_entry_marker, '\0'};
+			char* sptr = NULL;
+			char* tok = my_strtok_r(stringy, sep, &sptr);
+			if(tok == NULL){
+				return MPARC_NOTARCHIVE;
+			}
+			char lastb[2] = {structure->end_file_marker, '\0'};
+			if(strcmp(sptr, lastb) != 0){
+				return MPARC_NOTARCHIVE;
+			}
+			return MPARC_OK;
 		}
 
 
@@ -3462,12 +3499,8 @@ static char *mybasename(char const *path)
 			return err;
 		}
 
-
-		MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make){
-			((void)destdir);
-			((void)dir2make);	
-			((void)mybasename);	
-
+		
+		MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*)){
 			{
         		char** listy = NULL;
         		size_t listys = 0;
@@ -3476,16 +3509,76 @@ static char *mybasename(char const *path)
         		}
 
         		for(size_t i = 0; i < listys; i++){
+					if(dir2make != NULL) *dir2make = NULL;
+					char* fname = NULL;
 					const char* nkey = listy[i];
-					FILE* fps = fopen(nkey, "wb+");
+					{
+						fname = const_strdup(nkey);
+						size_t pathl = strlen(fname)+strlen(nkey)+1;
+						void* nfname = realloc(fname, pathl+1);
+						if(nfname == NULL){
+							free(fname);
+							return MPARC_OOM;
+						}
+						fname = (char*) nfname;
+						int splen = snprintf(fname, pathl, "%s/%s", destdir, nkey);
+						if(splen < 0){
+							free(fname);
+							return MPARC_IVAL;
+						}
+					}
+					FILE* fps = fopen(fname, "wb+");
+					if(on_item) (*on_item)(nkey);
 					if(fps == NULL){
-						printf("%d", errno);
+						char* dname = mydirname((char*)nkey);
+						#if defined(ENOENT)
+						if(errno == ENOENT){
+							// this means "I request you to make me a directory and then call me when you are done so I can continue to do my own agenda which is to help you, basically I need your help for me to help you"
+							if(mk_dir){
+								if((*mk_dir)(dname) != 0){
+									free(fname);
+									return MPARC_FERROR;
+								}
+								free(fname);
+								i--; // hacky
+								continue;
+							}
+							else{
+								if(dir2make != NULL) *dir2make = dname;
+							}
+							free(fname);
+							return MPARC_OPPART;
+						}
+						#else
+						((void)mk_dir);
+						if(dir2make != NULL) *dir2make = dname;
+						#endif
+						free(fname);
 						return MPARC_IVAL;
 					}
+					MPARC_blob_store* rawstore = map_get(&structure->globby, nkey);
+					if(rawstore == NULL){
+						free(fname);
+						return MPARC_IDK;
+					}
+					MPARC_blob_store store = *rawstore;
+					if(fwrite(store.binary_blob, sizeof(char), store.binary_size, fps) < store.binary_size){
+						if(ferror(fps)){
+							free(fname);
+							fclose(fps);
+							return MPARC_IVAL;
+						}
+					}
+
+					free(fname);
 					fclose(fps);
         		}
 			}
 			return MPARC_OK;
+		}
+
+		MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make){
+			return MPARC_extract_advance(structure, destdir, dir2make, NULL, NULL);
 		}
 
 
@@ -3502,6 +3595,14 @@ static char *mybasename(char const *path)
 				char* s3 = const_strdup(stringy);
 				if(s3 == NULL) return MPARC_OOM;
 				err = MPARC_i_parse_entries(structure, s3);
+				free(s3);
+				if(err != MPARC_OK) return err;
+			}
+			{
+				char* s3 = const_strdup(stringy);
+				if(s3 == NULL) return MPARC_OOM;
+				err = MPARC_i_parse_ender(structure, s3);
+				free(s3);
 				if(err != MPARC_OK) return err;
 			}
 			return MPARC_OK;

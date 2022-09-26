@@ -283,15 +283,35 @@ extern "C"{
      */
     MXPSQL_MPARC_err MPARC_construct_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream);
 
+
+    /**
+     * @brief Simple version of MPARC_extract_advance
+     * 
+     * @param structure the target structure
+     * @param destdir the destination directory
+     * @param dir2make NULL if there is no directory to make, not NULL if it needs you to make a directory
+     * @return MXPSQL_MPARC_err error status of extraction, some codes are special, see MPARC_extract_advance for more info
+     * 
+     * @see MPARC_extract_advance
+     */
+    MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make);
     /**
      * @brief Extract the archive into the directory
      * 
      * @param structure the target structure
      * @param destdir the destination directory
      * @param dir2make NULL if there is no directory to make, not NULL if it needs you to make a directory
-     * @return MXPSQL_MPARC_err 
+     * @param on_item called every time a new entry is read, NULL can be placed in
+     * @param mk_dir function to be called when making a directory, NULL can be placed in. Overrides dir2make on certain platform, may not be called on other platform
+     * @return MXPSQL_MPARC_err err status of extraction, some codes are special.
+     * 
+     * @details
+     * 
+     * Special Error Codes: MPARC_OPPART, it has interrupted it's operation and asking the user for assistance.
+     * 
+     * - dir2make is not NULL: use the variable dir2make and make a directory. Will not happen if platform supports ENOENT and mk_dir is not NULL
      */
-    MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make);
+    MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*));
 
     /**
      * @brief Parse the archive into the structure
