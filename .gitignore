@@ -1,2 +1,10 @@
+# spoopy scarey skellingtons
+
 *.exe*
+*.o.*
+*.so.*
+*.a.*
+
 *.mpar*
+
+html/
