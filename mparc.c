@@ -830,6 +830,7 @@ static void json_delete(JsonNode *node)
 		}
 		
 		free(node);
+		node=NULL;
 	}
 }
 
@@ -3700,11 +3701,14 @@ char* SmartStringDeCompressor(char* cstrings){
 				if(top == NULL) return MPARC_IVAL;
 				if(mid == NULL) {
 						free(top);
+						top = NULL;
 						return MPARC_IVAL;
 				}
 				if(bottom == NULL) {
 						free(top);
 						free(mid);
+						top = NULL;
+						mid = NULL;
 						return MPARC_IVAL;
 				}
 				{
@@ -3714,6 +3718,9 @@ char* SmartStringDeCompressor(char* cstrings){
 								free(top);
 								free(mid);
 								free(bottom);
+								top = NULL;
+								mid = NULL;
+								bottom = NULL;
 								return MPARC_IVAL;
 						}
 						char* alloca_out = calloc(sizy+1, sizeof(char));
@@ -3721,6 +3728,9 @@ char* SmartStringDeCompressor(char* cstrings){
 								free(top);
 								free(mid);
 								free(bottom);
+								top = NULL;
+								mid = NULL;
+								bottom = NULL;
 								return MPARC_OOM;
 						}
 						if(snprintf(alloca_out, sizy+1, fmt, top, mid, bottom) < 0){
@@ -3728,6 +3738,10 @@ char* SmartStringDeCompressor(char* cstrings){
 								free(mid);
 								free(bottom);
 								free(alloca_out);
+								top = NULL;
+								mid = NULL;
+								bottom = NULL;
+								alloca_out = NULL;
 								return MPARC_IVAL;
 						}
 
@@ -3736,6 +3750,9 @@ char* SmartStringDeCompressor(char* cstrings){
 				free(top);
 				free(mid);
 				free(bottom);
+				top = NULL;
+				mid = NULL;
+				bottom = NULL;
 				return MPARC_OK;
 		}
 
