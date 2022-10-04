@@ -433,9 +433,10 @@ static void sb_grow(SB *sb, int need)
 		alloc *= 2;
 	} while (alloc < length + need);
 	
-	sb->start = (char*) realloc(sb->start, alloc + 1);
-	if (sb->start == NULL)
+	void* newsb = realloc(sb->start, alloc + 1);
+	if (newsb == NULL)
 		out_of_memory();
+	sb->start = (char*) newsb;
 	sb->cur = sb->start + length;
 	sb->end = sb->start + alloc;
 }
