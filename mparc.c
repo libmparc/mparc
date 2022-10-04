@@ -3,49 +3,55 @@
 
 
 /**
-	* MPARC, A Dumb Archiver Format C Rewrite Of MPAR
-	* 
-	* Licensed To You Under Teh MIT License and the LGPL-2.1-Or-Later License
-	* 
-	* MIT License
-	* 
-	* Copyright (c) 2022 MXPSQL
-	* 
-	* Permission is hereby granted, free of charge, to any person obtaining a copy
-	* of this software and associated documentation files (the "Software"), to deal
-	* in the Software without restriction, including without limitation the rights
-	* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	* copies of the Software, and to permit persons to whom the Software is
-	* furnished to do so, subject to the following conditions:
-	* 
-	* The above copyright notice and this permission notice shall be included in all
-	* copies or substantial portions of the Software.
-	* 
-	* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-	* SOFTWARE.
-	* 
-	* 
-	* MPARC, A rewrite of MPAR IN C, a dumb archiver format
-	* Copyright (C) 2022 MXPSQL
-	* 
-	* This library is free software; you can redistribute it and/or
-	* modify it under the terms of the GNU Lesser General Public
-	* License as published by the Free Software Foundation; either
-	* version 2.1 of the License, or (at your option) any later version.
-	* 
-	* This library is distributed in the hope that it will be useful,
-	* but WITHOUT ANY WARRANTY; without even the implied warranty of
-	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	* Lesser General Public License for more details.
-	* 
-	* You should have received a copy of the GNU Lesser General Public
-	* License along with this library; if not, write to the Free Software
-	* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  * @file mparc.h
+  * @author MXPSQL
+  * @brief MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Source File
+  * @version 0.1
+  * @date 2022-09-26
+  * 
+  * @copyright
+  * 
+  * Licensed To You Under Teh MIT License and the LGPL-2.1-Or-Later License
+  * 
+  * MIT License
+  * 
+  * Copyright (c) 2022 MXPSQL
+  * 
+  * Permission is hereby granted, free of charge, to any person obtaining a copy
+  * of this software and associated documentation files (the "Software"), to deal
+  * in the Software without restriction, including without limitation the rights
+  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  * copies of the Software, and to permit persons to whom the Software is
+  * furnished to do so, subject to the following conditions:
+  * 
+  * The above copyright notice and this permission notice shall be included in all
+  * copies or substantial portions of the Software.
+  * 
+  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  * SOFTWARE.
+  * 
+  * 
+  * MPARC, A rewrite of MPAR IN C, a dumb archiver format
+  * Copyright (C) 2022 MXPSQL
+  * 
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Lesser General Public
+  * License as published by the Free Software Foundation; either
+  * version 2.1 of the License, or (at your option) any later version.
+  * 
+  * This library is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+  * 
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #include "mparc.h"
@@ -62,10 +68,43 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
+#ifdef MPARC_DEBUG
+#define MPARC_MEM_DEBUG 1
+#endif
+
+#ifdef MPARC_MEM_DEBUG
+#define GC_DEBUG
+#include <gc/gc.h>
+#define malloc(n) GC_MALLOC(n)
+#define calloc(m,n) GC_MALLOC((m)*(n))
+#define free(p) GC_FREE(p)
+#define realloc(p,n) GC_REALLOC((p),(n))
+#define CHECK_LEAKS() GC_gcollect()
+#else
+#define CHECK_LEAKS()
+#endif
+
 /* defines */
 
 #define STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25 "MXPSQL's Portable Archive"
-#define STANKY_MPAR_FILE_FORMAT_VERSION 1
+
+// define for format version number and representation
+#define STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER 1
+#define STANKY_MPAR_FILE_FORMAT_VERSION_HASH_ADDED 1
+// #define STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION uint_fast64_t
+#define STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION unsigned long long
+
+// special separators, only added here if necessary
+#define MPARC_MAGIC_CHKSM_SEP '%'
+
+// sorting mode
+// if set to true, then the entries will be sorted by their checksum values
+// else sorted by their filename
+// default is false
+// that description was false, normally the checksum will sort itself, but if it fails, then the json will sort it
+#ifndef MPARC_CHECKSUM_BASED_QSORT
+#define MPARC_CHECKSUM_BASED_QSORT false
+#endif
 
 /* not defines */
 
@@ -329,13 +368,13 @@ struct JsonNode
 	JsonTag tag;
 	union {
 		/* JSON_BOOL */
-		bool bool_;
+		bool boole;
 		
 		/* JSON_STRING */
-		char *string_; /* Must be valid UTF-8. */
+		char *string; /* Must be valid UTF-8. */
 		
 		/* JSON_NUMBER */
-		double number_;
+		double number;
 		
 		/* JSON_ARRAY */
 		/* JSON_OBJECT */
@@ -774,7 +813,7 @@ static void json_delete(JsonNode *node)
 		
 		switch (node->tag) {
 			case JSON_STRING:
-				free(node->store.string_);
+				free(node->store.string);
 				break;
 			case JSON_ARRAY:
 			case JSON_OBJECT:
@@ -863,14 +902,14 @@ static JsonNode *json_mknull(void)
 static JsonNode *json_mkbool(bool b)
 {
 	JsonNode *ret = mknode(JSON_BOOL);
-	ret->store.bool_ = b;
+	ret->store.boole = b;
 	return ret;
 }
 
 static JsonNode *mkstring(char *s)
 {
 	JsonNode *ret = mknode(JSON_STRING);
-	ret->store.string_ = s;
+	ret->store.string = s;
 	return ret;
 }
 
@@ -882,7 +921,7 @@ static JsonNode *json_mkstring(const char *s)
 static JsonNode *json_mknumber(double n)
 {
 	JsonNode *node = mknode(JSON_NUMBER);
-	node->store.number_ = n;
+	node->store.number = n;
 	return node;
 }
 
@@ -1342,13 +1381,13 @@ static void emit_value(SB *out, const JsonNode *node)
 			sb_puts(out, "null");
 			break;
 		case JSON_BOOL:
-			sb_puts(out, node->store.bool_ ? "true" : "false");
+			sb_puts(out, node->store.boole ? "true" : "false");
 			break;
 		case JSON_STRING:
-			emit_string(out, node->store.string_);
+			emit_string(out, node->store.string);
 			break;
 		case JSON_NUMBER:
-			emit_number(out, node->store.number_);
+			emit_number(out, node->store.number);
 			break;
 		case JSON_ARRAY:
 			emit_array(out, node);
@@ -1369,13 +1408,13 @@ static void emit_value_indented(SB *out, const JsonNode *node, const char *space
 			sb_puts(out, "null");
 			break;
 		case JSON_BOOL:
-			sb_puts(out, node->store.bool_ ? "true" : "false");
+			sb_puts(out, node->store.boole ? "true" : "false");
 			break;
 		case JSON_STRING:
-			emit_string(out, node->store.string_);
+			emit_string(out, node->store.string);
 			break;
 		case JSON_NUMBER:
-			emit_number(out, node->store.number_);
+			emit_number(out, node->store.number);
 			break;
 		case JSON_ARRAY:
 			emit_array_indented(out, node, space, indent_level);
@@ -1688,12 +1727,12 @@ static bool json_check(const JsonNode *node, char errmsg[256])
 		problem("tag is invalid (%u)", node->tag);
 	
 	if (node->tag == JSON_BOOL) {
-		if (node->store.bool_ != false && node->store.bool_ != true)
+		if (node->store.boole != false && node->store.boole != true)
 			problem("bool_ is neither false (%d) nor true (%d)", (int)false, (int)true);
 	} else if (node->tag == JSON_STRING) {
-		if (node->store.string_ == NULL)
+		if (node->store.string == NULL)
 			problem("string_ is NULL");
-		if (!utf8_validate(node->store.string_))
+		if (!utf8_validate(node->store.string))
 			problem("string_ contains invalid UTF-8");
 	} else if (node->tag == JSON_ARRAY || node->tag == JSON_OBJECT) {
 		JsonNode *head = node->store.children.head;
@@ -2703,6 +2742,15 @@ static char *mydirname(char *path)
   return path;
 }
 
+
+char* SmartStringCompressor(char* strings){
+	return strings; // noop
+}
+
+char* SmartStringDeCompressor(char* cstrings){
+	return cstrings; // noop
+}
+
 /* END OF SNIPPETS */
 
 /* BEGINNING OF MY SECTION OK */
@@ -2725,24 +2773,32 @@ static char *mydirname(char *path)
 		typedef struct MPARC_blob_store{
 				size_t binary_size;
 				unsigned char* binary_blob;
+				crc_t binary_crc;
 		} MPARC_blob_store;
 
 		typedef map_t(MPARC_blob_store) map_blob_t;
 
-		struct MXPSQL_MPARC_impleq_t {
+		struct MXPSQL_MPARC_t {
 				/* separator markers */
-				char magic_byte_sep;
-				char entry_sep_or_general_marker;
-				char begin_entry_marker;
-				char entry_elem2_sep_marker_or_magic_sep_marker;
-				char end_entry_marker;
-				char end_file_marker;
+				char magic_byte_sep; // separate the 25 character long magic number from the rest of the archive
+				char meta_sep; // separate the version number from implementation specific metadata
+				char entry_sep_or_general_marker; // a new line, but usually used to separate entries
+				char comment_marker; // unused, but can be implemented, other implementations can use this as extension metadata
+				char begin_entry_marker; // indicate beginning of entries
+				char entry_elem2_sep_marker_or_magic_sep_marker; // separate checksum from entry contents
+				char end_entry_marker; // indicate end of entry
+				char end_file_marker; // indicate end of file
 
 				/* metadata */
-				unsigned long long int version;
+				STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION writerVersion; // version that is used when creating archive
+				STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION loadedVersion; // version that indicates what version of the archive is loaded
 
 				/* storage actually */
 				map_blob_t globby;
+
+				
+				/* hidden */
+				va_list vlist;
 		};
 
     	int MPARC_strerror(MXPSQL_MPARC_err err, char** out){
@@ -2777,7 +2833,7 @@ static char *mydirname(char *path)
     	        *out = const_strdup("You dumb person the valid archive you put in me is too new for me to process, this archive processor may be version 1, but the archive is version 2");
     	        break;
     	        case MPARC_CHKSUM:
-    	        *out = const_strdup("My content is gone because it failed the CRC32 test :P");
+    	        *out = const_strdup("My content is gone or I can't write my content properly because it failed the CRC32 test :P");
     	        break;
 
 				case MPARC_OPPART:
@@ -2814,10 +2870,88 @@ static char *mydirname(char *path)
 
 
 		static int MPARC_i_sortcmp(const void* p1, const void* p2){
-			const char* str1 = (const char*) p1;
-			const char* str2 = (const char*) p2;
-			printf("dsort\n");
-			return strcmp(str1, str2);
+			const char* str1 = *((const char**) p1);
+			const char* str2 = *((const char**) p2);
+
+			int spress = 0;
+
+			if(MPARC_CHECKSUM_BASED_QSORT){
+				// dumb sort
+				// most likely checksum will do the work of sorting it
+				spress = strcmp(str1, str2);
+			}
+			else{
+				// smart sort
+				char* str1d = NULL;
+				char* str2d = NULL;
+
+				{
+					str1d = const_strdup(str1);
+					if(str1d == NULL) goto me_my_errhandler;
+					str2d = const_strdup(str2);
+					if(str2d == NULL) goto me_my_errhandler;
+				}
+
+				char* sav = NULL;
+				char sep[2] = {MPARC_MAGIC_CHKSM_SEP, '\0'};
+
+				char* str1fnam = NULL;
+				char* str2fnam = NULL;
+				{
+					char* tok = my_strtok_r(str1d, sep, &sav);
+					if(tok == NULL || strcmp(sav, "") == 0 || sav == NULL){
+						goto me_my_errhandler;
+					}
+
+					{
+						// ease, use json.c
+						JsonNode* root = json_decode(sav);
+						JsonNode* node = NULL;
+						json_foreach(node, root) {
+							// ignore non string ones
+							if(node->tag == JSON_STRING){
+								if(strcmp(node->key, "filename") == 0){
+									str1fnam = node->store.string;
+								}
+							}
+						};
+					}
+				}
+				{
+					char* tok = my_strtok_r(str2d, sep, &sav);
+					if(tok == NULL || strcmp(sav, "") == 0 || sav == NULL){
+						goto me_my_errhandler;
+					}
+
+					{
+						// ease, use json.c
+						JsonNode* root = json_decode(sav);
+						JsonNode* node = NULL;
+						json_foreach(node, root) {
+							// ignore non string ones
+							if(node->tag == JSON_STRING){
+								if(strcmp(node->key, "filename") == 0){
+									str2fnam = node->store.string;
+								}
+							}
+						};
+					}
+				}
+				spress = strcmp(str1fnam, str2fnam);
+
+				goto me_my_errhandler;
+
+				me_my_errhandler:
+				{
+					if(str1d) free(str1d);
+					if(str2d) free(str2d);
+				}
+			}
+
+			if(spress > 0) return 1;
+			else if(spress < 0) return -1;
+			else if(spress == 0) return 0;
+			else return 0;
 		}
 		
 		static MXPSQL_MPARC_err MPARC_i_sort(char** sortedstr){
@@ -2825,27 +2959,51 @@ static char *mydirname(char *path)
 			{
 				size_t i = 0;
 				for(i = 0; sortedstr[i] != NULL; i++);
-				i++;
+				counter = i;
 			}
-			qsort(sortedstr, counter, sizeof(char*), MPARC_i_sortcmp);
+			{
+				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp);
+				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp);
+			}
+			/* {
+				size_t i = 0, j = 0;
+				char* temp = NULL;
+    			for (i=0;i<counter-1;i++)
+    			{
+    			    for (j=0;j<counter-i-1;j++)
+    			    {
+    			        if (MPARC_i_sortcmp(sortedstr[j], sortedstr[j + 1] ) > 0)  // more readable with indexing syntax
+    			        {
+    			            temp = sortedstr[j];
+    			            sortedstr[j] = sortedstr[j+1];
+    			            sortedstr[j+1] = temp;
+    			        }
+    			    }
+    			}
+			} */
 			return MPARC_OK;
 		}
 
 		static char* MPARC_i_construct_header(MXPSQL_MPARC_t* structure){
-				static char* fmt = STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25"%c%llu%c";
-				int sps = snprintf(NULL, 0, fmt, structure->magic_byte_sep, structure->version, structure->begin_entry_marker);
+			JsonNode* nod = json_mkobject();
+			char* s = json_encode(nod);
+
+			{
+				static char* fmt = STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25"%c%llu%c%s%c";
+				int sps = snprintf(NULL, 0, fmt, structure->magic_byte_sep, structure->writerVersion, structure->meta_sep, s, structure->begin_entry_marker);
 				if(sps < 0){
 						return NULL;
 				}
 				char* alloc = calloc(sps+1, sizeof(char));
 				if(alloc == NULL) return NULL;
-				if(snprintf(alloc, sps+1, fmt, structure->magic_byte_sep, structure->version, structure->begin_entry_marker) < 0){
+				if(snprintf(alloc, sps+1, fmt, structure->magic_byte_sep, structure->writerVersion, structure->meta_sep, s, structure->begin_entry_marker) < 0){
 						free(alloc);
 						return NULL;
 				}
 				else{
 						return alloc;
 				}
+			}
 		}
 
 		static char* MPARC_i_construct_entries(MXPSQL_MPARC_t* structure){
@@ -2864,9 +3022,15 @@ static char *mydirname(char *path)
 				size_t indexy = 0;
 
 				while((nkey = map_next(&structure->globby, &itery))){
+						MPARC_blob_store* bob_the_blob_raw = map_get(&structure->globby, nkey);
+						if(!bob_the_blob_raw){
+							continue;
+						}
+						crc_t crc3 = crc_init();
 						JsonNode* objectweb = json_mkobject();
-						MPARC_blob_store bob_the_blob = *map_get(&structure->globby, nkey);
+						MPARC_blob_store bob_the_blob = *bob_the_blob_raw;
 						char* btob = b64.btoa(bob_the_blob.binary_blob, bob_the_blob.binary_size);
+						crc3 = bob_the_blob.binary_crc;
 						if(btob == NULL) {
 								for(size_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
@@ -2876,8 +3040,39 @@ static char *mydirname(char *path)
 						}
 						JsonNode* glob64 = json_mkstring(btob);
 						JsonNode* filename = json_mkstring(nkey);
+						JsonNode* blob_chksum = NULL;
+						{
+							static char* fmter = "%"PRIuFAST32;
+							char* globsum = NULL;
+							int size = snprintf(NULL, 0, fmter, crc3);
+							if(size < 0){
+								for(size_t i = 0; i < jsonentries; i++){
+										free(jsonry[jsonentries]);
+								}
+								free(jsonry);
+								return NULL;
+							}
+							globsum = calloc(size+1, sizeof(char));
+							if(globsum == NULL){
+								for(size_t i = 0; i < jsonentries; i++){
+										free(jsonry[jsonentries]);
+								}
+								free(jsonry);
+								return NULL;
+							}
+							if(snprintf(globsum, size, fmter, crc3) < 0){
+								for(size_t i = 0; i < jsonentries; i++){
+										free(jsonry[jsonentries]);
+								}
+								free(jsonry);
+								return NULL;
+							}
+							blob_chksum = json_mkstring(globsum);
+							free(globsum);
+						}
 						json_append_member(objectweb, "filename", filename);
 						json_append_member(objectweb, "blob", glob64);
+						json_append_member(objectweb, "crcsum", blob_chksum);
 						if(!json_check(objectweb, NULL)){
 							for(size_t i = 0; i < jsonentries; i++){
 									free(jsonry[jsonentries]);
@@ -2920,7 +3115,8 @@ static char *mydirname(char *path)
 						indexy++;
 				}
 
-				MPARC_i_sort(jsonry); // we qsort this, qsort can be quicksort, insertion sort or BOGOSORT
+				// ((void)MPARC_i_sort);
+				MPARC_i_sort(jsonry); // We qsort this, qsort can be quicksort, insertion sort or BOGOSORT. It is ordered by the checksum instead of the name lmao.
 
 				{
 						size_t iacrurate_snprintf_len = 1;
@@ -2981,9 +3177,30 @@ static char *mydirname(char *path)
 		}
 
 
+		static STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION MPARC_i_parse_version(char* str, int* success){
+			STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION lversion = 0;
+			/*{
+				if(sscanf(str, "%"SCNuFAST64, &lversion) != 1){
+					if(success != NULL) *success = 0;
+					return 0;
+				}
+				if(success != NULL) *success = 1;
+			}*/
+			{
+				char* endptr = NULL;
+				errno = 0;
+				lversion = strtoull(str, &endptr, 2);
+				if(!(errno == 0 && str && (!*endptr || *endptr != 0 || *endptr != '\0'))){
+					if(success != NULL) success = 0;
+					return 0;
+				}
+				if(success != NULL) *success = 1;
+			}
+			return lversion;
+		}
 
 		static MXPSQL_MPARC_err MPARC_i_parse_header(MXPSQL_MPARC_t* structure, char* Stringy){
-			long int version = structure->version;
+			STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION version = structure->writerVersion;
 
 			{
 				char sep[2] = {structure->begin_entry_marker, '\0'};
@@ -3001,27 +3218,42 @@ static char *mydirname(char *path)
 					if(tok == NULL){
 						return MPARC_NOTARCHIVE;
 					}
-					long int lversion = 0;
-					char* endptr = NULL;
-					char* stok = tok;
-					lversion = strtoull(stok, &endptr, 10);
-					if(stok == endptr){
-						return MPARC_NOTARCHIVE;
-					}
-					else if(errno == 0 && stok && !*endptr){
-						if(lversion > version){
-							return MPARC_ARCHIVETOOSHINY;
+					{
+						char* nstok;
+						char* jstok;
+						{
+							char* saveptr3 = NULL;
+							char sep3[2] = {structure->meta_sep, '\0'};
+							nstok = my_strtok_r(tok, sep3, &saveptr3);
+							if(nstok == NULL || strcmp(saveptr3, "") == 0){
+								return MPARC_NOTARCHIVE;
+							}
+							jstok = saveptr3;
 						}
-					}
-					else{
-						return MPARC_NOTARCHIVE;
+						{
+							STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION lversion = 0;
+							{
+								int status = 0;
+								lversion = MPARC_i_parse_version(nstok, &status);
+								if(status != 1){
+									return MPARC_NOTARCHIVE;
+								}
+							}
+							if(lversion > version){
+								return MPARC_ARCHIVETOOSHINY;
+							}
+							structure->loadedVersion = lversion;
+						}
+						{
+							((void)jstok);
+						}
 					}
 				}
 			}
 			return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_i_parse_entries(MXPSQL_MPARC_t* structure, char* Stringy){
+		static MXPSQL_MPARC_err MPARC_i_parse_entries(MXPSQL_MPARC_t* structure, char* Stringy){
 			char** entries = NULL;
 			char** json_entries = NULL;
 			MXPSQL_MPARC_err err = MPARC_OK;
@@ -3104,6 +3336,7 @@ static char *mydirname(char *path)
 			for(size_t i = 0; i < ecount; i++){
 				char* filename = NULL;
 				char* blob = NULL;
+				crc_t crc3 = crc_init();
 
 				char* jse = json_entries[i];
 
@@ -3147,10 +3380,19 @@ static char *mydirname(char *path)
 						if(node->tag == JSON_STRING){
 
 							if(strcmp(node->key, "filename") == 0){
-								filename = node->store.string_;
+								filename = node->store.string;
 							}
 							else if(strcmp(node->key, "blob") == 0){
-								blob = node->store.string_;
+								blob = node->store.string;
+							}
+							else if(strcmp(node->key, "crcsum") == 0){
+								{
+									char* nvalue = node->store.string;
+									if(sscanf(nvalue, "%"SCNuFAST32, &crc3) != 1){
+										err = MPARC_CHKSUM;
+										goto errhandler;
+									}
+								}
 							}
 							else{
 								err = MPARC_NOTARCHIVE;
@@ -3175,8 +3417,14 @@ static char *mydirname(char *path)
 					{
 						MPARC_blob_store store = {
 							bsize,
-							un64_blob
+							un64_blob,
+							crc3
 						};
+
+						crc_t crc = crc_init();
+						crc = crc_update(crc, store.binary_blob, store.binary_size);
+						crc = crc_finalize(crc);
+						store.binary_crc = crc;
 
 						map_set(&structure->globby, filename, store);
 					}
@@ -3225,14 +3473,18 @@ static char *mydirname(char *path)
 
 				map_init(&istructure->globby);
 
-				istructure->magic_byte_sep = ';';
-				istructure->entry_sep_or_general_marker = '\n';
+				// shall not change this
+				istructure->magic_byte_sep = ';'; 
+				istructure->meta_sep = '$'; 
+				istructure->entry_sep_or_general_marker = '\n'; 
+				istructure->comment_marker = '#';
 				istructure->begin_entry_marker = '>';
-				istructure->entry_elem2_sep_marker_or_magic_sep_marker = ':';
+				istructure->entry_elem2_sep_marker_or_magic_sep_marker = MPARC_MAGIC_CHKSM_SEP;
 				istructure->end_entry_marker = '@';
 				istructure->end_file_marker = '~';
 
-				istructure->version = STANKY_MPAR_FILE_FORMAT_VERSION;
+				istructure->writerVersion = STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER;
+				istructure->loadedVersion = STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER; // default same
 
 				*structure = istructure;
 
@@ -3280,7 +3532,7 @@ static char *mydirname(char *path)
 						*length = lentracker;
 				}
 
-				{
+				if(listout != NULL){
 
 						size_t index = 0;
 						const char* key2;
@@ -3298,7 +3550,7 @@ static char *mydirname(char *path)
 
 								listout_structure[index] = const_strdup(bi.nam);
 
-								free((char*)bi.nam);
+								// free((char*)bi.nam);
 
 								index++;
 						}
@@ -3311,7 +3563,7 @@ static char *mydirname(char *path)
 				}
 				else{
 						for(size_t i = 0; i < lentracker; i++){
-								free(listout_structure[i]);
+							if(listout_structure) free(listout_structure[i]);
 						}
 
 						free(listout_structure);
@@ -3328,16 +3580,25 @@ static char *mydirname(char *path)
 
 
 		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, size_t sizy){
-				MPARC_blob_store blob = {
-						sizy,
-						ustringc
-				};
+			crc_t crc3 = crc_init();
+			crc3 = crc_update(crc3, ustringc, sizy);
+			crc3 = crc_finalize(crc3);
 
-				if(map_set(&structure->globby, filename, blob) != 0){
-						return MPARC_IVAL;
-				}
+			MPARC_blob_store blob = {
+					sizy,
+					ustringc,
+					crc3
+			};
 
-				return MPARC_OK;
+			if(map_set(&structure->globby, filename, blob) != 0){
+					return MPARC_IVAL;
+			}
+
+			return MPARC_OK;
+		}
+
+		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, size_t sizey){
+			return MPARC_push_ufilestr(structure, filename, (unsigned char*)buffer_guffer, sizey);
 		}
 
 		MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, size_t sizey){
@@ -3379,7 +3640,6 @@ static char *mydirname(char *path)
 				while(fgetc(filestream) != EOF && !ferror(filestream)){
 						filesize += 1;
 				}
-
 				if(ferror(filestream)){
 						return MPARC_FERROR;
 				}
@@ -3417,11 +3677,16 @@ static char *mydirname(char *path)
 		}
 
 
-		MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, size_t* sout){
+		static MXPSQL_MPARC_err MPARC_peek_file_advance(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, size_t* sout, crc_t* crout){ // users don't need to know the crc
 				if(MPARC_exists(structure, filename) == MPARC_NOEXIST) return MPARC_NOEXIST;
 				if(bout != NULL) *bout = map_get(&structure->globby, filename)->binary_blob;
 				if(sout != NULL) *sout = map_get(&structure->globby, filename)->binary_size;
+				if(crout != NULL) *crout = map_get(&structure->globby, filename)->binary_crc;
 				return MPARC_OK;
+		}
+
+		MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, size_t* sout){
+			return MPARC_peek_file_advance(structure, filename, bout, sout, NULL);
 		}
 
 
@@ -3512,61 +3777,106 @@ static char *mydirname(char *path)
 					if(dir2make != NULL) *dir2make = NULL;
 					char* fname = NULL;
 					const char* nkey = listy[i];
-					{
-						fname = const_strdup(nkey);
-						size_t pathl = strlen(fname)+strlen(nkey)+1;
-						void* nfname = realloc(fname, pathl+1);
-						if(nfname == NULL){
-							free(fname);
-							return MPARC_OOM;
-						}
-						fname = (char*) nfname;
-						int splen = snprintf(fname, pathl, "%s/%s", destdir, nkey);
-						if(splen < 0){
-							free(fname);
-							return MPARC_IVAL;
-						}
-					}
-					FILE* fps = fopen(fname, "wb+");
+					FILE* fps = NULL;
 					if(on_item) (*on_item)(nkey);
-					if(fps == NULL){
-						char* dname = mydirname((char*)nkey);
-						#if defined(ENOENT)
-						if(errno == ENOENT){
-							// this means "I request you to make me a directory and then call me when you are done so I can continue to do my own agenda which is to help you, basically I need your help for me to help you"
-							if(mk_dir){
-								if((*mk_dir)(dname) != 0){
+					rmkdir_goto_label_spot:
+					{
+						{
+							fname = const_strdup(nkey);
+							size_t pathl = strlen(fname)+strlen(nkey)+1;
+							void* nfname = realloc(fname, pathl+1);
+							if(nfname == NULL){
+								free(fname);
+								return MPARC_OOM;
+							}
+							fname = (char*) nfname;
+							int splen = snprintf(fname, pathl, "%s/%s", destdir, nkey);
+							if(splen < 0){
+								free(fname);
+								return MPARC_IVAL;
+							}
+						}
+						fps = fopen(fname, "wb+");
+						if(fps == NULL){
+							char* dname = mydirname((char*)fname);
+							#if defined(ENOENT)
+							if(errno == ENOENT){
+								// this means "I request you to make me a directory and then call me when you are done so I can continue to do my own agenda which is to help you, basically I need your help for me to help you"
+								if(mk_dir){
+									if((*mk_dir)(dname) != 0){
+										free(fname);
+										return MPARC_FERROR;
+									}
 									free(fname);
-									return MPARC_FERROR;
+									// i--; // hacky
+									// continue;
+									goto rmkdir_goto_label_spot; // much better (don't object to this method of using goto and labels, the old one involes decrmenting the index variable and that is a hacky solution)
+								}
+								else{
+									if(dir2make != NULL) *dir2make = dname;
 								}
 								free(fname);
-								i--; // hacky
-								continue;
+								return MPARC_OPPART;
 							}
-							else{
-								if(dir2make != NULL) *dir2make = dname;
-							}
+							#else
+							((void)mk_dir);
+							if(dir2make != NULL) *dir2make = dname;
+							#endif
 							free(fname);
-							return MPARC_OPPART;
+							return MPARC_IVAL;
 						}
-						#else
-						((void)mk_dir);
-						if(dir2make != NULL) *dir2make = dname;
-						#endif
-						free(fname);
-						return MPARC_IVAL;
-					}
-					MPARC_blob_store* rawstore = map_get(&structure->globby, nkey);
-					if(rawstore == NULL){
-						free(fname);
-						return MPARC_IDK;
-					}
-					MPARC_blob_store store = *rawstore;
-					if(fwrite(store.binary_blob, sizeof(char), store.binary_size, fps) < store.binary_size){
-						if(ferror(fps)){
+						{
+							unsigned char* bout = NULL;
+							size_t sout = 0;
+							crc_t crc3 = 0;
+							MXPSQL_MPARC_err err = MPARC_peek_file_advance(structure, (char*) nkey, &bout, &sout, &crc3);
+							if(err != MPARC_OK){
+								free(fname);
+								fclose(fps);
+								return err;
+							}
+							if(fwrite(bout, sizeof(unsigned char), sout, fps) < sout){
+								if(ferror(fps)){
+									free(fname);
+									fclose(fps);
+									return MPARC_FERROR;
+								}
+							}
+							if(fseek(fps, 0, SEEK_SET) != 0){
+								free(fname);
+								fclose(fps);
+								return MPARC_FERROR;
+							}
+							unsigned char* binary = calloc(sout+1, sizeof(char));
+							if(binary == NULL){
+								free(fname);
+								fclose(fps);
+								return MPARC_OOM;
+							}
+							if(fread(binary, sizeof(unsigned char), sout, fps) < sout){
+								if(ferror(fps)){
+									free(fname);
+									free(binary);
+									fclose(fps);
+									return MPARC_FERROR;
+								}
+							}
+							{
+								crc_t crc = crc_init();
+								crc = crc_update(crc, binary, sout);
+								crc = crc_finalize(crc);
+								if(crc != crc3){
+									free(fname);
+									free(binary);
+									fclose(fps);
+									return MPARC_CHKSUM;
+								}
+							}
+						}
+						if(fflush(fps) == EOF){
 							free(fname);
 							fclose(fps);
-							return MPARC_IVAL;
+							return MPARC_FERROR;
 						}
 					}
 

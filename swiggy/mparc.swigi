@@ -1,9 +1,0 @@
-%module MPARC
-
- %{
- /* Includes the header in the wrapper code */
- #include "../mparc.h"
- %}
- 
- /* Parse the header file to generate wrappers */
- %include "../mparc.h"

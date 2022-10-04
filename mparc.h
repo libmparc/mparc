@@ -2,7 +2,13 @@
 #define _MXPSQL_MPARC_H
 
 /**
-  * MPARC, A Dumb Archiver Format C Rewrite Of MPAR
+  * @file mparc.h
+  * @author MXPSQL
+  * @brief MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header
+  * @version 0.1
+  * @date 2022-09-26
+  * 
+  * @copyright
   * 
   * Licensed To You Under Teh MIT License and the LGPL-2.1-Or-Later License
   * 
@@ -131,28 +137,18 @@ extern "C"{
     int MPARC_fperror(MXPSQL_MPARC_err err, FILE* fileptrstream);
     int MPARC_perror(MXPSQL_MPARC_err err);
 
-
-    /**
-     * @brief Opaque Implementation Struct
-     * 
-     */
-    typedef struct MXPSQL_MPARC_impleq_t MXPSQL_MPARC_impleq_t;
     /**
      * @brief Ptr type, should be initialized to null on first use
      * 
      * @details
-     * 
-     * Pointer type to MXPSQL_MPARC_impleq_t.
      * 
      * This should be initialized to NULL to prevent problems with uninitialized value.
      * 
      * Don't ever try to dereference this thing.
      * 
      * This can never be declared as a non pointer object.
-     * 
-     * @see MXPSQL_MPARC_impleq_t
      */
-    typedef struct MXPSQL_MPARC_impleq_t MXPSQL_MPARC_t;
+    typedef struct MXPSQL_MPARC_t MXPSQL_MPARC_t;
 
     /**
      * @brief Initialize sturcture
@@ -199,6 +195,16 @@ extern "C"{
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
     MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, size_t sizy);
+    /**
+     * @brief Push a void pointer as a file
+     * 
+     * @param structure the target structure
+     * @param filename the filename to assign
+     * @param buffer_guffer the void pointer
+     * @param sizy the size of buffer_guffer
+     * @return MXPSQL_MPARC_err the status code if successfully done
+     */
+    MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, size_t sizy);
     /**
      * @brief Push a string as a file
      * 

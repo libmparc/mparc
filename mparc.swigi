@@ -1,0 +1,15 @@
+%module MPARC
+
+ %{
+ /* Dummy c99 */
+ #define __STDC_VERSION__
+ /* Includes the header in the wrapper code */
+ #include "./mparc.h"
+ %}
+
+ /* Dummy c99 */
+ %define __STDC_VERSION__
+ %enddef
+
+ /* Parse the header file to generate wrappers */
+ %include "./mparc.h"

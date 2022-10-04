@@ -5,7 +5,13 @@
 *.so*
 *.so
 *.a*
+*.dll
+*.lib
 
 *.mpar*
+*.struct*
+*.log*
 
 html/
+# e/ is our test directory
+e/

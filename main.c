@@ -13,7 +13,7 @@ void xhandler(const char* key){
 }
 
 int mkdirer(char* dir){
-    #if defined(_WIN32) || defined(_WIN64)
+    #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
     #else
     return mkdir(dir, 0777);
     #endif
@@ -28,7 +28,7 @@ int main(int argc, char** argv){
 
 
     if(argc < 3){
-        printf("%s usage\n", argv[0]);
+        printf("%s usage: %s [your/archive.mpar] [l, c, a, x] [...]\n", argv[0], argv[0]);
         exit_c= EXIT_FAILURE;
         goto exit_handler;
     }
@@ -86,7 +86,19 @@ int main(int argc, char** argv){
             }
         }
 
-        err = MPARC_construct_filename(archive, filename);
+        if(strcmp(filename, "-") == 0){
+            char* archiveo=NULL;
+            err = MPARC_construct_str(archive, &archiveo);
+            fprintf(stderr, "%s", archiveo); // stderr due to tainted output if on stdout
+        }
+        else{
+            err = MPARC_construct_filename(archive, filename);
+            if(err != MPARC_OK){
+                MPARC_perror(err);
+                exit_c = EXIT_FAILURE;
+                goto exit_handler;
+            }  
+        }
         if(err != MPARC_OK){
             MPARC_perror(err);
             exit_c = EXIT_FAILURE;
@@ -140,11 +152,39 @@ int main(int argc, char** argv){
             goto exit_handler;
         }
 
-        err = MPARC_extract_advance(archive, argv[3], NULL, xhandler, mkdirer);
-        if(err != MPARC_OK){
-            MPARC_perror(err);
-            exit_c = EXIT_FAILURE;
-            goto exit_handler;
+        if(1){ // use new extract, it is much user friendlier
+            // new extract
+            err = MPARC_extract_advance(archive, argv[3], NULL, xhandler, mkdirer);
+            if(err != MPARC_OK){
+                MPARC_perror(err);
+                exit_c = EXIT_FAILURE;
+                goto exit_handler;
+            }
+        }
+        else{
+            // old extract
+            int run = 1;
+            MXPSQL_MPARC_err errstat = MPARC_OK;
+            char* d2m = NULL;
+            while(run == 1){
+                errstat = MPARC_extract(archive, argv[3], &d2m);
+                if(errstat == MPARC_OPPART){
+                    if(mkdirer(d2m) != 0){
+                        fprintf(stderr, "Failed to make directory\n");
+                        exit_c = EXIT_FAILURE;
+                        goto exit_handler;
+                    }
+                }
+                else if(errstat == MPARC_OK){
+                    run = 0;
+                    break;
+                }
+                else{
+                    MPARC_perror(errstat);
+                    exit_c = EXIT_FAILURE;
+                    goto exit_handler;
+                }
+            }
         }
     }
     else{
