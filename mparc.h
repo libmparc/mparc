@@ -4,7 +4,7 @@
 /**
   * @file mparc.h
   * @author MXPSQL
-  * @brief MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header
+  * @brief MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header. Never reeterant, thread and async safe.
   * @version 0.1
   * @date 2022-09-26
   * 
@@ -53,16 +53,18 @@
   * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef __STDC_VERSION__
+#ifndef __STDC__
 #error "Minimum C Version is C99"
 #endif
 
 
 #if defined(__cplusplus) || defined(c_plusplus)
 #include <cstdio>
+#include <cinttypes>
 extern "C"{
 #else
 #include <stdio.h>
+#include <inttypes.h>
 #endif
 
     /**
@@ -175,7 +177,7 @@ extern "C"{
      * 
      * @note Free listout manually with 'free'
      */
-    MXPSQL_MPARC_err MPARC_list(MXPSQL_MPARC_t* structure, char*** listout, size_t* length);
+    MXPSQL_MPARC_err MPARC_list(MXPSQL_MPARC_t* structure, char*** listout, uint64_t* length);
     /**
      * @brief Check if file entry exists
      * 
@@ -194,7 +196,7 @@ extern "C"{
      * @param sizy the size of ustringc
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, size_t sizy);
+    MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint64_t sizy);
     /**
      * @brief Push a void pointer as a file
      * 
@@ -204,7 +206,7 @@ extern "C"{
      * @param sizy the size of buffer_guffer
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, size_t sizy);
+    MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, uint64_t sizy);
     /**
      * @brief Push a string as a file
      * 
@@ -214,7 +216,7 @@ extern "C"{
      * @param sizey the size of stringc
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, size_t sizey);
+    MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, uint64_t sizey);
     /**
      * @brief Push a file read from the filesystem into the archive
      * 
@@ -260,7 +262,7 @@ extern "C"{
      * @param sout the output pointer to a variable that represent the size of bout
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, size_t* sout);
+    MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint64_t* sout);
 
     /**
      * @brief Construct the archive into a string
@@ -290,6 +292,17 @@ extern "C"{
     MXPSQL_MPARC_err MPARC_construct_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream);
 
 
+    /**
+     * @brief Advanced extraction function
+     * 
+     * @param structure the target structure
+     * @param destdir the destination directory
+     * @param dir2make NULL if there is no directory to make, not NULL if it needs you to make a directory
+     * @param on_item invoked everytime a new item is iterated over
+     * @param mk_dir invoked when directory is needed to be created, return 0 on success, non-zero on error. Overrides dir2make.
+     * @return MXPSQL_MPARC_err error status, some code are special like MPARC_OPPART. If you receive MPARC_OPPART, check dir2make
+     */
+    MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*));
     /**
      * @brief Simple version of MPARC_extract_advance
      * 

@@ -28,7 +28,7 @@ int main(int argc, char** argv){
 
 
     if(argc < 3){
-        printf("%s usage: %s [your/archive.mpar] [l, c, a, x] [...]\n", argv[0], argv[0]);
+        printf("%s usage: %s [your/archive.mpar] [l, c, a, x, d, e] [...]\n", argv[0], argv[0]);
         exit_c= EXIT_FAILURE;
         goto exit_handler;
     }
@@ -187,8 +187,77 @@ int main(int argc, char** argv){
             }
         }
     }
+    else if(strcmp(opmode, "d") == 0){
+        int pos = 3;
+        if(argc < 4){
+            fprintf(stderr, "%s", "You deleted nothing from the archive.");
+            exit_c = EXIT_FAILURE;
+            goto exit_handler;
+        }
+
+        err = MPARC_parse_filename(archive, filename);
+        if(err != MPARC_OK){
+            MPARC_perror(err);
+            exit_c = EXIT_FAILURE;
+            goto exit_handler;
+        }
+
+        
+        for(int i = pos; i < argc; i++){
+            printf("d> %s\n", argv[i]);
+            err = MPARC_pop_file(archive, argv[i]);
+            if(err == MPARC_NOEXIST){
+                fprintf(stderr, "The file (%s) does not exist and you still try to pop it off the archive???", argv[i]);
+                exit_c = EXIT_FAILURE;
+                goto exit_handler;
+            }
+            else if(err != MPARC_OK){
+                MPARC_perror(err);
+                exit_c = EXIT_FAILURE;
+                goto exit_handler;
+            }
+        }
+
+        err = MPARC_construct_filename(archive, filename);
+        if(err != MPARC_OK){
+            MPARC_perror(err);
+            exit_c = EXIT_FAILURE;
+            goto exit_handler;
+        }  
+    }
+    else if(strcmp(opmode, "e") == 0){
+        int pos = 3;
+        if(argc < 4){
+            fprintf(stderr, "%s", "You deleted nothing from the archive.");
+            exit_c = EXIT_FAILURE;
+            goto exit_handler;
+        }
+
+        err = MPARC_parse_filename(archive, filename);
+        if(err != MPARC_OK){
+            MPARC_perror(err);
+            exit_c = EXIT_FAILURE;
+            goto exit_handler;
+        }
+
+        err = MPARC_exists(archive, argv[pos]);
+
+        if(err == MPARC_OK) {
+            fprintf(stderr, "File (%s) exists\n", argv[pos]);
+            exit_c = EXIT_FAILURE;
+        }
+        else if(err == MPARC_NOEXIST){
+            fprintf(stderr, "File (%s) does not exists\n", argv[pos]);
+            exit_c = EXIT_SUCCESS;
+        }
+        else{
+            fprintf(stderr, "Internal state error while checking for File (%s)\n", argv[pos]);
+            exit_c = EXIT_FAILURE;
+        }
+        goto exit_handler;
+    }
     else{
-        printf("%s", "Wrong options [l, c, a, x]");
+        printf("%s", "Wrong options [l, c, a, x, d, e]");
         exit_c = EXIT_FAILURE;
         goto exit_handler;
     }

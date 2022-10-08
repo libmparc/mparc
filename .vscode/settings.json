@@ -1,6 +1,13 @@
 {
     "files.associations": {
         "stddef.h": "c",
-        "random": "c"
+        "random": "c",
+        "ios": "cpp",
+        "*.tcc": "cpp",
+        "filesystem": "cpp",
+        "string_view": "cpp",
+        "__locale": "cpp",
+        "__string": "cpp",
+        "string": "cpp"
     }
 }

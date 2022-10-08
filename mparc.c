@@ -67,6 +67,7 @@
 #include <errno.h>
 #include <inttypes.h>
 #include <stdbool.h>
+#include <time.h>
 
 #ifdef MPARC_DEBUG
 #define MPARC_MEM_DEBUG 1
@@ -98,12 +99,13 @@
 #define MPARC_MAGIC_CHKSM_SEP '%'
 
 // sorting mode
-// if set to true, then the entries will be sorted by their checksum values
-// else sorted by their filename
-// default is false
+// if set to 0, then the entries will be sorted by their checksum values
+// else if set to 1 sorted by their filename
+// else randomly sorted
+// default is 1
 // that description was false, normally the checksum will sort itself, but if it fails, then the json will sort it
-#ifndef MPARC_CHECKSUM_BASED_QSORT
-#define MPARC_CHECKSUM_BASED_QSORT false
+#ifndef MPARC_QSORT_MODE
+#define MPARC_QSORT_MODE 2
 #endif
 
 /* not defines */
@@ -119,7 +121,7 @@
  * https://github.com/skullchap/b64
 */
 
-static char *b64Encode(unsigned char *data, size_t inlen)
+static char *b64Encode(unsigned char *data, uint64_t inlen)
 {
 		static const char b64e[] = {
 				'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
@@ -131,14 +133,14 @@ static char *b64Encode(unsigned char *data, size_t inlen)
 				'w', 'x', 'y', 'z', '0', '1', '2', '3',
 				'4', '5', '6', '7', '8', '9', '+', '/'};
 
-		size_t outlen = ((((inlen) + 2) / 3) * 4);
+		uint64_t outlen = ((((inlen) + 2) / 3) * 4);
 
 		char *out = malloc(outlen + 1);
 		if (out == NULL) return NULL;
 		out[outlen] = '\0';
 		char *p = out;
 
-		size_t i;
+		uint64_t i;
 		for (i = 0; i < inlen - 2; i += 3)
 		{
 				*p++ = b64e[(data[i] >> 2) & 0x3F];
@@ -166,7 +168,7 @@ static char *b64Encode(unsigned char *data, size_t inlen)
 		return out;
 }
 
-static unsigned char *b64Decode(char *data, size_t inlen, size_t* outplen)
+static unsigned char *b64Decode(char *data, uint64_t inlen, uint64_t* outplen)
 {
 		static const char b64d[] = {
 				64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
@@ -187,7 +189,7 @@ static unsigned char *b64Decode(char *data, size_t inlen, size_t* outplen)
 				64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64};
 
 		if (inlen == 0 || inlen % 4) return NULL;
-		size_t outlen = (((inlen) / 4) * 3);
+		uint64_t outlen = (((inlen) / 4) * 3);
 
 		if (data[inlen - 1] == '=') outlen--;
 		if (data[inlen - 2] == '=') outlen--;
@@ -197,12 +199,12 @@ static unsigned char *b64Decode(char *data, size_t inlen, size_t* outplen)
 		*outplen = outlen;
 
 		typedef size_t u32;
-		for (size_t i = 0, j = 0; i < inlen;)
+		for (uint64_t i = 0, j = 0; i < inlen;)
 		{
-				u32 a = data[i] == '=' ? 0 & i++ : (size_t) b64d[((size_t) data[(size_t) i++])];
-				u32 b = data[i] == '=' ? 0 & i++ : (size_t) b64d[((size_t) data[(size_t) i++])];
-				u32 c = data[i] == '=' ? 0 & i++ : (size_t) b64d[((size_t) data[(size_t) i++])];
-				u32 d = data[i] == '=' ? 0 & i++ : (size_t) b64d[((size_t) data[(size_t) i++])];
+				u32 a = data[i] == '=' ? 0 & i++ : (uint64_t) b64d[((uint64_t) data[(uint64_t) i++])];
+				u32 b = data[i] == '=' ? 0 & i++ : (uint64_t) b64d[((uint64_t) data[(uint64_t) i++])];
+				u32 c = data[i] == '=' ? 0 & i++ : (uint64_t) b64d[((uint64_t) data[(uint64_t) i++])];
+				u32 d = data[i] == '=' ? 0 & i++ : (uint64_t) b64d[((uint64_t) data[(uint64_t) i++])];
 
 				u32 triple = (a << 3 * 6) + (b << 2 * 6) +
 													(c << 1 * 6) + (d << 0 * 6);
@@ -218,8 +220,8 @@ static unsigned char *b64Decode(char *data, size_t inlen, size_t* outplen)
 
 
 static const struct {
-		char* (*btoa) (unsigned char*, size_t);
-		unsigned char* (*atob) (char*, size_t, size_t*);
+		char* (*btoa) (unsigned char*, uint64_t);
+		unsigned char* (*atob) (char*, uint64_t, uint64_t*);
 } b64 = {b64Encode, b64Decode};
 
 
@@ -256,7 +258,7 @@ static inline crc_t crc_init(void)
  * \param[in] data_len Number of bytes in the \a data buffer.
  * \return             The updated crc value.
  */
-static crc_t crc_update(crc_t crc, const void *data, size_t data_len)
+static crc_t crc_update(crc_t crc, const void *data, uint64_t data_len)
 {
 	static const crc_t crc_table[256] = {
 	    0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
@@ -386,16 +388,20 @@ struct JsonNode
 	
 
 #define out_of_memory() do {                    \
-		fprintf(stderr, "Out of memory.\n");    \
-		exit(EXIT_FAILURE);                     \
+		/* dumb */ \
+		/* fprintf(stderr, "Out of memory.\n"); */   \
+		/* exit(EXIT_FAILURE);    */                 \
+		; /* Null statement */ \
 	} while (0)
 
 /* Sadly, strdup is not portable. */
 static char *json_strdup(const char *str)
 {
 	char *ret = (char*) malloc(strlen(str) + 1);
-	if (ret == NULL)
+	if (ret == NULL){
 		out_of_memory();
+		return NULL;
+	}
 	strcpy(ret, str);
 	return ret;
 }
@@ -412,8 +418,10 @@ typedef struct
 static void sb_init(SB *sb)
 {
 	sb->start = (char*) malloc(17);
-	if (sb->start == NULL)
+	if (sb->start == NULL){
 		out_of_memory();
+		return;
+	}
 	sb->cur = sb->start;
 	sb->end = sb->start + 16;
 }
@@ -422,6 +430,7 @@ static void sb_init(SB *sb)
 #define sb_need(sb, need) do {                  \
 		if ((sb)->end - (sb)->cur < (need))     \
 			sb_grow(sb, need);                  \
+		if(sb == NULL) break;   \
 	} while (0)
 
 static void sb_grow(SB *sb, int need)
@@ -434,8 +443,10 @@ static void sb_grow(SB *sb, int need)
 	} while (alloc < length + need);
 	
 	void* newsb = realloc(sb->start, alloc + 1);
-	if (newsb == NULL)
+	if (newsb == NULL){
 		out_of_memory();
+		return;
+	}
 	sb->start = (char*) newsb;
 	sb->cur = sb->start + length;
 	sb->end = sb->start + alloc;
@@ -451,6 +462,7 @@ static void sb_put(SB *sb, const char *bytes, int count)
 #define sb_putc(sb, c) do {         \
 		if ((sb)->cur >= (sb)->end) \
 			sb_grow(sb, 1);         \
+		if(sb == NULL) break;   \
 		*(sb)->cur++ = (c);         \
 	} while (0)
 
@@ -788,6 +800,7 @@ static char *json_encode_string(const char *str)
 {
 	SB sb;
 	sb_init(&sb);
+	if(sb.start == NULL) return NULL;
 	
 	emit_string(&sb, str);
 	
@@ -798,6 +811,7 @@ static char *json_stringify(const JsonNode *node, const char *space)
 {
 	SB sb;
 	sb_init(&sb);
+	if(sb.start == NULL) return NULL;
 	
 	if (space != NULL)
 		emit_value_indented(&sb, node, space, 0);
@@ -890,8 +904,10 @@ static JsonNode *json_first_child(const JsonNode *node)
 static JsonNode *mknode(JsonTag tag)
 {
 	JsonNode *ret = (JsonNode*) calloc(1, sizeof(JsonNode));
-	if (ret == NULL)
+	if (ret == NULL){
 		out_of_memory();
+		return NULL;
+	}
 	ret->tag = tag;
 	return ret;
 }
@@ -904,6 +920,7 @@ static JsonNode *json_mknull(void)
 static JsonNode *json_mkbool(bool b)
 {
 	JsonNode *ret = mknode(JSON_BOOL);
+	if(ret == NULL) return NULL;
 	ret->store.boole = b;
 	return ret;
 }
@@ -911,18 +928,22 @@ static JsonNode *json_mkbool(bool b)
 static JsonNode *mkstring(char *s)
 {
 	JsonNode *ret = mknode(JSON_STRING);
+	if(ret == NULL) return NULL;
 	ret->store.string = s;
 	return ret;
 }
 
 static JsonNode *json_mkstring(const char *s)
 {
-	return mkstring(json_strdup(s));
+	char* dup = json_strdup(s);
+	if(dup == NULL) return NULL;
+	else return mkstring(dup);
 }
 
 static JsonNode *json_mknumber(double n)
 {
 	JsonNode *node = mknode(JSON_NUMBER);
+	if(node == NULL) return NULL;
 	node->store.number = n;
 	return node;
 }
@@ -989,16 +1010,22 @@ static void json_append_member(JsonNode *object, const char *key, JsonNode *valu
 {
 	assert(object->tag == JSON_OBJECT);
 	assert(value->parent == NULL);
+
+	char* k = json_strdup(key);
+	if(k == NULL) return;
 	
-	append_member(object, json_strdup(key), value);
+	append_member(object, k, value);
 }
 
 static void json_prepend_member(JsonNode *object, const char *key, JsonNode *value)
 {
 	assert(object->tag == JSON_OBJECT);
 	assert(value->parent == NULL);
-	
-	value->key = json_strdup(key);
+
+	char* k = json_strdup(key);
+	if(k == NULL) return;
+
+	value->key = k;
 	prepend_node(object, value);
 }
 
@@ -1207,6 +1234,7 @@ static bool parse_string(const char **sp, char **out)
 	
 	if (out) {
 		sb_init(&sb);
+		if(sb.start == NULL) return false;
 		sb_need(&sb, 4);
 		b = sb.cur;
 	} else {
@@ -2745,12 +2773,17 @@ static char *mydirname(char *path)
 }
 
 
-char* SmartStringCompressor(char* strings){
+char* SmartStringCompressor(char* strings){ // hidden but you can actually extern thiss
 	return strings; // noop
 }
 
-char* SmartStringDeCompressor(char* cstrings){
+char* SmartStringDeCompressor(char* cstrings){ // hidden but you can actually extern thiss
 	return cstrings; // noop
+}
+
+
+static int voidstrcmp(const void* str1, const void* str2){
+	return strcmp((const char*) str1, (const char*) str2);
 }
 
 /* END OF SNIPPETS */
@@ -2773,7 +2806,7 @@ char* SmartStringDeCompressor(char* cstrings){
 
 		/* MAIN CODE OK */
 		typedef struct MPARC_blob_store{
-				size_t binary_size;
+				uint64_t binary_size;
 				unsigned char* binary_blob;
 				crc_t binary_crc;
 		} MPARC_blob_store;
@@ -2877,78 +2910,92 @@ char* SmartStringDeCompressor(char* cstrings){
 
 			int spress = 0;
 
-			if(MPARC_CHECKSUM_BASED_QSORT){
-				// dumb sort
-				// most likely checksum will do the work of sorting it
-				spress = strcmp(str1, str2);
-			}
-			else{
-				// smart sort
-				char* str1d = NULL;
-				char* str2d = NULL;
-
-				{
-					str1d = const_strdup(str1);
-					if(str1d == NULL) goto me_my_errhandler;
-					str2d = const_strdup(str2);
-					if(str2d == NULL) goto me_my_errhandler;
+			switch(MPARC_QSORT_MODE){
+				case 0: {
+					// dumb sort
+					// most likely checksum will do the work of sorting it
+					spress = voidstrcmp(str1, str2);
+					break;
 				}
 
-				char* sav = NULL;
-				char sep[2] = {MPARC_MAGIC_CHKSM_SEP, '\0'};
-
-				char* str1fnam = NULL;
-				char* str2fnam = NULL;
-				{
-					char* tok = my_strtok_r(str1d, sep, &sav);
-					if(tok == NULL || strcmp(sav, "") == 0 || sav == NULL){
-						goto me_my_errhandler;
-					}
+				case 1: {
+					// smart sort
+					char* str1d = NULL;
+					char* str2d = NULL;
 
 					{
-						// ease, use json.c
-						JsonNode* root = json_decode(sav);
-						JsonNode* node = NULL;
-						json_foreach(node, root) {
-							// ignore non string ones
-							if(node->tag == JSON_STRING){
-								if(strcmp(node->key, "filename") == 0){
-									str1fnam = node->store.string;
-								}
-							}
-						};
-					}
-				}
-				{
-					char* tok = my_strtok_r(str2d, sep, &sav);
-					if(tok == NULL || strcmp(sav, "") == 0 || sav == NULL){
-						goto me_my_errhandler;
+						str1d = const_strdup(str1);
+						if(str1d == NULL) goto me_my_errhandler;
+						str2d = const_strdup(str2);
+						if(str2d == NULL) goto me_my_errhandler;
 					}
 
+					char* sav = NULL;
+					char sep[2] = {MPARC_MAGIC_CHKSM_SEP, '\0'};
+
+					char* str1fnam = NULL;
+					char* str2fnam = NULL;
 					{
-						// ease, use json.c
-						JsonNode* root = json_decode(sav);
-						JsonNode* node = NULL;
-						json_foreach(node, root) {
-							// ignore non string ones
-							if(node->tag == JSON_STRING){
-								if(strcmp(node->key, "filename") == 0){
-									str2fnam = node->store.string;
+						char* tok = my_strtok_r(str1d, sep, &sav);
+						if(tok == NULL || strcmp(sav, "") == 0 || sav == NULL){
+							goto me_my_errhandler;
+						}
+
+						{
+							// ease, use json.c
+							JsonNode* root = json_decode(sav);
+							JsonNode* node = NULL;
+							json_foreach(node, root) {
+								// ignore non string ones
+								if(node->tag == JSON_STRING){
+									if(strcmp(node->key, "filename") == 0){
+										str1fnam = node->store.string;
+									}
 								}
-							}
-						};
+							};
+						}
 					}
-				}
-				spress = strcmp(str1fnam, str2fnam);
+					{
+						char* tok = my_strtok_r(str2d, sep, &sav);
+						if(tok == NULL || strcmp(sav, "") == 0 || sav == NULL){
+							goto me_my_errhandler;
+						}
 
-				goto me_my_errhandler;
+						{
+							// ease, use json.c
+							JsonNode* root = json_decode(sav);
+							JsonNode* node = NULL;
+							json_foreach(node, root) {
+								// ignore non string ones
+								if(node->tag == JSON_STRING){
+									if(strcmp(node->key, "filename") == 0){
+										str2fnam = node->store.string;
+									}
+								}
+							};
+						}
+					}
 
-				me_my_errhandler:
-				{
-					if(str1d) free(str1d);
-					if(str2d) free(str2d);
+					spress = voidstrcmp(str1fnam, str2fnam);
+
+					goto me_my_errhandler;
+
+					me_my_errhandler:
+					{
+						if(str1d) free(str1d);
+						if(str2d) free(str2d);
+					}
+
+					break;
 				}
-			}
+
+				default: {
+					double difftimet = difftime(time(NULL), 0);
+					srand((unsigned int) difftimet);
+					spress = (rand() % 30) - 15;
+					break;
+				}
+			};
 
 			if(spress > 0) return 1;
 			else if(spress < 0) return -1;
@@ -2957,9 +3004,9 @@ char* SmartStringDeCompressor(char* cstrings){
 		}
 		
 		static MXPSQL_MPARC_err MPARC_i_sort(char** sortedstr){
-			size_t counter = 0;
+			uint64_t counter = 0;
 			{
-				size_t i = 0;
+				uint64_t i = 0;
 				for(i = 0; sortedstr[i] != NULL; i++);
 				counter = i;
 			}
@@ -2968,7 +3015,7 @@ char* SmartStringDeCompressor(char* cstrings){
 				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp);
 			}
 			/* {
-				size_t i = 0, j = 0;
+				uint64_t i = 0, j = 0;
 				char* temp = NULL;
     			for (i=0;i<counter-1;i++)
     			{
@@ -3012,16 +3059,18 @@ char* SmartStringDeCompressor(char* cstrings){
 				char* estring = NULL;
 
 				char** jsonry = NULL;
-				size_t jsonentries;
+				uint64_t jsonentries;
 
-				MPARC_list(structure, NULL, &jsonentries);
+				if(MPARC_list(structure, NULL, &jsonentries) != MPARC_OK){
+					return NULL;
+				}
 
 				jsonry = calloc(jsonentries+1, sizeof(char*));
 				jsonry[jsonentries]=NULL;
 
 				const char* nkey;
 				map_iter_t itery = map_iter(&structure->globby);
-				size_t indexy = 0;
+				uint64_t indexy = 0;
 
 				while((nkey = map_next(&structure->globby, &itery))){
 						MPARC_blob_store* bob_the_blob_raw = map_get(&structure->globby, nkey);
@@ -3034,7 +3083,7 @@ char* SmartStringDeCompressor(char* cstrings){
 						char* btob = b64.btoa(bob_the_blob.binary_blob, bob_the_blob.binary_size);
 						crc3 = bob_the_blob.binary_crc;
 						if(btob == NULL) {
-								for(size_t i = 0; i < jsonentries; i++){
+								for(uint64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
@@ -3043,12 +3092,20 @@ char* SmartStringDeCompressor(char* cstrings){
 						JsonNode* glob64 = json_mkstring(btob);
 						JsonNode* filename = json_mkstring(nkey);
 						JsonNode* blob_chksum = NULL;
+						if(glob64 == NULL || filename == NULL) {
+							for(uint64_t i = 0; i < jsonentries; i++){
+									free(jsonry[jsonentries]);
+							}
+							free(jsonry);
+							return NULL;
+						}
+
 						{
 							static char* fmter = "%"PRIuFAST32;
 							char* globsum = NULL;
 							int size = snprintf(NULL, 0, fmter, crc3);
 							if(size < 0){
-								for(size_t i = 0; i < jsonentries; i++){
+								for(uint64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
@@ -3056,27 +3113,34 @@ char* SmartStringDeCompressor(char* cstrings){
 							}
 							globsum = calloc(size+1, sizeof(char));
 							if(globsum == NULL){
-								for(size_t i = 0; i < jsonentries; i++){
+								for(uint64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
 								return NULL;
 							}
 							if(snprintf(globsum, size, fmter, crc3) < 0){
-								for(size_t i = 0; i < jsonentries; i++){
+								for(uint64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
 								return NULL;
 							}
 							blob_chksum = json_mkstring(globsum);
+							if(blob_chksum == NULL){
+								for(uint64_t i = 0; i < jsonentries; i++){
+										free(jsonry[jsonentries]);
+								}
+								free(jsonry);
+								return NULL;
+							}
 							free(globsum);
 						}
 						json_append_member(objectweb, "filename", filename);
 						json_append_member(objectweb, "blob", glob64);
 						json_append_member(objectweb, "crcsum", blob_chksum);
 						if(!json_check(objectweb, NULL)){
-							for(size_t i = 0; i < jsonentries; i++){
+							for(uint64_t i = 0; i < jsonentries; i++){
 									free(jsonry[jsonentries]);
 							}
 							free(jsonry);
@@ -3096,14 +3160,14 @@ char* SmartStringDeCompressor(char* cstrings){
 								int sp = snprintf(NULL, 0, fmt, crc, structure->entry_elem2_sep_marker_or_magic_sep_marker, stringy)+1;
 								crcStringy = calloc(sp+1, sizeof(char));
 								if(crcStringy == NULL){
-									for(size_t i = 0; i < jsonentries; i++){
+									for(uint64_t i = 0; i < jsonentries; i++){
 											free(jsonry[jsonentries]);
 									}
 									free(jsonry);
 									return NULL;
 								}
 								if(snprintf(crcStringy, sp, fmt, crc, structure->entry_elem2_sep_marker_or_magic_sep_marker, stringy) < 0){
-									for(size_t i = 0; i < jsonentries; i++){
+									for(uint64_t i = 0; i < jsonentries; i++){
 											free(jsonry[jsonentries]);
 									}
 									free(jsonry);
@@ -3121,23 +3185,23 @@ char* SmartStringDeCompressor(char* cstrings){
 				MPARC_i_sort(jsonry); // We qsort this, qsort can be quicksort, insertion sort or BOGOSORT. It is ordered by the checksum instead of the name lmao.
 
 				{
-						size_t iacrurate_snprintf_len = 1;
-						for(size_t i = 0; i < jsonentries; i++){
+						uint64_t iacrurate_snprintf_len = 1;
+						for(uint64_t i = 0; i < jsonentries; i++){
 								iacrurate_snprintf_len += strlen(jsonry[i])+1;
 						}
 
 						char* str = calloc(iacrurate_snprintf_len+1, sizeof(char));
 						if(str == NULL) {
-								for(size_t i = 0; i < jsonentries; i++){
+								for(uint64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
 								return NULL;
 						}
-						for(size_t i2 = 0; i2 < jsonentries; i2++){
+						for(uint64_t i2 = 0; i2 < jsonentries; i2++){
 								char* outstr = calloc(iacrurate_snprintf_len+1, sizeof(char));
 								if(outstr == NULL){
-										for(size_t i = 0; i < jsonentries; i++){
+										for(uint64_t i = 0; i < jsonentries; i++){
 												free(jsonry[jsonentries]);
 										}
 										free(jsonry);
@@ -3150,7 +3214,7 @@ char* SmartStringDeCompressor(char* cstrings){
 
 						estring = str;
 
-						for(size_t i = 0; i < jsonentries; i++){
+						for(uint64_t i = 0; i < jsonentries; i++){
 								free(jsonry[jsonentries]);
 						}
 						free(jsonry);
@@ -3259,7 +3323,7 @@ char* SmartStringDeCompressor(char* cstrings){
 			char** entries = NULL;
 			char** json_entries = NULL;
 			MXPSQL_MPARC_err err = MPARC_OK;
-			size_t ecount = 0;
+			uint64_t ecount = 0;
 			{
 				char* entry = NULL;
 				
@@ -3296,7 +3360,7 @@ char* SmartStringDeCompressor(char* cstrings){
 						goto errhandler;
 					}
 					char* entry64 = my_strtok_r(entry2, septic, &saveptr2);
-					for(size_t i = 0; entry64 != NULL; i++){
+					for(uint64_t i = 0; entry64 != NULL; i++){
 						entries[i] = const_strdup(entry64);
 						if(entries[i] == NULL){
 							err = MPARC_OOM;
@@ -3308,7 +3372,7 @@ char* SmartStringDeCompressor(char* cstrings){
 				}
 			}
 
-			for(size_t i = 0; i < ecount; i++){
+			for(uint64_t i = 0; i < ecount; i++){
 				crc_t crc = crc_init();
 				crc_t tcrc = crc_init();
 				char* entry = entries[i];
@@ -3335,7 +3399,7 @@ char* SmartStringDeCompressor(char* cstrings){
 
 			jsmn_parser jsmn;
 			jsmn_init(&jsmn);
-			for(size_t i = 0; i < ecount; i++){
+			for(uint64_t i = 0; i < ecount; i++){
 				char* filename = NULL;
 				char* blob = NULL;
 				crc_t crc3 = crc_init();
@@ -3343,14 +3407,14 @@ char* SmartStringDeCompressor(char* cstrings){
 				char* jse = json_entries[i];
 
 				if(false){ // disable jsmn for now due to eroneous results (filename gives wrong name)
-					static const size_t jtokens_count = 128; // we only need 4 but we don't expect more than 128, we put more just in case for other metadata
+					static const uint64_t jtokens_count = 128; // we only need 4 but we don't expect more than 128, we put more just in case for other metadata
 					jsmntok_t jtokens[jtokens_count];
 					int jsmn_err = jsmn_parse(&jsmn, jse, strlen(jse), jtokens, jtokens_count);
 					if(jsmn_err < 0){
 						err = MPARC_NOTARCHIVE;
 						goto errhandler;
 					}
-					for(size_t i_jse = 1; i_jse < 5; i_jse++){ // we only need 4 to scan
+					for(uint64_t i_jse = 1; i_jse < 5; i_jse++){ // we only need 4 to scan
 						jsmntok_t jtoken = jtokens[i_jse];
 						char* tok1 = "";
 						{
@@ -3410,7 +3474,7 @@ char* SmartStringDeCompressor(char* cstrings){
 				}
 
 				if(true){ // for testing purposes
-					size_t bsize = 1;
+					uint64_t bsize = 1;
 					unsigned char* un64_blob = b64.atob(blob, strlen(blob), &bsize);
 					if(un64_blob == NULL){
 						err = MPARC_OOM;
@@ -3436,7 +3500,7 @@ char* SmartStringDeCompressor(char* cstrings){
 			goto errhandler; // redundant I know
 
 			errhandler:
-			for(size_t i = 0; i < ecount; i++){
+			for(uint64_t i = 0; i < ecount; i++){
 				if(entries[i] != NULL) free(entries[i]);
 				// if(json_entries[i] != NULL) free(json_entries[i]);
 			}
@@ -3507,17 +3571,17 @@ char* SmartStringDeCompressor(char* cstrings){
 
 
 
-		MXPSQL_MPARC_err MPARC_list(MXPSQL_MPARC_t* structure, char*** listout, size_t* length){
+		MXPSQL_MPARC_err MPARC_list(MXPSQL_MPARC_t* structure, char*** listout,	uint64_t* length){
 				if(structure == NULL) {
 						return MPARC_IVAL;
 				}
 
 				typedef struct anystruct {
-						size_t len;
+						uint64_t len;
 						const char* nam;
 				} abufinfo;
 
-				size_t lentracker = 0;
+				uint64_t lentracker = 0;
 
 				char** listout_structure = NULL;
 
@@ -3536,7 +3600,7 @@ char* SmartStringDeCompressor(char* cstrings){
 
 				if(listout != NULL){
 
-						size_t index = 0;
+						uint64_t index = 0;
 						const char* key2;
 						listout_structure = calloc(lentracker+1, sizeof(char*));
 
@@ -3564,7 +3628,7 @@ char* SmartStringDeCompressor(char* cstrings){
 						*listout = listout_structure;
 				}
 				else{
-						for(size_t i = 0; i < lentracker; i++){
+						for(uint64_t i = 0; i < lentracker; i++){
 							if(listout_structure) free(listout_structure[i]);
 						}
 
@@ -3576,12 +3640,27 @@ char* SmartStringDeCompressor(char* cstrings){
 
 		MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, char* filename){
 				if(structure == NULL || filename == NULL) return MPARC_IVAL;
-				if((map_get(&structure->globby, filename)) == NULL) return MPARC_NOEXIST;
+				if(true){
+					if((map_get(&structure->globby, filename)) == NULL) return MPARC_NOEXIST;
+				}
+				else{
+					char** listy_out = NULL;
+					uint64_t listy_size = 0;
+					{
+						MXPSQL_MPARC_err err = MPARC_list(structure, &listy_out, &listy_size);
+						if(err != MPARC_OK) return err;
+					}
+					{
+						char* p = bsearch(filename, listy_out, listy_size, sizeof(*listy_out), voidstrcmp);
+						if( p == NULL && map_get(&structure->globby, filename) == NULL) return MPARC_NOEXIST;
+					}
+					free(listy_out);
+				}
 				return MPARC_OK;
 		}
 
 
-		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, size_t sizy){
+		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint64_t sizy){
 			crc_t crc3 = crc_init();
 			crc3 = crc_update(crc3, ustringc, sizy);
 			crc3 = crc_finalize(crc3);
@@ -3599,11 +3678,11 @@ char* SmartStringDeCompressor(char* cstrings){
 			return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, size_t sizey){
+		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, uint64_t sizey){
 			return MPARC_push_ufilestr(structure, filename, (unsigned char*)buffer_guffer, sizey);
 		}
 
-		MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, size_t sizey){
+		MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, uint64_t sizey){
 				return MPARC_push_ufilestr(structure, filename, (unsigned char*) stringc, sizey);
 		}
 
@@ -3634,7 +3713,7 @@ char* SmartStringDeCompressor(char* cstrings){
 
 				unsigned char* binary = NULL;
 
-				size_t filesize = 0; // byte count
+				uint64_t filesize = 0; // byte count
 				if(fseek(filestream, 0, SEEK_SET) != 0){
 						return MPARC_FERROR;
 				}
@@ -3669,17 +3748,18 @@ char* SmartStringDeCompressor(char* cstrings){
 
 		MXPSQL_MPARC_err MPARC_clear_file(MXPSQL_MPARC_t* structure){
 			char** entryos = NULL;
-			size_t eos_s = 0;
+			uint64_t eos_s = 0;
 			MXPSQL_MPARC_err err = MPARC_list(structure, &entryos, &eos_s);
 			if(err != MPARC_OK) return err;
-			for(size_t i = 0; i < eos_s; i++){
+			for(uint64_t i = 0; i < eos_s; i++){
 				MPARC_pop_file(structure, entryos[i]);
 			}
+			free(entryos);
 			return err;
 		}
 
 
-		static MXPSQL_MPARC_err MPARC_peek_file_advance(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, size_t* sout, crc_t* crout){ // users don't need to know the crc
+		static MXPSQL_MPARC_err MPARC_peek_file_advance(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint64_t* sout, crc_t* crout){ // users don't need to know the crc
 				if(MPARC_exists(structure, filename) == MPARC_NOEXIST) return MPARC_NOEXIST;
 				if(bout != NULL) *bout = map_get(&structure->globby, filename)->binary_blob;
 				if(sout != NULL) *sout = map_get(&structure->globby, filename)->binary_size;
@@ -3687,7 +3767,7 @@ char* SmartStringDeCompressor(char* cstrings){
 				return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, size_t* sout){
+		MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint64_t* sout){
 			return MPARC_peek_file_advance(structure, filename, bout, sout, NULL);
 		}
 
@@ -3773,7 +3853,7 @@ char* SmartStringDeCompressor(char* cstrings){
 
 			char* archive = NULL;
 			MXPSQL_MPARC_err err = MPARC_construct_str(structure, &archive);
-			size_t count = strlen(archive);
+			uint64_t count = strlen(archive);
 			if(fwrite(archive, sizeof(char), count, fpstream) < count){
 				free(archive);
 				return MPARC_FERROR;
@@ -3786,12 +3866,12 @@ char* SmartStringDeCompressor(char* cstrings){
 		MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*)){
 			{
         		char** listy = NULL;
-        		size_t listys = 0;
+        		uint64_t listys = 0;
         		if(MPARC_list(structure, &listy, &listys) != MPARC_OK){
         		    return MPARC_IVAL;
         		}
 
-        		for(size_t i = 0; i < listys; i++){
+        		for(uint64_t i = 0; i < listys; i++){
 					if(dir2make != NULL) *dir2make = NULL;
 					char* fname = NULL;
 					const char* nkey = listy[i];
@@ -3801,16 +3881,18 @@ char* SmartStringDeCompressor(char* cstrings){
 					{
 						{
 							fname = const_strdup(nkey);
-							size_t pathl = strlen(fname)+strlen(nkey)+1;
+							uint64_t pathl = strlen(fname)+strlen(nkey)+1;
 							void* nfname = realloc(fname, pathl+1);
 							if(nfname == NULL){
 								free(fname);
+								free(listy);
 								return MPARC_OOM;
 							}
 							fname = (char*) nfname;
 							int splen = snprintf(fname, pathl, "%s/%s", destdir, nkey);
 							if(splen < 0){
 								free(fname);
+								free(listy);
 								return MPARC_IVAL;
 							}
 						}
@@ -3823,9 +3905,11 @@ char* SmartStringDeCompressor(char* cstrings){
 								if(mk_dir){
 									if((*mk_dir)(dname) != 0){
 										free(fname);
+										free(listy);
 										return MPARC_FERROR;
 									}
 									free(fname);
+									free(listy);
 									// i--; // hacky
 									// continue;
 									goto rmkdir_goto_label_spot; // much better (don't object to this method of using goto and labels, the old one involes decrmenting the index variable and that is a hacky solution)
@@ -3834,6 +3918,7 @@ char* SmartStringDeCompressor(char* cstrings){
 									if(dir2make != NULL) *dir2make = dname;
 								}
 								free(fname);
+								free(listy);
 								return MPARC_OPPART;
 							}
 							#else
@@ -3841,33 +3926,38 @@ char* SmartStringDeCompressor(char* cstrings){
 							if(dir2make != NULL) *dir2make = dname;
 							#endif
 							free(fname);
+							free(listy);
 							return MPARC_IVAL;
 						}
 						{
 							unsigned char* bout = NULL;
-							size_t sout = 0;
+							uint64_t sout = 0;
 							crc_t crc3 = 0;
 							MXPSQL_MPARC_err err = MPARC_peek_file_advance(structure, (char*) nkey, &bout, &sout, &crc3);
 							if(err != MPARC_OK){
 								free(fname);
+								free(listy);
 								fclose(fps);
 								return err;
 							}
 							if(fwrite(bout, sizeof(unsigned char), sout, fps) < sout){
 								if(ferror(fps)){
 									free(fname);
+									free(listy);
 									fclose(fps);
 									return MPARC_FERROR;
 								}
 							}
 							if(fseek(fps, 0, SEEK_SET) != 0){
 								free(fname);
+								free(listy);
 								fclose(fps);
 								return MPARC_FERROR;
 							}
 							unsigned char* binary = calloc(sout+1, sizeof(char));
 							if(binary == NULL){
 								free(fname);
+								free(listy);
 								fclose(fps);
 								return MPARC_OOM;
 							}
@@ -3875,6 +3965,7 @@ char* SmartStringDeCompressor(char* cstrings){
 								if(ferror(fps)){
 									free(fname);
 									free(binary);
+									free(listy);
 									fclose(fps);
 									return MPARC_FERROR;
 								}
@@ -3886,6 +3977,7 @@ char* SmartStringDeCompressor(char* cstrings){
 								if(crc != crc3){
 									free(fname);
 									free(binary);
+									free(listy);
 									fclose(fps);
 									return MPARC_CHKSUM;
 								}
@@ -3893,6 +3985,7 @@ char* SmartStringDeCompressor(char* cstrings){
 						}
 						if(fflush(fps) == EOF){
 							free(fname);
+							free(listy);
 							fclose(fps);
 							return MPARC_FERROR;
 						}
@@ -3901,6 +3994,7 @@ char* SmartStringDeCompressor(char* cstrings){
 					free(fname);
 					fclose(fps);
         		}
+				free(listy);
 			}
 			return MPARC_OK;
 		}
@@ -3937,7 +4031,7 @@ char* SmartStringDeCompressor(char* cstrings){
 		}
 
 		MXPSQL_MPARC_err MPARC_parse_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream){
-			size_t filesize = 0;
+			uint64_t filesize = 0;
 			if(fseek(fpstream, 0, SEEK_SET) != 0){
 				return MPARC_FERROR;
 			}

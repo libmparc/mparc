@@ -1,9 +1,11 @@
-CFLAGS=-pipe -fdiagnostics-color -g -Og -std=c99 -pedantic -Wall -Wextra -Werror
-CLIBS=-ldmallocth
+CFLAGS:=-pipe -fdiagnostics-color -g -Og -std=c99 -pedantic -Wall -Wextra -Werror
+CLIBS:=-ldmallocth
+
+CC:=gcc
 
 DEFAULT_GOAL:=all
 
-.PHONY: all buildlib build test cls clean mkar
+.PHONY: all  buildlib build test  cls  clean  mkar  mkat
 
 all: cls test build
 
@@ -28,3 +30,8 @@ clean:
 
 mkar:
 	./mparc.exe ./my.mpar c ./*.c ./*.h ./*.hpp ./makefile ./*.swigi
+
+
+mkat:
+	autoscan
+	mv configure.scan configure.ac

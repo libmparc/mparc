@@ -1,5 +1,6 @@
 # spoopy scarey skellingtons
 
+# executables
 *.exe*
 *.o*
 *.so*
@@ -8,10 +9,27 @@
 *.dll
 *.lib
 
+# misc files
 *.mpar*
 *.struct*
 *.log*
 
+# autotools
+!configure.ac
+configure
+!Makefile.am
+configure~
+aclocal.m4
+install-sh
+Makefile.in
+compile
+config.guess
+missing
+config.sub
+depcomp
+autom4te.cache/
+
+# misc dirs
 html/
 # e/ is our test directory
 e/
