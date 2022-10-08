@@ -121,7 +121,7 @@
  * https://github.com/skullchap/b64
 */
 
-static char *b64Encode(unsigned char *data, uint64_t inlen)
+static char *b64Encode(unsigned char *data, uint_fast64_t inlen)
 {
 		static const char b64e[] = {
 				'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
@@ -133,14 +133,14 @@ static char *b64Encode(unsigned char *data, uint64_t inlen)
 				'w', 'x', 'y', 'z', '0', '1', '2', '3',
 				'4', '5', '6', '7', '8', '9', '+', '/'};
 
-		uint64_t outlen = ((((inlen) + 2) / 3) * 4);
+		uint_fast64_t outlen = ((((inlen) + 2) / 3) * 4);
 
 		char *out = malloc(outlen + 1);
 		if (out == NULL) return NULL;
 		out[outlen] = '\0';
 		char *p = out;
 
-		uint64_t i;
+		uint_fast64_t i;
 		for (i = 0; i < inlen - 2; i += 3)
 		{
 				*p++ = b64e[(data[i] >> 2) & 0x3F];
@@ -168,7 +168,7 @@ static char *b64Encode(unsigned char *data, uint64_t inlen)
 		return out;
 }
 
-static unsigned char *b64Decode(char *data, uint64_t inlen, uint64_t* outplen)
+static unsigned char *b64Decode(char *data, uint_fast64_t inlen, uint_fast64_t* outplen)
 {
 		static const char b64d[] = {
 				64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
@@ -189,7 +189,7 @@ static unsigned char *b64Decode(char *data, uint64_t inlen, uint64_t* outplen)
 				64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64};
 
 		if (inlen == 0 || inlen % 4) return NULL;
-		uint64_t outlen = (((inlen) / 4) * 3);
+		uint_fast64_t outlen = (((inlen) / 4) * 3);
 
 		if (data[inlen - 1] == '=') outlen--;
 		if (data[inlen - 2] == '=') outlen--;
@@ -199,12 +199,12 @@ static unsigned char *b64Decode(char *data, uint64_t inlen, uint64_t* outplen)
 		*outplen = outlen;
 
 		typedef size_t u32;
-		for (uint64_t i = 0, j = 0; i < inlen;)
+		for (uint_fast64_t i = 0, j = 0; i < inlen;)
 		{
-				u32 a = data[i] == '=' ? 0 & i++ : (uint64_t) b64d[((uint64_t) data[(uint64_t) i++])];
-				u32 b = data[i] == '=' ? 0 & i++ : (uint64_t) b64d[((uint64_t) data[(uint64_t) i++])];
-				u32 c = data[i] == '=' ? 0 & i++ : (uint64_t) b64d[((uint64_t) data[(uint64_t) i++])];
-				u32 d = data[i] == '=' ? 0 & i++ : (uint64_t) b64d[((uint64_t) data[(uint64_t) i++])];
+				u32 a = data[i] == '=' ? 0 & i++ : (uint_fast64_t) b64d[((uint_fast64_t) data[(uint_fast64_t) i++])];
+				u32 b = data[i] == '=' ? 0 & i++ : (uint_fast64_t) b64d[((uint_fast64_t) data[(uint_fast64_t) i++])];
+				u32 c = data[i] == '=' ? 0 & i++ : (uint_fast64_t) b64d[((uint_fast64_t) data[(uint_fast64_t) i++])];
+				u32 d = data[i] == '=' ? 0 & i++ : (uint_fast64_t) b64d[((uint_fast64_t) data[(uint_fast64_t) i++])];
 
 				u32 triple = (a << 3 * 6) + (b << 2 * 6) +
 													(c << 1 * 6) + (d << 0 * 6);
@@ -220,8 +220,8 @@ static unsigned char *b64Decode(char *data, uint64_t inlen, uint64_t* outplen)
 
 
 static const struct {
-		char* (*btoa) (unsigned char*, uint64_t);
-		unsigned char* (*atob) (char*, uint64_t, uint64_t*);
+		char* (*btoa) (unsigned char*, uint_fast64_t);
+		unsigned char* (*atob) (char*, uint_fast64_t, uint_fast64_t*);
 } b64 = {b64Encode, b64Decode};
 
 
@@ -258,7 +258,7 @@ static inline crc_t crc_init(void)
  * \param[in] data_len Number of bytes in the \a data buffer.
  * \return             The updated crc value.
  */
-static crc_t crc_update(crc_t crc, const void *data, uint64_t data_len)
+static crc_t crc_update(crc_t crc, const void *data, uint_fast64_t data_len)
 {
 	static const crc_t crc_table[256] = {
 	    0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
@@ -2806,7 +2806,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 		/* MAIN CODE OK */
 		typedef struct MPARC_blob_store{
-				uint64_t binary_size;
+				uint_fast64_t binary_size;
 				unsigned char* binary_blob;
 				crc_t binary_crc;
 		} MPARC_blob_store;
@@ -3004,9 +3004,9 @@ static int voidstrcmp(const void* str1, const void* str2){
 		}
 		
 		static MXPSQL_MPARC_err MPARC_i_sort(char** sortedstr){
-			uint64_t counter = 0;
+			uint_fast64_t counter = 0;
 			{
-				uint64_t i = 0;
+				uint_fast64_t i = 0;
 				for(i = 0; sortedstr[i] != NULL; i++);
 				counter = i;
 			}
@@ -3015,7 +3015,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp);
 			}
 			/* {
-				uint64_t i = 0, j = 0;
+				uint_fast64_t i = 0, j = 0;
 				char* temp = NULL;
     			for (i=0;i<counter-1;i++)
     			{
@@ -3059,7 +3059,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 				char* estring = NULL;
 
 				char** jsonry = NULL;
-				uint64_t jsonentries;
+				uint_fast64_t jsonentries;
 
 				if(MPARC_list(structure, NULL, &jsonentries) != MPARC_OK){
 					return NULL;
@@ -3070,7 +3070,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 				const char* nkey;
 				map_iter_t itery = map_iter(&structure->globby);
-				uint64_t indexy = 0;
+				uint_fast64_t indexy = 0;
 
 				while((nkey = map_next(&structure->globby, &itery))){
 						MPARC_blob_store* bob_the_blob_raw = map_get(&structure->globby, nkey);
@@ -3083,7 +3083,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						char* btob = b64.btoa(bob_the_blob.binary_blob, bob_the_blob.binary_size);
 						crc3 = bob_the_blob.binary_crc;
 						if(btob == NULL) {
-								for(uint64_t i = 0; i < jsonentries; i++){
+								for(uint_fast64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
@@ -3093,7 +3093,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						JsonNode* filename = json_mkstring(nkey);
 						JsonNode* blob_chksum = NULL;
 						if(glob64 == NULL || filename == NULL) {
-							for(uint64_t i = 0; i < jsonentries; i++){
+							for(uint_fast64_t i = 0; i < jsonentries; i++){
 									free(jsonry[jsonentries]);
 							}
 							free(jsonry);
@@ -3105,7 +3105,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 							char* globsum = NULL;
 							int size = snprintf(NULL, 0, fmter, crc3);
 							if(size < 0){
-								for(uint64_t i = 0; i < jsonentries; i++){
+								for(uint_fast64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
@@ -3113,14 +3113,14 @@ static int voidstrcmp(const void* str1, const void* str2){
 							}
 							globsum = calloc(size+1, sizeof(char));
 							if(globsum == NULL){
-								for(uint64_t i = 0; i < jsonentries; i++){
+								for(uint_fast64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
 								return NULL;
 							}
 							if(snprintf(globsum, size, fmter, crc3) < 0){
-								for(uint64_t i = 0; i < jsonentries; i++){
+								for(uint_fast64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
@@ -3128,7 +3128,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 							}
 							blob_chksum = json_mkstring(globsum);
 							if(blob_chksum == NULL){
-								for(uint64_t i = 0; i < jsonentries; i++){
+								for(uint_fast64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
@@ -3140,7 +3140,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						json_append_member(objectweb, "blob", glob64);
 						json_append_member(objectweb, "crcsum", blob_chksum);
 						if(!json_check(objectweb, NULL)){
-							for(uint64_t i = 0; i < jsonentries; i++){
+							for(uint_fast64_t i = 0; i < jsonentries; i++){
 									free(jsonry[jsonentries]);
 							}
 							free(jsonry);
@@ -3160,14 +3160,14 @@ static int voidstrcmp(const void* str1, const void* str2){
 								int sp = snprintf(NULL, 0, fmt, crc, structure->entry_elem2_sep_marker_or_magic_sep_marker, stringy)+1;
 								crcStringy = calloc(sp+1, sizeof(char));
 								if(crcStringy == NULL){
-									for(uint64_t i = 0; i < jsonentries; i++){
+									for(uint_fast64_t i = 0; i < jsonentries; i++){
 											free(jsonry[jsonentries]);
 									}
 									free(jsonry);
 									return NULL;
 								}
 								if(snprintf(crcStringy, sp, fmt, crc, structure->entry_elem2_sep_marker_or_magic_sep_marker, stringy) < 0){
-									for(uint64_t i = 0; i < jsonentries; i++){
+									for(uint_fast64_t i = 0; i < jsonentries; i++){
 											free(jsonry[jsonentries]);
 									}
 									free(jsonry);
@@ -3185,23 +3185,23 @@ static int voidstrcmp(const void* str1, const void* str2){
 				MPARC_i_sort(jsonry); // We qsort this, qsort can be quicksort, insertion sort or BOGOSORT. It is ordered by the checksum instead of the name lmao.
 
 				{
-						uint64_t iacrurate_snprintf_len = 1;
-						for(uint64_t i = 0; i < jsonentries; i++){
+						uint_fast64_t iacrurate_snprintf_len = 1;
+						for(uint_fast64_t i = 0; i < jsonentries; i++){
 								iacrurate_snprintf_len += strlen(jsonry[i])+1;
 						}
 
 						char* str = calloc(iacrurate_snprintf_len+1, sizeof(char));
 						if(str == NULL) {
-								for(uint64_t i = 0; i < jsonentries; i++){
+								for(uint_fast64_t i = 0; i < jsonentries; i++){
 										free(jsonry[jsonentries]);
 								}
 								free(jsonry);
 								return NULL;
 						}
-						for(uint64_t i2 = 0; i2 < jsonentries; i2++){
+						for(uint_fast64_t i2 = 0; i2 < jsonentries; i2++){
 								char* outstr = calloc(iacrurate_snprintf_len+1, sizeof(char));
 								if(outstr == NULL){
-										for(uint64_t i = 0; i < jsonentries; i++){
+										for(uint_fast64_t i = 0; i < jsonentries; i++){
 												free(jsonry[jsonentries]);
 										}
 										free(jsonry);
@@ -3214,7 +3214,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 						estring = str;
 
-						for(uint64_t i = 0; i < jsonentries; i++){
+						for(uint_fast64_t i = 0; i < jsonentries; i++){
 								free(jsonry[jsonentries]);
 						}
 						free(jsonry);
@@ -3323,7 +3323,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 			char** entries = NULL;
 			char** json_entries = NULL;
 			MXPSQL_MPARC_err err = MPARC_OK;
-			uint64_t ecount = 0;
+			uint_fast64_t ecount = 0;
 			{
 				char* entry = NULL;
 				
@@ -3360,7 +3360,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						goto errhandler;
 					}
 					char* entry64 = my_strtok_r(entry2, septic, &saveptr2);
-					for(uint64_t i = 0; entry64 != NULL; i++){
+					for(uint_fast64_t i = 0; entry64 != NULL; i++){
 						entries[i] = const_strdup(entry64);
 						if(entries[i] == NULL){
 							err = MPARC_OOM;
@@ -3372,7 +3372,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 				}
 			}
 
-			for(uint64_t i = 0; i < ecount; i++){
+			for(uint_fast64_t i = 0; i < ecount; i++){
 				crc_t crc = crc_init();
 				crc_t tcrc = crc_init();
 				char* entry = entries[i];
@@ -3399,7 +3399,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 			jsmn_parser jsmn;
 			jsmn_init(&jsmn);
-			for(uint64_t i = 0; i < ecount; i++){
+			for(uint_fast64_t i = 0; i < ecount; i++){
 				char* filename = NULL;
 				char* blob = NULL;
 				crc_t crc3 = crc_init();
@@ -3407,14 +3407,14 @@ static int voidstrcmp(const void* str1, const void* str2){
 				char* jse = json_entries[i];
 
 				if(false){ // disable jsmn for now due to eroneous results (filename gives wrong name)
-					static const uint64_t jtokens_count = 128; // we only need 4 but we don't expect more than 128, we put more just in case for other metadata
+					static const uint_fast64_t jtokens_count = 128; // we only need 4 but we don't expect more than 128, we put more just in case for other metadata
 					jsmntok_t jtokens[jtokens_count];
 					int jsmn_err = jsmn_parse(&jsmn, jse, strlen(jse), jtokens, jtokens_count);
 					if(jsmn_err < 0){
 						err = MPARC_NOTARCHIVE;
 						goto errhandler;
 					}
-					for(uint64_t i_jse = 1; i_jse < 5; i_jse++){ // we only need 4 to scan
+					for(uint_fast64_t i_jse = 1; i_jse < 5; i_jse++){ // we only need 4 to scan
 						jsmntok_t jtoken = jtokens[i_jse];
 						char* tok1 = "";
 						{
@@ -3474,7 +3474,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 				}
 
 				if(true){ // for testing purposes
-					uint64_t bsize = 1;
+					uint_fast64_t bsize = 1;
 					unsigned char* un64_blob = b64.atob(blob, strlen(blob), &bsize);
 					if(un64_blob == NULL){
 						err = MPARC_OOM;
@@ -3500,7 +3500,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 			goto errhandler; // redundant I know
 
 			errhandler:
-			for(uint64_t i = 0; i < ecount; i++){
+			for(uint_fast64_t i = 0; i < ecount; i++){
 				if(entries[i] != NULL) free(entries[i]);
 				// if(json_entries[i] != NULL) free(json_entries[i]);
 			}
@@ -3571,17 +3571,17 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 
 
-		MXPSQL_MPARC_err MPARC_list(MXPSQL_MPARC_t* structure, char*** listout,	uint64_t* length){
+		MXPSQL_MPARC_err MPARC_list(MXPSQL_MPARC_t* structure, char*** listout,	uint_fast64_t* length){
 				if(structure == NULL) {
 						return MPARC_IVAL;
 				}
 
 				typedef struct anystruct {
-						uint64_t len;
+						uint_fast64_t len;
 						const char* nam;
 				} abufinfo;
 
-				uint64_t lentracker = 0;
+				uint_fast64_t lentracker = 0;
 
 				char** listout_structure = NULL;
 
@@ -3600,7 +3600,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 				if(listout != NULL){
 
-						uint64_t index = 0;
+						uint_fast64_t index = 0;
 						const char* key2;
 						listout_structure = calloc(lentracker+1, sizeof(char*));
 
@@ -3628,7 +3628,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						*listout = listout_structure;
 				}
 				else{
-						for(uint64_t i = 0; i < lentracker; i++){
+						for(uint_fast64_t i = 0; i < lentracker; i++){
 							if(listout_structure) free(listout_structure[i]);
 						}
 
@@ -3645,7 +3645,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 				}
 				else{
 					char** listy_out = NULL;
-					uint64_t listy_size = 0;
+					uint_fast64_t listy_size = 0;
 					{
 						MXPSQL_MPARC_err err = MPARC_list(structure, &listy_out, &listy_size);
 						if(err != MPARC_OK) return err;
@@ -3660,7 +3660,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 		}
 
 
-		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint64_t sizy){
+		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint_fast64_t sizy){
 			crc_t crc3 = crc_init();
 			crc3 = crc_update(crc3, ustringc, sizy);
 			crc3 = crc_finalize(crc3);
@@ -3678,11 +3678,11 @@ static int voidstrcmp(const void* str1, const void* str2){
 			return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, uint64_t sizey){
+		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, uint_fast64_t sizey){
 			return MPARC_push_ufilestr(structure, filename, (unsigned char*)buffer_guffer, sizey);
 		}
 
-		MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, uint64_t sizey){
+		MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, uint_fast64_t sizey){
 				return MPARC_push_ufilestr(structure, filename, (unsigned char*) stringc, sizey);
 		}
 
@@ -3713,7 +3713,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 				unsigned char* binary = NULL;
 
-				uint64_t filesize = 0; // byte count
+				uint_fast64_t filesize = 0; // byte count
 				if(fseek(filestream, 0, SEEK_SET) != 0){
 						return MPARC_FERROR;
 				}
@@ -3748,10 +3748,10 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 		MXPSQL_MPARC_err MPARC_clear_file(MXPSQL_MPARC_t* structure){
 			char** entryos = NULL;
-			uint64_t eos_s = 0;
+			uint_fast64_t eos_s = 0;
 			MXPSQL_MPARC_err err = MPARC_list(structure, &entryos, &eos_s);
 			if(err != MPARC_OK) return err;
-			for(uint64_t i = 0; i < eos_s; i++){
+			for(uint_fast64_t i = 0; i < eos_s; i++){
 				MPARC_pop_file(structure, entryos[i]);
 			}
 			free(entryos);
@@ -3759,7 +3759,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 		}
 
 
-		static MXPSQL_MPARC_err MPARC_peek_file_advance(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint64_t* sout, crc_t* crout){ // users don't need to know the crc
+		static MXPSQL_MPARC_err MPARC_peek_file_advance(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint_fast64_t* sout, crc_t* crout){ // users don't need to know the crc
 				if(MPARC_exists(structure, filename) == MPARC_NOEXIST) return MPARC_NOEXIST;
 				if(bout != NULL) *bout = map_get(&structure->globby, filename)->binary_blob;
 				if(sout != NULL) *sout = map_get(&structure->globby, filename)->binary_size;
@@ -3767,7 +3767,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 				return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint64_t* sout){
+		MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint_fast64_t* sout){
 			return MPARC_peek_file_advance(structure, filename, bout, sout, NULL);
 		}
 
@@ -3853,7 +3853,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 			char* archive = NULL;
 			MXPSQL_MPARC_err err = MPARC_construct_str(structure, &archive);
-			uint64_t count = strlen(archive);
+			uint_fast64_t count = strlen(archive);
 			if(fwrite(archive, sizeof(char), count, fpstream) < count){
 				free(archive);
 				return MPARC_FERROR;
@@ -3866,12 +3866,12 @@ static int voidstrcmp(const void* str1, const void* str2){
 		MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*)){
 			{
         		char** listy = NULL;
-        		uint64_t listys = 0;
+        		uint_fast64_t listys = 0;
         		if(MPARC_list(structure, &listy, &listys) != MPARC_OK){
         		    return MPARC_IVAL;
         		}
 
-        		for(uint64_t i = 0; i < listys; i++){
+        		for(uint_fast64_t i = 0; i < listys; i++){
 					if(dir2make != NULL) *dir2make = NULL;
 					char* fname = NULL;
 					const char* nkey = listy[i];
@@ -3881,7 +3881,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 					{
 						{
 							fname = const_strdup(nkey);
-							uint64_t pathl = strlen(fname)+strlen(nkey)+1;
+							uint_fast64_t pathl = strlen(fname)+strlen(nkey)+1;
 							void* nfname = realloc(fname, pathl+1);
 							if(nfname == NULL){
 								free(fname);
@@ -3931,7 +3931,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						}
 						{
 							unsigned char* bout = NULL;
-							uint64_t sout = 0;
+							uint_fast64_t sout = 0;
 							crc_t crc3 = 0;
 							MXPSQL_MPARC_err err = MPARC_peek_file_advance(structure, (char*) nkey, &bout, &sout, &crc3);
 							if(err != MPARC_OK){
@@ -4031,7 +4031,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 		}
 
 		MXPSQL_MPARC_err MPARC_parse_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream){
-			uint64_t filesize = 0;
+			uint_fast64_t filesize = 0;
 			if(fseek(fpstream, 0, SEEK_SET) != 0){
 				return MPARC_FERROR;
 			}

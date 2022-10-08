@@ -177,7 +177,7 @@ extern "C"{
      * 
      * @note Free listout manually with 'free'
      */
-    MXPSQL_MPARC_err MPARC_list(MXPSQL_MPARC_t* structure, char*** listout, uint64_t* length);
+    MXPSQL_MPARC_err MPARC_list(MXPSQL_MPARC_t* structure, char*** listout, uint_fast64_t* length);
     /**
      * @brief Check if file entry exists
      * 
@@ -196,7 +196,7 @@ extern "C"{
      * @param sizy the size of ustringc
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint64_t sizy);
+    MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint_fast64_t sizy);
     /**
      * @brief Push a void pointer as a file
      * 
@@ -206,7 +206,7 @@ extern "C"{
      * @param sizy the size of buffer_guffer
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, uint64_t sizy);
+    MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, uint_fast64_t sizy);
     /**
      * @brief Push a string as a file
      * 
@@ -216,7 +216,7 @@ extern "C"{
      * @param sizey the size of stringc
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, uint64_t sizey);
+    MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, uint_fast64_t sizey);
     /**
      * @brief Push a file read from the filesystem into the archive
      * 
@@ -262,7 +262,7 @@ extern "C"{
      * @param sout the output pointer to a variable that represent the size of bout
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint64_t* sout);
+    MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint_fast64_t* sout);
 
     /**
      * @brief Construct the archive into a string
