@@ -11,7 +11,10 @@ project(MPARC C)
 # set cmake standards
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 11)
-set(C_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
 # add executable
 add_executable(MPARC main.c mparc.c)
+
+# enforce post-target-definition property configurations
+set_property(TARGET MPARC PROPERTY C_STANDARD_REQUIRED TRUE)
