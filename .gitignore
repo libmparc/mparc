@@ -16,8 +16,11 @@
 
 # autotools
 !configure.ac
-configure
 !Makefile.am
+configure
+config.status
+confdefs.h
+conftest.*
 configure~
 aclocal.m4
 install-sh

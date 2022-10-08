@@ -25,7 +25,8 @@ build: test buildlib
 
 
 clean:
-	rm -rf *.o *.exe *.stackdump *.mpar.* *.mpar *.struct *.struct.* *.log *.log.*
+	rm -rf *.o *.exe *.stackdump *.mpar.* *.mpar *.struct *.struct.* *.log *.log.* 
+	rm -rf configure config.status Makefile.in aclocal.m4
 
 
 mkar:
