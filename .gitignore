@@ -36,3 +36,5 @@ autom4te.cache/
 html/
 # e/ is our test directory
 e/
+# build/ is our cmake output directory
+build/
