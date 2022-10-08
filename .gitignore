@@ -17,6 +17,7 @@
 # autotools
 !configure.ac
 !Makefile.am
+confinc.mk
 configure
 config.status
 confdefs.h
@@ -31,10 +32,14 @@ missing
 config.sub
 depcomp
 autom4te.cache/
+mparc-*/
+.deps/
+
+# cmake
+# build/ is our cmake output directory
+build/
 
 # misc dirs
 html/
 # e/ is our test directory
 e/
-# build/ is our cmake output directory
-build/
