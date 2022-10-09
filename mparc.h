@@ -160,6 +160,14 @@ extern "C"{
      */
     MXPSQL_MPARC_err MPARC_init(MXPSQL_MPARC_t** structure);
     /**
+     * @brief Initialize structure by copying
+     * 
+     * @param structure the target structure for copying
+     * @param targetdest the destination target structure to be overwritten
+     * @return MXPSQL_MPARC_err the status code
+     */
+    MXPSQL_MPARC_err MPARC_copy(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_t** targetdest);
+    /**
      * @brief Tear down structure
      * 
      * @param structure the target structure

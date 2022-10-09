@@ -3557,6 +3557,43 @@ static int voidstrcmp(const void* str1, const void* str2){
 				return MPARC_OK;
 		}
 
+		MXPSQL_MPARC_err MPARC_copy(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_t** targetdest){
+			MXPSQL_MPARC_err err = MPARC_OK;
+			if(structure == NULL) return MPARC_IVAL;
+			if(targetdest != NULL){
+				err = MPARC_destroy(*targetdest);
+				if(err != MPARC_OK){
+					return err;
+				}
+				err = MPARC_init(targetdest);
+				if(err != MPARC_OK){
+					if(*targetdest)MPARC_destroy(*targetdest);
+					return err;
+				}
+			}
+			else{
+				err = MPARC_init(targetdest);
+				if(err != MPARC_OK){
+					if(*targetdest)MPARC_destroy(*targetdest);
+					return err;
+				}
+			}
+			MXPSQL_MPARC_t* pstruct = *structure;
+			map_iter_t iter = map_iter(&pstruct->globby);
+			const char* nkey = NULL;
+			while((nkey = map_next(&pstruct->globby, &iter))){
+				char* nnkey = const_strdup(nkey);
+				MPARC_blob_store blob = *map_get(&pstruct->globby, nkey);
+				err = MPARC_push_ufilestr(*targetdest, nnkey, blob.binary_blob, blob.binary_size);
+				free(nnkey);
+				if(err != MPARC_OK) {
+					MPARC_destroy(*targetdest);
+					return err;
+				}
+			}
+			return MPARC_OK;
+		}
+
 		MXPSQL_MPARC_err MPARC_destroy(MXPSQL_MPARC_t* structure){
 				if(structure == NULL) return MPARC_IVAL;
 
