@@ -4,7 +4,7 @@
 AC_PREREQ([2.71])
 AC_INIT([MPARC], [0.1], [https://github.com/MOALib/mparc/issues])
 AM_INIT_AUTOMAKE
-AC_CONFIG_SRCDIR([mparc.c, main.c])
+AC_CONFIG_SRCDIR([mparc.c], [main.c])
 # AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])
 
