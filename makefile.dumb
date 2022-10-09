@@ -26,7 +26,7 @@ build: test buildlib
 
 clean:
 	rm -rf *.o *.exe *.stackdump *.mpar.* *.mpar *.struct *.struct.* *.log *.log.* 
-	rm -rf configure config.status Makefile.in aclocal.m4
+	rm -rf configure config.status Makefile.in aclocal.m4 autom4te.cache mparc-*/
 	rm -rf e build
 
 
