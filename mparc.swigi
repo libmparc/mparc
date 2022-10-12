@@ -1,8 +1,11 @@
 %module MPARC
 
  %{
+ #ifndef __STDC_VERSION__
  /* Dummy c99 */
  #define __STDC_VERSION__
+ #endif
+
  /* Includes the header in the wrapper code */
  #include "./mparc.h"
  %}

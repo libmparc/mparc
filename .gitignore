@@ -39,7 +39,11 @@ mparc-*/
 # build/ is our cmake output directory
 build/
 
-# misc dirs
+# misc
+*.tar
+*.tar.*
+
+# dirs
 html/
 # e/ is our test directory
 e/

@@ -1,4 +1,4 @@
-CFLAGS:=-pipe -fdiagnostics-color -g -Og -std=c99 -pedantic -Wall -Wextra -Werror
+CFLAGS:=-fpic -pipe -fdiagnostics-color -g -Og -std=c99 -pedantic -Wall -Wextra -Werror
 CLIBS:=
 DMALLOC_PATH:=/usr/lib/libdmallocth.a
 
@@ -6,7 +6,7 @@ CC:=gcc
 
 DEFAULT_GOAL:=all
 
-.PHONY: all  cls  buildlib mklib build test  docs  clean  mkar  mkat
+.PHONY: all  cls  buildlib mklib build test  docs  clean  mkar  mkat runconf
 
 all: cls test build
 
@@ -34,10 +34,17 @@ docs:
 
 clean:
 	rm -rf *.o *.exe *.stackdump *.a
+	
 	rm -rf *.mpar.* *.mpar *.struct *.struct.* 
 	rm -rf *.log *.log.* 
-	rm -rf configure config.status Makefile.in aclocal.m4 autom4te.cache mparc-*/
+
+	rm -rf configure configure~ Makefile config.status Makefile.in aclocal.m4 autom4te.cache mparc-*/ 
+	rm -rf missing install-sh depcomp compile config.sub config.guess
+
+	rm -rf *.tar.* *.tar
+
 	rm -rf e/ build/ 
+
 	rm -rf docs/ docs/htmldoc/ docs/latex/ docs/rtfdoc/ docs/man/ docs/xmldoc/ docs/docbook/
 
 
@@ -48,3 +55,8 @@ mkar:
 mkat:
 	autoscan
 	mv configure.scan configure.ac
+
+runconf:
+	autoconf
+	automake --add-missing
+	./configure
