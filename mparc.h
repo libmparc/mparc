@@ -53,8 +53,8 @@
   * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef __STDC__
-#error "Minimum C Version is C99"
+#if (!(defined(__STDC__) && __STDC__))
+#error "C must be ANSI C, not K&R C"
 #endif
 
 
@@ -73,7 +73,7 @@ extern "C"{
      */
     typedef enum MXPSQL_MPARC_err {
         /**
-         * @brief Everything's gine
+         * @brief Everything's fine
          * 
          */
         MPARC_OK = 0,
@@ -107,7 +107,7 @@ extern "C"{
         MPARC_OOM = 3,
 
         /**
-         * @brief The archive you provided is actually not an archive determined by the 25 character long MAGIC NUMBER.
+         * @brief The archive you provided is actually not an archive determined by the 25 character long MAGIC NUMBER or some other factor, but most likely the magic number.
          * 
          */
         MPARC_NOTARCHIVE=4,
@@ -117,7 +117,7 @@ extern "C"{
          */
         MPARC_ARCHIVETOOSHINY=5,
         /**
-         * @brief CRC checksum failed, unused as of now
+         * @brief CRC checksum check and comparison failed.
          * 
          */
         MPARC_CHKSUM=6,
@@ -173,7 +173,7 @@ extern "C"{
      * @param structure the target structure
      * @return MXPSQL_MPARC_err the status code
      */
-    MXPSQL_MPARC_err MPARC_destroy(MXPSQL_MPARC_t* structure);
+    MXPSQL_MPARC_err MPARC_destroy(MXPSQL_MPARC_t** structure);
 
     /**
      * @brief List out the current files included

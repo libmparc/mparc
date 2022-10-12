@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <stdint.h>
 #include <sys/stat.h>
 #include <errno.h>
 
@@ -28,7 +29,15 @@ int main(int argc, char** argv){
 
 
     if(argc < 3){
-        printf("%s usage: %s [your/archive.mpar] [l, c, a, x, d, e] [...]\n", argv[0], argv[0]);
+        printf("%s usage: %s [your/archive.mpar] [l, c, a, x, d, e, p, cp] [...]\n", argv[0], argv[0]);
+        printf("l to List archive\n");
+        printf("c to Create archive\n");
+        printf("a to Append archive\n");
+        printf("x to eXtract archive\n");
+        printf("d to Delete archive entry\n");
+        printf("e to check if an archive entry Exists\n");
+        printf("p to Print contents of archive (or one entry)\n");
+        printf("cp to CoPy archive\n");
         exit_c= EXIT_FAILURE;
         goto exit_handler;
     }
@@ -256,6 +265,95 @@ int main(int argc, char** argv){
         }
         goto exit_handler;
     }
+    else if(strcmp(opmode, "p") == 0){
+        err = MPARC_parse_filename(archive, filename);
+        if(err != MPARC_OK){
+            MPARC_perror(err);
+            exit_c = EXIT_FAILURE;
+            goto exit_handler;
+        }
+        int pos = 3;
+        if(argc < 4){
+            char** listy = NULL;
+            uint_fast64_t sizy = 0;
+            err = MPARC_list(archive, &listy, &sizy);
+            if(err != MPARC_OK){
+                MPARC_perror(err);
+                exit_c = EXIT_FAILURE;
+                goto exit_handler;
+            }
+            for(uint_fast64_t i = 0; i < sizy; i++){
+                unsigned char* binary_blob;
+                uint_fast64_t binary_size;
+                err = MPARC_peek_file(archive, listy[i], &binary_blob, &binary_size);
+                if(err != MPARC_OK){
+                    MPARC_perror(err);
+                    exit_c = EXIT_FAILURE;
+                    goto exit_handler;
+                }
+                for(uint_fast64_t i = 0; i < binary_size; i++){
+                    printf("%c", (char) binary_blob[i]);
+                }
+                printf("\n");
+            }
+            free(listy);
+        }
+        else{
+            for(int i = pos; i < argc; i++){
+                char* filename = argv[i];
+                if((err = MPARC_exists(archive, filename)) == MPARC_OK){
+                    unsigned char* binary_blob;
+                    uint_fast64_t binary_size;
+                    err = MPARC_peek_file(archive, filename, &binary_blob, &binary_size);
+                    if(err != MPARC_OK){
+                        MPARC_perror(err);
+                        exit_c = EXIT_FAILURE;
+                        goto exit_handler;
+                    }
+                    for(uint_fast64_t i = 0; i < binary_size; i++){
+                        printf("%c", (char) binary_blob[i]);
+                    }
+                    printf("\n");
+                }
+                else{
+                    MPARC_perror(err);
+                    exit_c = EXIT_FAILURE;
+                    goto exit_handler;
+                }
+            }
+        }
+    }
+    else if(strcmp(opmode, "cp") == 0){
+        int pos = 3;
+        if(argc < 4){
+            printf("Destination archive filename required\n");
+            exit_c = EXIT_FAILURE;
+            goto exit_handler;
+        }
+        MXPSQL_MPARC_t* cp_archive = NULL;
+        err = MPARC_parse_filename(archive, filename);
+        if(err != MPARC_OK){
+            MPARC_perror(err);
+            exit_c = EXIT_FAILURE;
+            goto pre_exit_handler;
+        }
+        err = MPARC_copy(&archive, &cp_archive);
+        if(err != MPARC_OK){
+            MPARC_perror(err);
+            exit_c = EXIT_FAILURE;
+            goto pre_exit_handler;
+        }
+        err = MPARC_construct_filename(archive, argv[pos]);
+        if(err != MPARC_OK){
+            MPARC_perror(err);
+            exit_c = EXIT_FAILURE;
+            goto pre_exit_handler;
+        }
+        goto pre_exit_handler;
+        pre_exit_handler:
+        MPARC_destroy(&cp_archive);
+        goto exit_handler;
+    }
     else{
         printf("%s", "Wrong options [l, c, a, x, d, e]");
         exit_c = EXIT_FAILURE;
@@ -266,6 +364,6 @@ int main(int argc, char** argv){
     goto exit_handler; // redundant
 
     exit_handler:
-    MPARC_destroy(archive);
+    MPARC_destroy(&archive);
     return exit_c;
 }

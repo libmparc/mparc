@@ -43,3 +43,14 @@ build/
 html/
 # e/ is our test directory
 e/
+
+# doxygen
+# docs/ is our singlular documentation directory
+# latex/, rtfdoc/, man/, xmldoc/, docbook/ and htmldoc/ is our invidual documentation directory
+docs/
+docs/latex/
+docs/htmldoc/
+docs/rtfdoc/
+docs/man/
+docs/xmldoc/
+docs/docbook/

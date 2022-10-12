@@ -217,7 +217,7 @@ int main(int argc, char* argv[]){
 		p->cmd3 = "cmd.sexe";
 		if((err = MPARC_push_voidfile(archive, "structy-pod.struct", p, sizeof(*p))) != MPARC_OK){
     	    printf("A big no happened when trying to push files\n");
-    	            	    switch(err){
+    	        switch(err){
     		        case MPARC_OK:
     		        printf( "it fine\n");
     		        break;
@@ -262,6 +262,53 @@ int main(int argc, char* argv[]){
     	    abort();
     	}
 		free(p);
+	}
+	{
+		if((err = MPARC_push_voidfile(archive, "mparc.struct", archive, sizeof(archive)))){
+    	        switch(err){
+    		        case MPARC_OK:
+    		        printf( "it fine\n");
+    		        break;
+
+    		        case MPARC_IDK:
+    		        printf( "it fine cause idk\n");
+					return 1;
+    		        case MPARC_INTERNAL:
+    		        printf( "Internal error detected\n");
+					return 1;
+
+
+    		        case MPARC_IVAL:
+    		        printf( "Bad vals\n");
+    		        break;
+    		        case MPARC_NOEXIST:
+    		        printf( "It does not exist you dumb dumb\n");
+    		        break;
+    		        case MPARC_OOM:
+    		        printf( "Oh noes I run out of memory\n");
+    		        break;
+
+    		        case MPARC_NOTARCHIVE:
+    		        printf( "You dumb person what you put in is not an archive by the 25 character long magic number it has\n");
+    		        break;
+    		        case MPARC_ARCHIVETOOSHINY:
+    		        printf( "You dumb person the valid archive you put in me is too new for me to process\n");
+    		        break;
+    		        case MPARC_CHKSUM:
+    		        printf( "My content is gone :P\n");
+    		        break;
+
+    		        case MPARC_FERROR:
+    		        printf( "FILE.exe has stopped responding\n");
+    		        break;
+
+    		        default:
+    		        printf( "Man what happened here\n");
+    		        return 1;
+    		    };
+    	    printf("File push failed\n");
+    	    abort();
+		}
 	}
     /* {
         char** listprintf( NULL;
@@ -399,6 +446,6 @@ int main(int argc, char* argv[]){
 	if((err =MPARC_extract(archive, ".", NULL)) != MPARC_OK){
 		MPARC_sfperror(err, stderr, "DFialed to extract archive");
 	}
-    MPARC_destroy(archive);
+    MPARC_destroy(&archive);
     return 0;
 }

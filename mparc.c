@@ -1,7 +1,6 @@
 #ifndef _MXPSQL_MPARC_C
 #define _MXPSQL_MPARC_C
 
-
 /**
   * @file mparc.h
   * @author MXPSQL
@@ -2678,6 +2677,37 @@ void *llist_pop(llist *list)
 
 /* end of llist.h and llist.c section */
 
+/* start of LZ77 Section: FastL7 */
+/* https://github.com/ariya/FastLZ source */
+/* 
+ * Have a bowl of this MIT License
+ * 
+ * FastLZ - Byte-aligned LZ77 compression library
+ * Copyright (C) 2005-2020 Ariya Hidayat <ariya.hidayat@gmail.com>
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+*/
+
+// Nah, but I can still put it in here though
+
+/* end of LZ77 Section: FastL7 */
+
 /* TINY SNIPPETS THAT WILL BE VERY USEFUL LATER ON OK SECTION */
 
 
@@ -2771,16 +2801,6 @@ static char *mydirname(char *path)
 
   return path;
 }
-
-
-char* SmartStringCompressor(char* strings){ // hidden but you can actually extern thiss
-	return strings; // noop
-}
-
-char* SmartStringDeCompressor(char* cstrings){ // hidden but you can actually extern thiss
-	return cstrings; // noop
-}
-
 
 static int voidstrcmp(const void* str1, const void* str2){
 	return strcmp((const char*) str1, (const char*) str2);
@@ -3559,47 +3579,50 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 		MXPSQL_MPARC_err MPARC_copy(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_t** targetdest){
 			MXPSQL_MPARC_err err = MPARC_OK;
-			if(structure == NULL) return MPARC_IVAL;
-			if(targetdest != NULL){
-				err = MPARC_destroy(*targetdest);
+			if(structure == NULL || targetdest == NULL) return MPARC_IVAL;
+			if(*targetdest != NULL){
+				err = MPARC_destroy(targetdest);
 				if(err != MPARC_OK){
 					return err;
 				}
-				err = MPARC_init(targetdest);
+			}
+			MXPSQL_MPARC_t* cp_archive = NULL;
+			err = MPARC_init(&cp_archive);
+			if(err != MPARC_OK){
+				return err;
+			}
+			// partial deep copy
+			{
+				char** listy_structure_out = NULL;
+				uint_fast64_t listy_structure_sizy_sizey_size = 0;
+				err = MPARC_list(*structure, &listy_structure_out, &listy_structure_sizy_sizey_size);
 				if(err != MPARC_OK){
-					if(*targetdest)MPARC_destroy(*targetdest);
 					return err;
 				}
-			}
-			else{
-				err = MPARC_init(targetdest);
-				if(err != MPARC_OK){
-					if(*targetdest)MPARC_destroy(*targetdest);
-					return err;
+				for(uint_fast64_t i = 0; i < listy_structure_sizy_sizey_size; i++){
+					char* filename = listy_structure_out[i];
+					MPARC_blob_store e = {0};
+					err = MPARC_peek_file(*structure, filename, &e.binary_blob, &e.binary_size);
+					if(err != MPARC_OK) {
+						goto my_err_handler;
+					}
+					err = MPARC_push_ufilestr(cp_archive, filename, e.binary_blob, e.binary_size);
 				}
+
+				goto my_err_handler;
+				my_err_handler:
+				free(listy_structure_out);
 			}
-			MXPSQL_MPARC_t* pstruct = *structure;
-			map_iter_t iter = map_iter(&pstruct->globby);
-			const char* nkey = NULL;
-			while((nkey = map_next(&pstruct->globby, &iter))){
-				char* nnkey = const_strdup(nkey);
-				MPARC_blob_store blob = *map_get(&pstruct->globby, nkey);
-				err = MPARC_push_ufilestr(*targetdest, nnkey, blob.binary_blob, blob.binary_size);
-				free(nnkey);
-				if(err != MPARC_OK) {
-					MPARC_destroy(*targetdest);
-					return err;
-				}
-			}
-			return MPARC_OK;
+			*targetdest = cp_archive;
+			return err;
 		}
 
-		MXPSQL_MPARC_err MPARC_destroy(MXPSQL_MPARC_t* structure){
+		MXPSQL_MPARC_err MPARC_destroy(MXPSQL_MPARC_t** structure){
 				if(structure == NULL) return MPARC_IVAL;
 
-				map_deinit(&structure->globby);
+				map_deinit(&(*structure)->globby);
 
-				free(structure);
+				free(*structure);
 
 				structure = NULL;
 
@@ -3808,7 +3831,33 @@ static int voidstrcmp(const void* str1, const void* str2){
 			return MPARC_peek_file_advance(structure, filename, bout, sout, NULL);
 		}
 
-
+		/*
+		 * How is the file constructed:
+		 * 
+		 * 1. Build the header:
+		 * Format: MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE]
+		 * 
+		 * 2. Build the entries
+		 * Format: [CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]
+		 * Repeat this as required (how many entries are there you repeat)
+		 * 
+		 * 
+		 * 3. Build the footer
+		 * Format: @~
+		 * 
+		 * 
+		 * Follow this (with placeholder) and you get this:
+		 * MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE][CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]@~
+		 * 
+		 * A real single entried one:
+		 * MXPSQL's Portable Archive;1${"WhatsThis": "MPARC Logo lmao-Hahahaha"}>
+		 * 134131812%{"filename":"./LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
+		 *
+		 * A real (much more real) multi entried one:
+		 * MXPSQL's Portable Archive;1${}>
+		 * 3601911152%{"filename":"LICENSE","blob":"U2VlIExJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgYW5kIGNob29zZSBvbmUgb2YgdGhlbS4KCkxJQ0VOU0UuTEdQTCBjb250YWlucyBMR1BMLTIuMS1vci1sYXRlciBsaWNlbnNlLgpMSUNFTlNFLk1JVCBjb250YWlucyBNSVQgbGljZW5zZS4KCkxJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgc2hvdWxkIGJlIGRpc3RyaWJ1dGVkIHRvZ2V0aGVyIHdpdGggeW91ciBjb3B5LCBpZiBub3QsIHNvbWV0aGluZyBpcyB3cm9uZy4=","crcsum":"404921597"}
+		 * 59879441%{"filename":"LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
+		*/
 		MXPSQL_MPARC_err MPARC_construct_str(MXPSQL_MPARC_t* structure, char** output){
 				static char* fmt = "%s%s%s";
 
