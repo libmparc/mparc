@@ -1,5 +1,5 @@
 CFLAGS:=-fpic -pipe -fdiagnostics-color -g -Og -std=c99 -pedantic -Wall -Wextra -Werror
-CLIBS:=
+CLIBS:=-ldmallocth
 DMALLOC_PATH:=/usr/lib/libdmallocth.a
 
 CC:=gcc
@@ -34,7 +34,7 @@ docs:
 
 clean:
 	rm -rf *.o *.exe *.stackdump *.a
-	
+
 	rm -rf *.mpar.* *.mpar *.struct *.struct.* 
 	rm -rf *.log *.log.* 
 

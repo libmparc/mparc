@@ -3546,8 +3546,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 		
 
 		MXPSQL_MPARC_err MPARC_init(MXPSQL_MPARC_t** structure){
-				if(structure == NULL) return MPARC_IVAL;
-				if(*structure != NULL) return MPARC_IVAL;
+				if(structure == NULL || * structure == NULL) return MPARC_IVAL;
 
 				void* memalloc = calloc(1, sizeof(MXPSQL_MPARC_t));
 				if(memalloc == NULL) return MPARC_OOM;
@@ -3618,13 +3617,13 @@ static int voidstrcmp(const void* str1, const void* str2){
 		}
 
 		MXPSQL_MPARC_err MPARC_destroy(MXPSQL_MPARC_t** structure){
-				if(structure == NULL) return MPARC_IVAL;
+				if(structure == NULL || *structure == NULL) return MPARC_IVAL;
 
 				map_deinit(&(*structure)->globby);
 
 				free(*structure);
 
-				structure = NULL;
+				*structure = NULL; // invalidation for security
 
 				return MPARC_OK;
 		}
