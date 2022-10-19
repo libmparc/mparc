@@ -140,7 +140,7 @@ extern "C"{
     int MPARC_perror(MXPSQL_MPARC_err err);
 
     /**
-     * @brief Ptr type, should be initialized to null on first use
+     * @brief Ptr type of the archive, should be initialized to null on first use
      * 
      * @details
      * 
@@ -151,6 +151,18 @@ extern "C"{
      * This can never be declared as a non pointer object.
      */
     typedef struct MXPSQL_MPARC_t MXPSQL_MPARC_t;
+    /**
+     * @brief Ptr type of the iterator, should be initialized to null on first use
+     * 
+     * @details
+     * 
+     * This should be initialized to NULL to prevent problems with uninitialized value.
+     * 
+     * Don't ever try to dereference this thing.
+     * 
+     * This can never be declared as a non pointer object.
+     */
+    typedef struct MXPSQL_MPARC_iter_t MXPSQL_MPARC_iter_t;
 
     /**
      * @brief Initialize sturcture
@@ -176,16 +188,43 @@ extern "C"{
     MXPSQL_MPARC_err MPARC_destroy(MXPSQL_MPARC_t** structure);
 
     /**
-     * @brief List out the current files included
+     * @brief List out the current files included as an array
      * 
      * @param structure the target structure
      * @param listout the output list
      * @param length the length of listout
      * @return MXPSQL_MPARC_err the status code if successfully done
      * 
-     * @note Free listout manually with 'free'
+     * @note Free listout manually with 'free', not 'delete'
      */
-    MXPSQL_MPARC_err MPARC_list(MXPSQL_MPARC_t* structure, char*** listout, uint_fast64_t* length);
+    MXPSQL_MPARC_err MPARC_list_array(MXPSQL_MPARC_t* structure, char*** listout, uint_fast64_t* length);
+    /**
+     * @brief Initialize the iterator that list the current files included
+     * 
+     * @param structure the target structure
+     * @param iterator the target iterator
+     * @return MXPSQL_MPARC_err the status code if successfully done
+     */
+    MXPSQL_MPARC_err MPARC_list_iterator_init(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_iter_t** iterator);
+    /**
+     * @brief Update the state of the iterator to point to the next one
+     * 
+     * @param iterator the target iterator
+     * @param outnam output string
+     * @return MXPSQL_MPARC_err 
+     * 
+     * @details
+     * 
+     * If it returns MPARC_NOEXIST, the iterator has reached the end
+     */
+    MXPSQL_MPARC_err MPARC_list_iterator_next(MXPSQL_MPARC_iter_t** iterator, const char** outnam);
+    /**
+     * @brief Destroy the iterator
+     * 
+     * @param iterator the target iterator
+     * @return MXPSQL_MPARC_err the status code if successfully done
+     */
+    MXPSQL_MPARC_err MPARC_list_iterator_destroy(MXPSQL_MPARC_iter_t** iterator);
     /**
      * @brief Check if file entry exists
      * 
@@ -194,15 +233,28 @@ extern "C"{
      * @return MXPSQL_MPARC_err the status code if successfully done or errors out
      */
     MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, char* filename);
-
+    
     /**
      * @brief Push an unsigned string as a file
+     * 
+     * @param structure the target structure
+     * @param filename the filename to assign
+     * @param stripdir strip the directory from the filename, set to 0 to disable
+     * @param ustringc the bytes of string
+     * @param sizy the size of ustringc
+     * @return MXPSQL_MPARC_err the status code if successfully done
+     */
+    MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, unsigned char* ustringc, uint_fast64_t sizy);
+    /**
+     * @brief Simple version of MPARC_push_ufilestr_advance that does not strip the directory name
      * 
      * @param structure the target structure
      * @param filename the filename to assign
      * @param ustringc the bytes of string
      * @param sizy the size of ustringc
      * @return MXPSQL_MPARC_err the status code if successfully done
+     * 
+     * @see MPARC_extract_advance
      */
     MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint_fast64_t sizy);
     /**
@@ -308,7 +360,11 @@ extern "C"{
      * @param dir2make NULL if there is no directory to make, not NULL if it needs you to make a directory
      * @param on_item invoked everytime a new item is iterated over
      * @param mk_dir invoked when directory is needed to be created, return 0 on success, non-zero on error. Overrides dir2make.
-     * @return MXPSQL_MPARC_err error status, some code are special like MPARC_OPPART. If you receive MPARC_OPPART, check dir2make
+     * @return MXPSQL_MPARC_err error status, some code are special, see details
+     * 
+     * @details
+     * 
+     * if the error code returns MPARC_OPPART, check dir2make to see if it needs you to make a new directory
      */
     MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*));
     /**
@@ -322,23 +378,29 @@ extern "C"{
      * @see MPARC_extract_advance
      */
     MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make);
+
     /**
-     * @brief Extract the archive into the directory
+     * @brief Read a directory into the structure
      * 
      * @param structure the target structure
-     * @param destdir the destination directory
-     * @param dir2make NULL if there is no directory to make, not NULL if it needs you to make a directory
-     * @param on_item called every time a new entry is read, NULL can be placed in
-     * @param mk_dir function to be called when making a directory, NULL can be placed in. Overrides dir2make on certain platform, may not be called on other platform
-     * @return MXPSQL_MPARC_err err status of extraction, some codes are special.
+     * @param srcdir the source directory to read from
+     * @param recursive read from subdirectories if not set to 0
+     * @param listdir function to list a directory, shall not be NULL or else it returns an error. This is the function that handles listing the file and recursion.
+     * @return MXPSQL_MPARC_err error status of reading
      * 
      * @details
      * 
-     * Special Error Codes: MPARC_OPPART, it has interrupted it's operation and asking the user for assistance.
+     * > listdir Prototyping
      * 
-     * - dir2make is not NULL: use the variable dir2make and make a directory. Will not happen if platform supports ENOENT and mk_dir is not NULL
+     * the first parameter of the listdir function is the current directory that should be read from
+     * 
+     * the second parameter indicates if it should be recursive, set to 0 if not, don't if not
+     * 
+     * the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc'ed or Malloc'ed (pls Calloc it) as it relies on finding NULL and the array getting freed
+     * 
+     * the return value should always be 0 for success, other values indicate failure
      */
-    MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*));
+    MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, char* srcdir, int recursive, int (*listdir)(char*, int, char**));
 
     /**
      * @brief Parse the archive into the structure

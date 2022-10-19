@@ -385,7 +385,7 @@ int main(int argc, char* argv[]){
     }
 	{
 		char** e = NULL;
-		err = MPARC_list(archive, &e, NULL);
+		err = MPARC_list_array(archive, &e, NULL);
         if(err != MPARC_OK){
             printf("A big no happened when trying to list files\n");
                 	    switch(err){

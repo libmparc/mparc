@@ -2774,7 +2774,15 @@ static char* const_strdup(const char* src){
 		return str;
 }
 
-static char *mydirname(char *path)
+// from glibc from https://github.com/lattera/glibc/blob/master/string/basename.c
+static char* mybasename (const char *filename)
+{
+  char *p = strrchr (filename, '/');
+  return p ? p + 1 : (char *) filename;
+}
+
+// from glibc from https://github.com/lattera/glibc/blob/master/misc/dirname.c
+static char* mydirname (char *path)
 {
   static const char dot[] = ".";
   char *last_slash;
@@ -2782,17 +2790,46 @@ static char *mydirname(char *path)
   /* Find last '/'.  */
   last_slash = path != NULL ? strrchr (path, '/') : NULL;
 
-  if (last_slash == path)
-    /* The last slash is the first character in the string.  We have to
-       return "/".  */
-    ++last_slash;
-  else if (last_slash != NULL && last_slash[1] == '\0')
-    /* The '/' is the last character, we have to look further.  */
-    last_slash = memchr (path, last_slash - path, '/');
+  if (last_slash != NULL && last_slash != path && last_slash[1] == '\0')
+    {
+      /* Determine whether all remaining characters are slashes.  */
+      char *runp;
+
+      for (runp = last_slash; runp != path; --runp)
+	if (runp[-1] != '/')
+	  break;
+
+      /* The '/' is the last character, we have to look further.  */
+      if (runp != path)
+	last_slash = memchr (path, '/', runp - path);
+    }
 
   if (last_slash != NULL)
-    /* Terminate the path.  */
-    last_slash[0] = '\0';
+    {
+      /* Determine whether all remaining characters are slashes.  */
+      char *runp;
+
+      for (runp = last_slash; runp != path; --runp)
+	if (runp[-1] != '/')
+	  break;
+
+      /* Terminate the path.  */
+      if (runp == path)
+	{
+	  /* The last slash is the first character in the string.  We have to
+	     return "/".  As a special case we have to return "//" if there
+	     are exactly two slashes at the beginning of the string.  See
+	     XBD 4.10 Path Name Resolution for more information.  */
+	  if (last_slash == path + 1)
+	    ++last_slash;
+	  else
+	    last_slash = path + 1;
+	}
+      else
+	last_slash = runp;
+
+      last_slash[0] = '\0';
+    }
   else
     /* This assignment is ill-designed but the XPG specs require to
        return a string containing "." in any case no directory part is
@@ -2803,7 +2840,7 @@ static char *mydirname(char *path)
 }
 
 static int voidstrcmp(const void* str1, const void* str2){
-	return strcmp((const char*) str1, (const char*) str2);
+	return strcoll((const char*) str1, (const char*) str2);
 }
 
 /* END OF SNIPPETS */
@@ -2854,6 +2891,11 @@ static int voidstrcmp(const void* str1, const void* str2){
 				
 				/* hidden */
 				va_list vlist;
+		};
+
+		struct MXPSQL_MPARC_iter_t {
+			MXPSQL_MPARC_t* archive;
+			map_iter_t itery;
 		};
 
     	int MPARC_strerror(MXPSQL_MPARC_err err, char** out){
@@ -3081,7 +3123,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 				char** jsonry = NULL;
 				uint_fast64_t jsonentries;
 
-				if(MPARC_list(structure, NULL, &jsonentries) != MPARC_OK){
+				if(MPARC_list_array(structure, NULL, &jsonentries) != MPARC_OK){
 					return NULL;
 				}
 
@@ -3546,7 +3588,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 		
 
 		MXPSQL_MPARC_err MPARC_init(MXPSQL_MPARC_t** structure){
-				if(structure == NULL || * structure == NULL) return MPARC_IVAL;
+				if(!(structure == NULL || *structure == NULL)) return MPARC_IVAL;
 
 				void* memalloc = calloc(1, sizeof(MXPSQL_MPARC_t));
 				if(memalloc == NULL) return MPARC_OOM;
@@ -3594,7 +3636,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 			{
 				char** listy_structure_out = NULL;
 				uint_fast64_t listy_structure_sizy_sizey_size = 0;
-				err = MPARC_list(*structure, &listy_structure_out, &listy_structure_sizy_sizey_size);
+				err = MPARC_list_array(*structure, &listy_structure_out, &listy_structure_sizy_sizey_size);
 				if(err != MPARC_OK){
 					return err;
 				}
@@ -3630,7 +3672,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 
 
-		MXPSQL_MPARC_err MPARC_list(MXPSQL_MPARC_t* structure, char*** listout,	uint_fast64_t* length){
+		MXPSQL_MPARC_err MPARC_list_array(MXPSQL_MPARC_t* structure, char*** listout,	uint_fast64_t* length){
 				if(structure == NULL) {
 						return MPARC_IVAL;
 				}
@@ -3663,7 +3705,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						const char* key2;
 						listout_structure = calloc(lentracker+1, sizeof(char*));
 
-						map_iter_t iter2 = map_iter(&structure->globby);
+						/* map_iter_t iter2 = map_iter(&structure->globby);
 
 						while ((key2 = map_next(&structure->globby, &iter2))) {
 								// printf("L> %s\n", key);
@@ -3672,6 +3714,36 @@ static int voidstrcmp(const void* str1, const void* str2){
 										strlen(key2),
 										key2
 								};
+
+								listout_structure[index] = const_strdup(bi.nam);
+
+								// free((char*)bi.nam);
+
+								index++;
+						} */
+
+						MXPSQL_MPARC_iter_t* iterator = NULL;
+						{
+							MXPSQL_MPARC_err err = MPARC_list_iterator_init(&structure, &iterator);
+							if(err != MPARC_OK){
+								free(listout_structure);
+								return err;
+							}
+						}
+						if(iterator == NULL) {
+							free(listout_structure);
+							return MPARC_IVAL;
+						}
+						while((MPARC_list_iterator_next(&iterator, &key2) == MPARC_OK)){
+								abufinfo bi = {
+										strlen(key2),
+										key2
+								};
+
+								// printf("L> %s\n", key2);
+
+								// printf("%de\n", key2 == NULL);
+								// fflush(stdout);
 
 								listout_structure[index] = const_strdup(bi.nam);
 
@@ -3687,14 +3759,54 @@ static int voidstrcmp(const void* str1, const void* str2){
 						*listout = listout_structure;
 				}
 				else{
-						for(uint_fast64_t i = 0; i < lentracker; i++){
-							if(listout_structure) free(listout_structure[i]);
-						}
+					for(uint_fast64_t i = 0; i < lentracker; i++){
+						if(listout_structure) free(listout_structure[i]);
+					}
 
-						free(listout_structure);
+					free(listout_structure);
 				}
 
 				return MPARC_OK;
+		}
+
+		MXPSQL_MPARC_err MPARC_list_iterator_init(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_iter_t** iterator){
+			if(!(structure == NULL || *structure == NULL || iterator == NULL || *iterator == NULL)) return MPARC_IVAL;
+
+			void* memalloc = calloc(1, sizeof(MXPSQL_MPARC_iter_t));
+			if(memalloc == NULL) return MPARC_OOM;
+
+			MXPSQL_MPARC_iter_t* iter = (MXPSQL_MPARC_iter_t*) memalloc;
+			if(iter == NULL) return MPARC_IVAL;
+
+			iter->archive = *structure;
+			iter->itery = map_iter(&(*structure)->globby);
+
+			*iterator = iter;
+
+			return MPARC_OK;
+		}
+
+		MXPSQL_MPARC_err MPARC_list_iterator_next(MXPSQL_MPARC_iter_t** iterator, const char** outnam){
+			if(iterator == NULL || *iterator == NULL) return MPARC_IVAL;
+
+			MXPSQL_MPARC_iter_t* iterye = *iterator;
+
+			const char* nkey = map_next(&iterye->archive->globby, &iterye->itery);
+
+			// printf("eeeee\n");
+			// fflush(stdout);
+
+			if(nkey == NULL) return MPARC_NOEXIST;
+
+			if(outnam != NULL) *outnam = nkey;
+
+			return MPARC_OK;
+		}
+
+		MXPSQL_MPARC_err MPARC_list_iterator_destroy(MXPSQL_MPARC_iter_t** iterator){
+			if(iterator == NULL || *iterator == NULL) return MPARC_IVAL;
+			free(*iterator);
+			return MPARC_OK;
 		}
 
 		MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, char* filename){
@@ -3706,7 +3818,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 					char** listy_out = NULL;
 					uint_fast64_t listy_size = 0;
 					{
-						MXPSQL_MPARC_err err = MPARC_list(structure, &listy_out, &listy_size);
+						MXPSQL_MPARC_err err = MPARC_list_array(structure, &listy_out, &listy_size);
 						if(err != MPARC_OK) return err;
 					}
 					{
@@ -3719,7 +3831,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 		}
 
 
-		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint_fast64_t sizy){
+		MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, unsigned char* ustringc, uint_fast64_t sizy){
 			crc_t crc3 = crc_init();
 			crc3 = crc_update(crc3, ustringc, sizy);
 			crc3 = crc_finalize(crc3);
@@ -3730,11 +3842,23 @@ static int voidstrcmp(const void* str1, const void* str2){
 					crc3
 			};
 
-			if(map_set(&structure->globby, filename, blob) != 0){
-					return MPARC_IVAL;
+			char* pfilename = NULL;
+			if(stripdir != 0){
+				pfilename = mybasename(pfilename);
+			}
+			else{
+				pfilename = filename;
+			}
+
+			if(map_set(&structure->globby, pfilename, blob) != 0){
+				return MPARC_IVAL;
 			}
 
 			return MPARC_OK;
+		}
+
+		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint_fast64_t sizy){
+			return MPARC_push_ufilestr_advance(structure, filename, 0, ustringc, sizy);
 		}
 
 		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, uint_fast64_t sizey){
@@ -3808,7 +3932,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 		MXPSQL_MPARC_err MPARC_clear_file(MXPSQL_MPARC_t* structure){
 			char** entryos = NULL;
 			uint_fast64_t eos_s = 0;
-			MXPSQL_MPARC_err err = MPARC_list(structure, &entryos, &eos_s);
+			MXPSQL_MPARC_err err = MPARC_list_array(structure, &entryos, &eos_s);
 			if(err != MPARC_OK) return err;
 			for(uint_fast64_t i = 0; i < eos_s; i++){
 				MPARC_pop_file(structure, entryos[i]);
@@ -3952,7 +4076,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 			{
         		char** listy = NULL;
         		uint_fast64_t listys = 0;
-        		if(MPARC_list(structure, &listy, &listys) != MPARC_OK){
+        		if(MPARC_list_array(structure, &listy, &listys) != MPARC_OK){
         		    return MPARC_IVAL;
         		}
 
@@ -4086,6 +4210,38 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 		MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make){
 			return MPARC_extract_advance(structure, destdir, dir2make, NULL, NULL);
+		}
+
+
+		MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, char* srcdir, int recursive, int (*listdir)(char*, int, char**)){
+			if(listdir == NULL) return MPARC_IVAL;
+
+			char** flists = NULL;
+			MXPSQL_MPARC_err err = MPARC_OK;
+
+			if(listdir(srcdir, recursive, flists) != 0){
+				err = MPARC_FERROR;
+				goto main_errhandler;
+			}
+
+			for(uint_fast64_t i = 0; flists[i] != NULL; i++){
+				err = MPARC_push_filename(structure, flists[i]);
+				if(err != MPARC_OK){
+					goto main_errhandler;
+				}
+			}
+
+
+			goto main_errhandler;
+			main_errhandler:
+			for(uint_fast64_t i = 0; flists[i] != NULL; i++){
+				if(flists[i] != NULL) {
+					free(flists[i]);
+				}
+			}
+			free(flists);
+
+			return err;
 		}
 
 

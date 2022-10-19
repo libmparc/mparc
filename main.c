@@ -42,14 +42,20 @@ int main(int argc, char** argv){
         goto exit_handler;
     }
 
-
-    MPARC_init(&archive);
+    printf("Initializing archive\n");
+    err = MPARC_init(&archive);
+    if(err != MPARC_OK){
+        MPARC_perror(err);
+        exit_c = EXIT_FAILURE;
+        goto exit_handler;
+    }
 
     filename = argv[1];
 
     opmode = argv[2];
 
-    if(MPARC_clear_file(archive) != MPARC_OK){
+    printf("Clearing archive state\n");
+    if((err = MPARC_clear_file(archive)) != MPARC_OK){
         MPARC_perror(err);
         exit_c = EXIT_FAILURE;
         goto exit_handler;
@@ -65,7 +71,7 @@ int main(int argc, char** argv){
 
         char** listy = NULL;
         size_t listys = 0;
-        err = MPARC_list(archive, &listy, &listys);
+        err = MPARC_list_array(archive, &listy, &listys);
         if(err != MPARC_OK){
             MPARC_perror(err);
             exit_c = EXIT_FAILURE;
@@ -79,7 +85,7 @@ int main(int argc, char** argv){
     else if(strcmp(opmode, "c") == 0){
         int pos = 3;
         if(argc < 4){
-            fprintf(stderr, "%s", "You made an empty archive.");
+            fprintf(stderr, "%s", "You made an empty archive.\n");
             exit_c = EXIT_FAILURE;
             goto exit_handler;
         }
@@ -98,7 +104,7 @@ int main(int argc, char** argv){
         if(strcmp(filename, "-") == 0){
             char* archiveo=NULL;
             err = MPARC_construct_str(archive, &archiveo);
-            fprintf(stderr, "%s", archiveo); // stderr due to tainted output if on stdout
+            fprintf(stderr, "%s\n", archiveo); // stderr due to tainted output if on stdout
         }
         else{
             err = MPARC_construct_filename(archive, filename);
@@ -117,7 +123,7 @@ int main(int argc, char** argv){
     else if(strcmp(opmode, "a") == 0){
         int pos = 3;
         if(argc < 4){
-            fprintf(stderr, "%s", "You appened nothing to the archive.");
+            fprintf(stderr, "%s\n", "You appened nothing to the archive.");
             exit_c = EXIT_FAILURE;
             goto exit_handler;
         }
@@ -199,7 +205,7 @@ int main(int argc, char** argv){
     else if(strcmp(opmode, "d") == 0){
         int pos = 3;
         if(argc < 4){
-            fprintf(stderr, "%s", "You deleted nothing from the archive.");
+            fprintf(stderr, "%s", "You deleted nothing from the archive.\n");
             exit_c = EXIT_FAILURE;
             goto exit_handler;
         }
@@ -216,7 +222,7 @@ int main(int argc, char** argv){
             printf("d> %s\n", argv[i]);
             err = MPARC_pop_file(archive, argv[i]);
             if(err == MPARC_NOEXIST){
-                fprintf(stderr, "The file (%s) does not exist and you still try to pop it off the archive???", argv[i]);
+                fprintf(stderr, "The file (%s) does not exist and you still try to pop it off the archive???\n", argv[i]);
                 exit_c = EXIT_FAILURE;
                 goto exit_handler;
             }
@@ -237,7 +243,7 @@ int main(int argc, char** argv){
     else if(strcmp(opmode, "e") == 0){
         int pos = 3;
         if(argc < 4){
-            fprintf(stderr, "%s", "You deleted nothing from the archive.");
+            fprintf(stderr, "%s", "You checked nothing from the archive.\n");
             exit_c = EXIT_FAILURE;
             goto exit_handler;
         }
@@ -276,7 +282,7 @@ int main(int argc, char** argv){
         if(argc < 4){
             char** listy = NULL;
             uint_fast64_t sizy = 0;
-            err = MPARC_list(archive, &listy, &sizy);
+            err = MPARC_list_array(archive, &listy, &sizy);
             if(err != MPARC_OK){
                 MPARC_perror(err);
                 exit_c = EXIT_FAILURE;
@@ -364,6 +370,8 @@ int main(int argc, char** argv){
     goto exit_handler; // redundant
 
     exit_handler:
+    printf("Tearing down archive\n");
+    if(err != MPARC_OK || exit_c == EXIT_FAILURE) printf("Failure detected\n");
     MPARC_destroy(&archive);
     return exit_c;
 }
