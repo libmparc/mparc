@@ -54,7 +54,7 @@
  */
 
 #if (!(defined(__STDC__) && __STDC__))
-#error "C must be ANSI C, not K&R C"
+#error "C must be ANSI C, not K&R C or non ANSI C compliant C"
 #endif
 
 
@@ -240,11 +240,12 @@ extern "C"{
      * @param structure the target structure
      * @param filename the filename to assign
      * @param stripdir strip the directory from the filename, set to 0 to disable
+     * @param overwrite if set to anything other than a 0, overwrites the entry if it exists. if set to 0, prevents you from overwriting it if it exists. set to 0 to disable ability to overwrite (already explained)
      * @param ustringc the bytes of string
      * @param sizy the size of ustringc
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, unsigned char* ustringc, uint_fast64_t sizy);
+    MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, uint_fast64_t sizy);
     /**
      * @brief Simple version of MPARC_push_ufilestr_advance that does not strip the directory name
      * 
@@ -289,7 +290,7 @@ extern "C"{
      * @brief Push an active filestream into the archive as a file
      * 
      * @param structure the target structure
-     * @param filestream the active filestream to read from
+     * @param filestream the active filestream to read from, should be opened in "rb" mode
      * @param filename the filename to assign
      * @return MXPSQL_MPARC_err the status code if successfully done
      * 
@@ -344,7 +345,7 @@ extern "C"{
      * @brief Construct the archive into a file stream
      * 
      * @param structure the target structure
-     * @param fpstream the file stream
+     * @param fpstream the file stream, should be opened in "rb" mode
      * @return MXPSQL_MPARC_err the status code if successfully done
      * 
      * @note fpstream should be closed and opened manually
@@ -414,7 +415,7 @@ extern "C"{
      * @brief Parse the opened file stream archive into the structure
      * 
      * @param structure the target structure
-     * @param fpstream the stream to read from
+     * @param fpstream the stream to read from, should be opened in "rb" mode
      * @return MXPSQL_MPARC_err Did it parse well or did not
      */
     MXPSQL_MPARC_err MPARC_parse_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream);

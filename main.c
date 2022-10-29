@@ -4,7 +4,12 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <stdint.h>
+#if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
+#include <windows.h>
+#include <fileapi.h>
+#else
 #include <sys/stat.h>
+#endif
 #include <errno.h>
 
 #include "mparc.h"
@@ -15,6 +20,7 @@ void xhandler(const char* key){
 
 int mkdirer(char* dir){
     #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
+    return !CreateDirectoryA(dir, NULL);
     #else
     return mkdir(dir, 0777);
     #endif
@@ -104,6 +110,11 @@ int main(int argc, char** argv){
         if(strcmp(filename, "-") == 0){
             char* archiveo=NULL;
             err = MPARC_construct_str(archive, &archiveo);
+            if(err != MPARC_OK){
+                MPARC_perror(err);
+                exit_c = EXIT_FAILURE;
+                goto exit_handler;
+            }  
             fprintf(stderr, "%s\n", archiveo); // stderr due to tainted output if on stdout
         }
         else{

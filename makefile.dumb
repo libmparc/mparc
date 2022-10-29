@@ -1,7 +1,7 @@
 CFLAGS:=-fpic -pipe -fdiagnostics-color -g -Og -std=c99 -pedantic -Wall -Wextra -Werror
 CLIBS:=-ldmallocth
 
-DMALLOC_PATH:=/usr/lib/libdmallocth.a
+DMALLOC_PATH:="/usr/lib/libdmallocth.a"
 
 MAINcFILE=main.c
 MAINcppFILE=cxmain.cpp
@@ -27,7 +27,7 @@ buildlib:
 	$(CC) $(CFLAGS) mparc.c $(CLIBS) -c -o $(LIBO)
 
 mklib: buildlib
-	ar rcs $(LIBA) $(LIBO) "$(DMALLOC_PATH)"
+	ar rcs $(LIBA) $(LIBO) $(DMALLOC_PATH)
 
 test: mklib
 	$(CC) $(CFLAGS) t$(MAINcFILE) $(LIBA) $(CLIBS) -o ./t$(EXEC)

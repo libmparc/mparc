@@ -102,10 +102,16 @@
 // else if set to 1 sorted by their filename
 // else randomly sorted
 // default is 1
-// that description was false, normally the checksum will sort itself, but if it fails, then the json will sort it
+// that description for mode 0 was actually false (sort of), normally the checksum will sort itself, but if it fails, then the json will sort it
 #ifndef MPARC_QSORT_MODE
-#define MPARC_QSORT_MODE 2
+#define MPARC_QSORT_MODE 1
 #endif
+
+// Fwrite and Fread usage threshold
+// how much bytes is needed to warant using fwrite or fread, else use fputc or fgetc
+// default is 8 kiloytes
+// think of as in bytes, not bits
+#define MPARC_DIRECTF_MINIMUM (8000)
 
 /* not defines */
 
@@ -2713,7 +2719,7 @@ void *llist_pop(llist *list)
 
 /* Glibc Strtok, Here's Your LGPL Notice and Why I Dual Licensed it under the LGPL and MIT
 
-		Source: https://codebrowser.dev/glibc/glibc/string/my_strtok_r.c.html
+		Source: https://codebrowser.dev/glibc/glibc/string/strtok_r.c.html
 
 		Reentrant string tokenizer.  Generic version.
 		Copyright (C) 1991-2022 Free Software Foundation, Inc.
@@ -2729,7 +2735,7 @@ void *llist_pop(llist *list)
 		You should have received a copy of the GNU Lesser General Public
 		License along with the GNU C Library; if not, see
 		<https://www.gnu.org/licenses/>.  */
-static char * my_strtok_r (char *s, const char *delim, char **save_ptr)
+char * MPARC_strtok_r (char *s, const char *delim, char **save_ptr)
 {
 	char *end;
 	if (s == NULL)
@@ -2759,7 +2765,7 @@ static char * my_strtok_r (char *s, const char *delim, char **save_ptr)
 	return s;
 }
 
-static char* const_strdup(const char* src){
+char* const_strdup(const char* src){
 		char *str;
 		char *p;
 		int len = 0;
@@ -2775,14 +2781,14 @@ static char* const_strdup(const char* src){
 }
 
 // from glibc from https://github.com/lattera/glibc/blob/master/string/basename.c
-static char* mybasename (const char *filename)
+char* MPARC_basename (const char *filename)
 {
   char *p = strrchr (filename, '/');
   return p ? p + 1 : (char *) filename;
 }
 
 // from glibc from https://github.com/lattera/glibc/blob/master/misc/dirname.c
-static char* mydirname (char *path)
+char* MPARC_dirname (char *path)
 {
   static const char dot[] = ".";
   char *last_slash;
@@ -2998,7 +3004,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 					char* str1fnam = NULL;
 					char* str2fnam = NULL;
 					{
-						char* tok = my_strtok_r(str1d, sep, &sav);
+						char* tok = MPARC_strtok_r(str1d, sep, &sav);
 						if(tok == NULL || strcmp(sav, "") == 0 || sav == NULL){
 							goto me_my_errhandler;
 						}
@@ -3018,7 +3024,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						}
 					}
 					{
-						char* tok = my_strtok_r(str2d, sep, &sav);
+						char* tok = MPARC_strtok_r(str2d, sep, &sav);
 						if(tok == NULL || strcmp(sav, "") == 0 || sav == NULL){
 							goto me_my_errhandler;
 						}
@@ -3131,10 +3137,23 @@ static int voidstrcmp(const void* str1, const void* str2){
 				jsonry[jsonentries]=NULL;
 
 				const char* nkey;
-				map_iter_t itery = map_iter(&structure->globby);
+				MXPSQL_MPARC_iter_t* itery = NULL;
+				// map_iter_t itery = map_iter(&structure->globby);
 				uint_fast64_t indexy = 0;
 
-				while((nkey = map_next(&structure->globby, &itery))){
+				{
+					MXPSQL_MPARC_err err = MPARC_list_iterator_init(&structure, &itery);
+					if(err != MPARC_OK){
+						for(uint_fast64_t i = 0; i < jsonentries; i++){
+								free(jsonry[i]);
+						}
+						MPARC_list_iterator_destroy(&itery);
+						free(jsonry);
+						return NULL;
+					}
+				}
+
+				while((MPARC_list_iterator_next(&itery, &nkey)) == MPARC_OK){
 						MPARC_blob_store* bob_the_blob_raw = map_get(&structure->globby, nkey);
 						if(!bob_the_blob_raw){
 							continue;
@@ -3146,9 +3165,10 @@ static int voidstrcmp(const void* str1, const void* str2){
 						crc3 = bob_the_blob.binary_crc;
 						if(btob == NULL) {
 								for(uint_fast64_t i = 0; i < jsonentries; i++){
-										free(jsonry[jsonentries]);
+										free(jsonry[i]);
 								}
 								free(jsonry);
+								MPARC_list_iterator_destroy(&itery);
 								return NULL;
 						}
 						JsonNode* glob64 = json_mkstring(btob);
@@ -3156,9 +3176,10 @@ static int voidstrcmp(const void* str1, const void* str2){
 						JsonNode* blob_chksum = NULL;
 						if(glob64 == NULL || filename == NULL) {
 							for(uint_fast64_t i = 0; i < jsonentries; i++){
-									free(jsonry[jsonentries]);
+									free(jsonry[i]);
 							}
 							free(jsonry);
+							MPARC_list_iterator_destroy(&itery);
 							return NULL;
 						}
 
@@ -3168,7 +3189,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 							int size = snprintf(NULL, 0, fmter, crc3);
 							if(size < 0){
 								for(uint_fast64_t i = 0; i < jsonentries; i++){
-										free(jsonry[jsonentries]);
+										free(jsonry[i]);
 								}
 								free(jsonry);
 								return NULL;
@@ -3176,14 +3197,15 @@ static int voidstrcmp(const void* str1, const void* str2){
 							globsum = calloc(size+1, sizeof(char));
 							if(globsum == NULL){
 								for(uint_fast64_t i = 0; i < jsonentries; i++){
-										free(jsonry[jsonentries]);
+										free(jsonry[i]);
 								}
 								free(jsonry);
+								MPARC_list_iterator_destroy(&itery);
 								return NULL;
 							}
 							if(snprintf(globsum, size, fmter, crc3) < 0){
 								for(uint_fast64_t i = 0; i < jsonentries; i++){
-										free(jsonry[jsonentries]);
+										free(jsonry[i]);
 								}
 								free(jsonry);
 								return NULL;
@@ -3191,9 +3213,10 @@ static int voidstrcmp(const void* str1, const void* str2){
 							blob_chksum = json_mkstring(globsum);
 							if(blob_chksum == NULL){
 								for(uint_fast64_t i = 0; i < jsonentries; i++){
-										free(jsonry[jsonentries]);
+										free(jsonry[i]);
 								}
 								free(jsonry);
+								MPARC_list_iterator_destroy(&itery);
 								return NULL;
 							}
 							free(globsum);
@@ -3203,9 +3226,10 @@ static int voidstrcmp(const void* str1, const void* str2){
 						json_append_member(objectweb, "crcsum", blob_chksum);
 						if(!json_check(objectweb, NULL)){
 							for(uint_fast64_t i = 0; i < jsonentries; i++){
-									free(jsonry[jsonentries]);
+									free(jsonry[i]);
 							}
 							free(jsonry);
+							MPARC_list_iterator_destroy(&itery);
 							return NULL;
 						}
 						char* stringy = json_encode(objectweb);
@@ -3223,17 +3247,19 @@ static int voidstrcmp(const void* str1, const void* str2){
 								crcStringy = calloc(sp+1, sizeof(char));
 								if(crcStringy == NULL){
 									for(uint_fast64_t i = 0; i < jsonentries; i++){
-											free(jsonry[jsonentries]);
+											free(jsonry[i]);
 									}
 									free(jsonry);
+									MPARC_list_iterator_destroy(&itery);
 									return NULL;
 								}
 								if(snprintf(crcStringy, sp, fmt, crc, structure->entry_elem2_sep_marker_or_magic_sep_marker, stringy) < 0){
 									for(uint_fast64_t i = 0; i < jsonentries; i++){
-											free(jsonry[jsonentries]);
+											free(jsonry[i]);
 									}
 									free(jsonry);
 									free(crcStringy);
+									MPARC_list_iterator_destroy(&itery);
 									return NULL;
 								}
 								jsonry[indexy] = crcStringy;
@@ -3242,6 +3268,8 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 						indexy++;
 				}
+
+				MPARC_list_iterator_destroy(&itery);
 
 				// ((void)MPARC_i_sort);
 				MPARC_i_sort(jsonry); // We qsort this, qsort can be quicksort, insertion sort or BOGOSORT. It is ordered by the checksum instead of the name lmao.
@@ -3255,7 +3283,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						char* str = calloc(iacrurate_snprintf_len+1, sizeof(char));
 						if(str == NULL) {
 								for(uint_fast64_t i = 0; i < jsonentries; i++){
-										free(jsonry[jsonentries]);
+										free(jsonry[i]);
 								}
 								free(jsonry);
 								return NULL;
@@ -3264,20 +3292,28 @@ static int voidstrcmp(const void* str1, const void* str2){
 								char* outstr = calloc(iacrurate_snprintf_len+1, sizeof(char));
 								if(outstr == NULL){
 										for(uint_fast64_t i = 0; i < jsonentries; i++){
-												free(jsonry[jsonentries]);
+												free(jsonry[i]);
 										}
 										free(jsonry);
 										return NULL;
 								}
 								strcpy(outstr, str);
-								snprintf(outstr, iacrurate_snprintf_len, "%s%c%s", str, structure->entry_sep_or_general_marker, jsonry[i2]);
+								int len = snprintf(outstr, iacrurate_snprintf_len, "%s%c%s", str, structure->entry_sep_or_general_marker, jsonry[i2]);
+								if(len < 0 || ((uint_fast64_t)len) > iacrurate_snprintf_len){
+									for(uint_fast64_t i = 0; i < jsonentries; i++){
+											free(jsonry[i]);
+									}
+									free(jsonry);
+									free(outstr);
+									return NULL;
+								}
 								strcpy(str, outstr);
 						}
 
 						estring = str;
 
 						for(uint_fast64_t i = 0; i < jsonentries; i++){
-								free(jsonry[jsonentries]);
+								free(jsonry[i]);
 						}
 						free(jsonry);
 				}
@@ -3333,16 +3369,16 @@ static int voidstrcmp(const void* str1, const void* str2){
 			{
 				char sep[2] = {structure->begin_entry_marker, '\0'};
 				char* saveptr;
-				char* btok = my_strtok_r(Stringy, sep, &saveptr);
+				char* btok = MPARC_strtok_r(Stringy, sep, &saveptr);
 
 				{
 					char* saveptr2;
 					char sep2[2] = {structure->magic_byte_sep, '\0'};
-					char* tok = my_strtok_r(btok, sep2, &saveptr2);
+					char* tok = MPARC_strtok_r(btok, sep2, &saveptr2);
 					if(tok == NULL || strcmp(STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25, btok) != 0){
 						return MPARC_NOTARCHIVE;
 					}
-					tok = my_strtok_r(NULL, sep2, &saveptr2);
+					tok = MPARC_strtok_r(NULL, sep2, &saveptr2);
 					if(tok == NULL){
 						return MPARC_NOTARCHIVE;
 					}
@@ -3352,7 +3388,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						{
 							char* saveptr3 = NULL;
 							char sep3[2] = {structure->meta_sep, '\0'};
-							nstok = my_strtok_r(tok, sep3, &saveptr3);
+							nstok = MPARC_strtok_r(tok, sep3, &saveptr3);
 							if(nstok == NULL || strcmp(saveptr3, "") == 0){
 								return MPARC_NOTARCHIVE;
 							}
@@ -3368,6 +3404,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 								}
 							}
 							if(lversion > version){
+								errno = ERANGE;
 								return MPARC_ARCHIVETOOSHINY;
 							}
 							structure->loadedVersion = lversion;
@@ -3391,12 +3428,12 @@ static int voidstrcmp(const void* str1, const void* str2){
 				
 				char* saveptr = NULL;
 				char sepsis[2] = {structure->begin_entry_marker, '\0'};
-				entry = my_strtok_r(Stringy, sepsis, &saveptr);
+				entry = MPARC_strtok_r(Stringy, sepsis, &saveptr);
 				if(entry == NULL) return MPARC_NOTARCHIVE;
-				entry = my_strtok_r(NULL, sepsis, &saveptr);
+				entry = MPARC_strtok_r(NULL, sepsis, &saveptr);
 				if(entry == NULL) return MPARC_NOTARCHIVE;
 				sepsis[0] = structure->end_entry_marker;
-				char* entry2 = my_strtok_r(entry, sepsis, &saveptr);
+				char* entry2 = MPARC_strtok_r(entry, sepsis, &saveptr);
 				{
 					char* saveptr2 = NULL;
 					char septic[2] = {structure->entry_sep_or_general_marker, '\0'};
@@ -3407,10 +3444,10 @@ static int voidstrcmp(const void* str1, const void* str2){
 							goto errhandler;
 						}
 						char* sp3 = NULL;
-						char* e = my_strtok_r(edup, septic, &sp3);
+						char* e = MPARC_strtok_r(edup, septic, &sp3);
 						while(e != NULL) {
 							ecount += 1;
-							e = my_strtok_r(NULL, septic, &sp3);
+							e = MPARC_strtok_r(NULL, septic, &sp3);
 						}
 						free(edup);
 					}
@@ -3421,14 +3458,14 @@ static int voidstrcmp(const void* str1, const void* str2){
 						err = MPARC_OOM;
 						goto errhandler;
 					}
-					char* entry64 = my_strtok_r(entry2, septic, &saveptr2);
+					char* entry64 = MPARC_strtok_r(entry2, septic, &saveptr2);
 					for(uint_fast64_t i = 0; entry64 != NULL; i++){
 						entries[i] = const_strdup(entry64);
 						if(entries[i] == NULL){
 							err = MPARC_OOM;
 							goto errhandler;
 						}
-						entry64 = my_strtok_r(NULL, septic, &saveptr2);
+						entry64 = MPARC_strtok_r(NULL, septic, &saveptr2);
 					}
 					entries[ecount] = NULL;
 				}
@@ -3440,12 +3477,13 @@ static int voidstrcmp(const void* str1, const void* str2){
 				char* entry = entries[i];
 				char* sptr = NULL;
 				char seps[2] = {structure->entry_elem2_sep_marker_or_magic_sep_marker, '\0'};
-				char* crcstr = my_strtok_r(entry, seps, &sptr);
+				char* crcstr = MPARC_strtok_r(entry, seps, &sptr);
 				if(crcstr == NULL || sptr == NULL || strcmp(sptr, "") == 0){
 					err = MPARC_NOTARCHIVE;
 					goto errhandler;
 				}
 				if(sscanf(crcstr, "%"SCNuFAST32, &crc) != 1){ // failed to get checksum, we will never know the real checksum
+					errno = EILSEQ;
 					err = MPARC_CHKSUM;
 					goto errhandler;
 				}
@@ -3453,6 +3491,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 				tcrc = crc_update(tcrc, tok, strlen(tok));
 				tcrc = crc_finalize(tcrc);
 				if(tcrc != crc){
+					errno = EILSEQ;
 					err = MPARC_CHKSUM;
 					goto errhandler;
 				}
@@ -3465,12 +3504,15 @@ static int voidstrcmp(const void* str1, const void* str2){
 				char* filename = NULL;
 				char* blob = NULL;
 				crc_t crc3 = crc_init();
+				bool filename_parsed = false;
+				bool blob_parsed = false;
+				bool crc3_parsed = false;
 
 				char* jse = json_entries[i];
 
-				if(false){ // disable jsmn for now due to eroneous results (filename gives wrong name)
+				if(false){ // disable jsmn for now due to eroneous results (problem with the token ordering)
 					static const uint_fast64_t jtokens_count = 128; // we only need 4 but we don't expect more than 128, we put more just in case for other metadata
-					jsmntok_t jtokens[jtokens_count];
+					jsmntok_t jtokens[jtokens_count]; // this says no to C++
 					int jsmn_err = jsmn_parse(&jsmn, jse, strlen(jse), jtokens, jtokens_count);
 					if(jsmn_err < 0){
 						err = MPARC_NOTARCHIVE;
@@ -3509,33 +3551,34 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 							if(strcmp(node->key, "filename") == 0){
 								filename = node->store.string;
+								filename_parsed = true;
 							}
 							else if(strcmp(node->key, "blob") == 0){
 								blob = node->store.string;
+								blob_parsed = true;
 							}
 							else if(strcmp(node->key, "crcsum") == 0){
 								{
 									char* nvalue = node->store.string;
 									if(sscanf(nvalue, "%"SCNuFAST32, &crc3) != 1){
+										errno = EILSEQ;
 										err = MPARC_CHKSUM;
 										goto errhandler;
 									}
+									crc3_parsed = true;
 								}
 							}
-							else{
-								err = MPARC_NOTARCHIVE;
-								goto errhandler;
-							}
 
-						}
-						else{
-							err = MPARC_NOTARCHIVE;
-							goto errhandler;
 						}
 					}
 				}
 
-				if(true){ // for testing purposes
+				if(!filename_parsed || !blob_parsed || !crc3_parsed){
+					err = MPARC_NOTARCHIVE;
+					goto errhandler;
+				}
+				
+				{
 					uint_fast64_t bsize = 1;
 					unsigned char* un64_blob = b64.atob(blob, strlen(blob), &bsize);
 					if(un64_blob == NULL){
@@ -3557,6 +3600,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						map_set(&structure->globby, filename, store);
 					}
 				}
+
 			}
 
 			goto errhandler; // redundant I know
@@ -3573,7 +3617,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 		static MXPSQL_MPARC_err MPARC_i_parse_ender(MXPSQL_MPARC_t* structure, char* stringy){
 			char sep[2] = {structure->end_entry_marker, '\0'};
 			char* sptr = NULL;
-			char* tok = my_strtok_r(stringy, sep, &sptr);
+			char* tok = MPARC_strtok_r(stringy, sep, &sptr);
 			if(tok == NULL){
 				return MPARC_NOTARCHIVE;
 			}
@@ -3831,23 +3875,27 @@ static int voidstrcmp(const void* str1, const void* str2){
 		}
 
 
-		MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, unsigned char* ustringc, uint_fast64_t sizy){
+		MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, uint_fast64_t sizy){
 			crc_t crc3 = crc_init();
 			crc3 = crc_update(crc3, ustringc, sizy);
 			crc3 = crc_finalize(crc3);
 
 			MPARC_blob_store blob = {
-					sizy,
-					ustringc,
-					crc3
+				sizy,
+				ustringc,
+				crc3
 			};
 
 			char* pfilename = NULL;
 			if(stripdir != 0){
-				pfilename = mybasename(pfilename);
+				pfilename = MPARC_basename(pfilename);
 			}
 			else{
 				pfilename = filename;
+			}
+
+			if(overwrite == 0 && MPARC_exists(structure, pfilename) != MPARC_NOEXIST){
+				return MPARC_OPPART;
 			}
 
 			if(map_set(&structure->globby, pfilename, blob) != 0){
@@ -3858,7 +3906,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 		}
 
 		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint_fast64_t sizy){
-			return MPARC_push_ufilestr_advance(structure, filename, 0, ustringc, sizy);
+			return MPARC_push_ufilestr_advance(structure, filename, 0, 1, ustringc, sizy);
 		}
 
 		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, uint_fast64_t sizey){
@@ -3914,9 +3962,25 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 				binary = calloc(filesize+1, sizeof(unsigned char));
 
-				if(fread(binary, sizeof(unsigned char), filesize, filestream) < filesize && ferror(filestream)){
+				if(filesize >= MPARC_DIRECTF_MINIMUM){
+					if(fread(binary, sizeof(unsigned char), filesize, filestream) < filesize && ferror(filestream)){
 						free(binary);
 						return MPARC_FERROR;
+					}
+				}
+				else{
+					int c = 0;
+					uint_fast64_t i = 0;
+					while((c = fgetc(filestream)) != EOF){
+						binary[i++] = c;
+					}
+
+					if(ferror(filestream)){
+						free(binary);
+						return MPARC_FERROR;
+					}
+
+					binary[i] = '\0';
 				}
 
 				return MPARC_push_ufilestr(structure, filename, binary, filesize);
@@ -3955,18 +4019,50 @@ static int voidstrcmp(const void* str1, const void* str2){
 		}
 
 		/*
+		 * 
+		 * SEE THIS TO SEE THE FILE FORMAT OF THE ARCHIVE
+		 * THIS PART IS IMPORTANT TO SEE HOW IT IS IMPLEMENTED AND THE FORMAT
+		 * 
 		 * How is the file constructed:
 		 * 
 		 * 1. Build the header:
 		 * Format: MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE]
 		 * 
+		 * The ';' character separates the Magic numbers (very long with 25 character I think) from the version number
+		 * 
+		 * The '$' character separates the version and magic numbers from the metadata
+		 * 
+		 * The '>' character works to indicate the start of entries
+		 * The newline is an anomaly though, but just put it in there
+		 * 
+		 * JSON_WHATEV_METADATA can be implementation defined
+		 * This C implementation will ignore any extra metadata
+		 * 
+		 * You should separate the '$' before separating with ';' and '>'
+		 * 
+		 * 
 		 * 2. Build the entries
 		 * Format: [CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]
+		 * 
+		 * The '%' character is to separate the checksum of the JSON from the JSON itself
+		 * 
+		 * You can add other metadata like date of creation, but there must be the entries "filename", "blob" and "crcsum" in the JSON
+		 * This C implementation will ignore any extra metadata
+		 * 
+		 * "filename" should contain the filename. (don't do any effects and magic on this field called "filename")
+		 * "blob" should contain the base64 of the binary or text file. (base64 to make it a text file and not binary)
+		 * "crcsum" should contain the CRC32 checksum of the content of "blob" after converting it back to it's original form. ("blob" but wihtout base64)
+		 * 
 		 * Repeat this as required (how many entries are there you repeat)
+		 * 
+		 * 
 		 * 
 		 * 
 		 * 3. Build the footer
 		 * Format: @~
+		 * 
+		 * the '@' character is to signify end of entry
+		 * the '~' character is to signify end of file
 		 * 
 		 * 
 		 * Follow this (with placeholder) and you get this:
@@ -4062,10 +4158,25 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 			char* archive = NULL;
 			MXPSQL_MPARC_err err = MPARC_construct_str(structure, &archive);
+			if(err != MPARC_OK){
+				if(archive) free(archive);
+				return err;
+			}
 			uint_fast64_t count = strlen(archive);
-			if(fwrite(archive, sizeof(char), count, fpstream) < count){
-				free(archive);
-				return MPARC_FERROR;
+			if(count >= MPARC_DIRECTF_MINIMUM){
+				if(fwrite(archive, sizeof(char), count, fpstream) < count && ferror(fpstream)){
+					free(archive);
+					return MPARC_FERROR;
+				}
+			}
+			else{
+				for(uint_fast64_t i = 0; i < count; i++){
+					if(fputc(archive[i], fpstream) == EOF){
+						free(archive);
+						err = MPARC_FERROR;
+						return err;
+					}
+				}
 			}
 			free(archive);
 			return err;
@@ -4099,7 +4210,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 							}
 							fname = (char*) nfname;
 							int splen = snprintf(fname, pathl, "%s/%s", destdir, nkey);
-							if(splen < 0){
+							if(splen < 0 || ((uint_fast64_t)splen) > pathl){
 								free(fname);
 								free(listy);
 								return MPARC_IVAL;
@@ -4107,7 +4218,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 						}
 						fps = fopen(fname, "wb+");
 						if(fps == NULL){
-							char* dname = mydirname((char*)fname);
+							char* dname = MPARC_dirname((char*)fname);
 							#if defined(ENOENT)
 							if(errno == ENOENT){
 								// this means "I request you to make me a directory and then call me when you are done so I can continue to do my own agenda which is to help you, basically I need your help for me to help you"
@@ -4149,12 +4260,25 @@ static int voidstrcmp(const void* str1, const void* str2){
 								fclose(fps);
 								return err;
 							}
-							if(fwrite(bout, sizeof(unsigned char), sout, fps) < sout){
-								if(ferror(fps)){
-									free(fname);
-									free(listy);
-									fclose(fps);
-									return MPARC_FERROR;
+							if(sout >= MPARC_DIRECTF_MINIMUM){
+								if(fwrite(bout, sizeof(unsigned char), sout, fps) < sout){
+									if(ferror(fps)){
+										free(fname);
+										free(listy);
+										fclose(fps);
+										return MPARC_FERROR;
+									}
+								}
+							}
+							else{
+								// char abc = {'a', 'b', 'c', '\0'};
+								for(uint_fast64_t i = 0; i < sout; i++){
+									if(fputc(bout[i], fps) == EOF){
+										free(fname);
+										free(listy);
+										fclose(fps);
+										return MPARC_FERROR;
+									}
 								}
 							}
 							if(fseek(fps, 0, SEEK_SET) != 0){
@@ -4170,14 +4294,30 @@ static int voidstrcmp(const void* str1, const void* str2){
 								fclose(fps);
 								return MPARC_OOM;
 							}
-							if(fread(binary, sizeof(unsigned char), sout, fps) < sout){
+							if(sout >= MPARC_DIRECTF_MINIMUM){
+								if(fread(binary, sizeof(unsigned char), sout, fps) < sout){
+									if(ferror(fps)){
+										free(fname);
+										free(binary);
+										free(listy);
+										fclose(fps);
+										return MPARC_FERROR;
+									}
+								}
+							}
+							else{
+								int c = 0;
+								uint_fast64_t i = 0;
+								while((c = fgetc(fps)) != EOF){
+									binary[i++] = c;
+								}
+
 								if(ferror(fps)){
-									free(fname);
 									free(binary);
-									free(listy);
-									fclose(fps);
 									return MPARC_FERROR;
 								}
+
+								binary[i] = '\0';
 							}
 							{
 								crc_t crc = crc_init();
@@ -4188,6 +4328,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 									free(binary);
 									free(listy);
 									fclose(fps);
+									errno = EILSEQ;
 									return MPARC_CHKSUM;
 								}
 							}
@@ -4293,9 +4434,25 @@ static int voidstrcmp(const void* str1, const void* str2){
 				return MPARC_OOM;
 			}
 
-			if(fread(binary, sizeof(unsigned char), filesize, fpstream) < filesize && ferror(fpstream)){
-				free(binary);
-				return MPARC_FERROR;
+			if(filesize >= MPARC_DIRECTF_MINIMUM){
+				if(fread(binary, sizeof(unsigned char), filesize, fpstream) < filesize && ferror(fpstream)){
+					free(binary);
+					return MPARC_FERROR;
+				}
+			}
+			else{
+				int c = 0;
+				uint_fast64_t i = 0;
+				while((c = fgetc(fpstream)) != EOF){
+					binary[i++] = c;
+				}
+
+				if(ferror(fpstream)){
+					free(binary);
+					return MPARC_FERROR;
+				}
+
+				binary[i] = '\0';
 			}
 
 			return MPARC_parse_str(structure, binary);
