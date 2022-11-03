@@ -529,6 +529,9 @@ extern "C"{
 
 /* not defines */
 
+
+#ifndef MXPSQL_MPARC_NO_B64
+
 /*
  * B64 Section and Copyright notice
  *
@@ -648,6 +651,11 @@ static const struct {
 
 /* END OF B64 SECTION */
 
+#endif
+
+
+#ifndef MXPSQL_MPARC_NO_PYCRC32
+
 /* crc.h and crc.c by pycrc section */
 
 /**
@@ -738,6 +746,11 @@ static inline crc_t crc_finalize(crc_t crc)
 }
 
 /* end of CRC32 section */
+
+#endif
+
+
+#ifndef MXPSQL_MPARC_NO_CCAN_JSON
 
 /* jsmn.h and json.c section and copyright notice */
 
@@ -2231,6 +2244,11 @@ static bool json_check(const JsonNode *node, char errmsg[256])
 	#undef problem
 }
 
+#endif
+
+
+#ifndef MXPSQL_MPARC_NO_JSMN
+
 /* jsmn.h part from https://github.com/zserge/jsmn */
 
 /*
@@ -2686,7 +2704,12 @@ JSMN_STATIC void jsmn_init(jsmn_parser *parser) {
 	parser->toksuper = -1;
 }
 
+#endif
+
 /* END OF jsmn.h and json.h section */
+
+
+#ifndef MXPSQL_MPARC_NO_RXI_MAP
 
 /* map.h by RXI section and copyright notice 
  * 
@@ -2958,6 +2981,8 @@ static const char *map_next_(map_base_t *m, map_iter_t *iter) {
 	}
 	return (char*) (iter->node + 1);
 }
+
+#endif
 
 /* end of map.h section */
 
@@ -3526,10 +3551,14 @@ static int isLittleEndian(){
 		}
 		
 		static MXPSQL_MPARC_err MPARC_i_sort(char** sortedstr){
+            if(sortedstr == NULL) return MPARC_IVAL;
+
 			uint_fast64_t counter = 0;
 			{
 				uint_fast64_t i = 0;
-				for(i = 0; sortedstr[i] != NULL; i++);
+				for(i = 0; 
+                    sortedstr[i] != NULL
+                    ; i++);
 				counter = i;
 			}
 			{

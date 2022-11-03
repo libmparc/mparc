@@ -1,9 +1,9 @@
 CFLAGS:=-fpic -pipe -fdiagnostics-color -g -Og -std=c99 -pedantic -Wall -Wextra -Werror
-# CLIBS:=-ldmallocth
-CLIBS:=
+CLIBS:=-ldmallocth
+# CLIBS:=
 
-# DMALLOC_PATH:="/usr/lib/libdmallocth.a"
-DMALLOC_PATH:=
+DMALLOC_PATH:="/mingw64/lib/libdmallocth.a"
+# DMALLOC_PATH:=
 
 MAINcFILE=main.c
 MAINcppFILE=cxmain.cpp

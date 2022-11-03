@@ -372,7 +372,7 @@ int main(int argc, char** argv){
         goto exit_handler;
     }
     else{
-        printf("%s", "Wrong options [l, c, a, x, d, e]");
+        printf("%s\n", "Wrong options [l, c, a, x, d, e]");
         exit_c = EXIT_FAILURE;
         goto exit_handler;
     }
