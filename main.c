@@ -232,7 +232,7 @@ int main(int argc, char** argv){
         for(int i = pos; i < argc; i++){
             printf("d> %s\n", argv[i]);
             err = MPARC_pop_file(archive, argv[i]);
-            if(err == MPARC_NOEXIST){
+            if(err == MPARC_KNOEXIST){
                 fprintf(stderr, "The file (%s) does not exist and you still try to pop it off the archive???\n", argv[i]);
                 exit_c = EXIT_FAILURE;
                 goto exit_handler;
@@ -272,7 +272,7 @@ int main(int argc, char** argv){
             fprintf(stderr, "File (%s) exists\n", argv[pos]);
             exit_c = EXIT_FAILURE;
         }
-        else if(err == MPARC_NOEXIST){
+        else if(err == MPARC_KNOEXIST){
             fprintf(stderr, "File (%s) does not exists\n", argv[pos]);
             exit_c = EXIT_SUCCESS;
         }

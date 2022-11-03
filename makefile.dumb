@@ -1,7 +1,9 @@
 CFLAGS:=-fpic -pipe -fdiagnostics-color -g -Og -std=c99 -pedantic -Wall -Wextra -Werror
-CLIBS:=-ldmallocth
+# CLIBS:=-ldmallocth
+CLIBS:=
 
-DMALLOC_PATH:="/usr/lib/libdmallocth.a"
+# DMALLOC_PATH:="/usr/lib/libdmallocth.a"
+DMALLOC_PATH:=
 
 MAINcFILE=main.c
 MAINcppFILE=cxmain.cpp
@@ -58,7 +60,7 @@ clean:
 
 
 mkar:
-	./mparc.exe ./my.mpar c ./*.c ./*.h ./*.hpp ./Makefile.dumb ./configure.ac ./Makefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
+	./mparc.exe ./my.mpar c ./*.c ./*.h ./Makefile.dumb ./configure.ac ./Makefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
 	./mparc.exe ./mini.mpar c ./misc/lsarah.txt ./misc/logobase.txt
 
 
