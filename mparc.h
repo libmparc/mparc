@@ -4798,26 +4798,45 @@ static int isLittleEndian(){
 			MXPSQL_MPARC_err err = MPARC_OK;
 			{
 				char* s3 = const_strdup(stringy);
-				if(s3 == NULL) return MPARC_OOM;
+				if(s3 == NULL) {
+                    err = MPARC_OOM;
+                    goto endy;
+                }
 				err = MPARC_i_parse_header(structure, s3);
 				free(s3);
-				if(err != MPARC_OK) return err;
+				if(err != MPARC_OK) {
+                    goto endy;
+                }
 			}
 			{
 				char* s3 = const_strdup(stringy);
-				if(s3 == NULL) return MPARC_OOM;
+				if(s3 == NULL) {
+                    err = MPARC_OOM;
+                    goto endy;
+                }
 				err = MPARC_i_parse_entries(structure, s3, erronduplicate);
 				free(s3);
-				if(err != MPARC_OK) return err;
+				if(err != MPARC_OK) {
+                    goto endy;
+                }
 			}
 			{
 				char* s3 = const_strdup(stringy);
-				if(s3 == NULL) return MPARC_OOM;
+				if(s3 == NULL) {
+                    err = MPARC_OOM;
+                    goto endy;
+                }
 				err = MPARC_i_parse_ender(structure, s3);
 				free(s3);
-				if(err != MPARC_OK) return err;
+				if(err != MPARC_OK) {
+                    goto endy;
+                }
 			}
-			return MPARC_OK;
+
+            goto endy; // redundant
+
+            endy:
+			return err;
 		}
 
 		MXPSQL_MPARC_err MPARC_parse_str(MXPSQL_MPARC_t* structure, char* stringy){
