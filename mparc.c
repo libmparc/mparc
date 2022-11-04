@@ -3302,7 +3302,7 @@ static int isLittleEndian(){
 							{
 								static char* fmt = "%"PRIuFAST32"%c%s";
 
-								int sp = snprintf(NULL, 0, fmt, crc, structure->entry_elem2_sep_marker_or_magic_sep_marker, stringy);
+								int sp = snprintf(NULL, 0, fmt, crc, structure->entry_elem2_sep_marker_or_magic_sep_marker, stringy)+10; // silly hack workaround, somehow snprintf is kind of broken in this part
 								crcStringy = calloc((sp+1),sizeof(char));
 								if(crcStringy == NULL){
 									if(eout) *eout = MPARC_OOM;
@@ -3330,7 +3330,7 @@ static int isLittleEndian(){
 				{
 						uint_fast64_t iacrurate_snprintf_len = 1;
 						for(uint_fast64_t i = 0; i < jsonentries; i++){
-								iacrurate_snprintf_len += strlen(jsonry[i])+1;
+								iacrurate_snprintf_len += strlen(jsonry[i])+10;
 						}
 
 						char* str = calloc(iacrurate_snprintf_len+1, sizeof(char));
@@ -3338,6 +3338,7 @@ static int isLittleEndian(){
 							if(eout) *eout = MPARC_OOM;
 							goto errhandler;
 						}
+						memset(str, '\0', iacrurate_snprintf_len+1);
 						for(uint_fast64_t i2 = 0; i2 < jsonentries; i2++){
 								char* outstr = calloc(iacrurate_snprintf_len+1, sizeof(char));
 								if(outstr == NULL){
@@ -3422,7 +3423,10 @@ static int isLittleEndian(){
 		static MXPSQL_MPARC_err MPARC_i_parse_header(MXPSQL_MPARC_t* structure, char* Stringy){
 			STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION version = structure->writerVersion;
 
-			{
+			// not bad implementation
+			// this is not broken
+			// but not compliant with the note I written
+			/* {
 				char sep[2] = {structure->begin_entry_marker, '\0'};
 				char* saveptr;
 				char* btok = MPARC_strtok_r(Stringy, sep, &saveptr);
@@ -3470,6 +3474,54 @@ static int isLittleEndian(){
 						}
 						{
 							((void)jstok);
+						}
+					}
+				}
+			} */
+
+			// construction note tip compliant method
+			// also cleaner
+			{
+				char magic_sep[] = {structure->magic_byte_sep, '\0'};
+				char* magic_saveptr;
+				char* magic_tok = MPARC_strtok_r(Stringy, magic_sep, &magic_saveptr);
+				if(magic_tok == NULL || strcmp(magic_saveptr, "") == 0){
+					return MPARC_NOTARCHIVE;
+				}
+
+				{
+					char pre_entry_begin_sep[2] = {structure->begin_entry_marker, '\0'};
+					char* pre_entry_begin_saveptr;
+					char* peb_tok = MPARC_strtok_r(magic_saveptr, pre_entry_begin_sep, &pre_entry_begin_saveptr); // peb means pre entry begin
+					if(peb_tok == NULL || strcmp(peb_tok, "") == 0){
+						return MPARC_NOTARCHIVE;
+					}
+
+
+					{
+						char meta_sep_sep[2] = {structure->meta_sep, '\0'};
+						char* meta_sep_sep_saveptr;
+						char* mss_tok = MPARC_strtok_r(peb_tok, meta_sep_sep, &meta_sep_sep_saveptr); // mss means meta sep sep
+						if(mss_tok == NULL || strcmp(mss_tok, "") == 0 || strcmp(meta_sep_sep_saveptr, "") == 0){
+							return MPARC_NOTARCHIVE;
+						}
+
+						{
+							STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION lversion = 0;
+
+							{
+								int status = 0;
+								lversion = MPARC_i_parse_version(mss_tok, &status);
+								if(status != 1){
+									return MPARC_NOTARCHIVE;
+								}
+
+								if(lversion > version){
+									return MPARC_ARCHIVETOOSHINY;
+								}
+
+								structure->loadedVersion = lversion;
+							}
 						}
 					}
 				}
@@ -4084,12 +4136,12 @@ static int isLittleEndian(){
 		 * SEE THIS TO SEE THE FILE FORMAT OF THE ARCHIVE
 		 * THIS PART IS IMPORTANT TO SEE HOW IT IS IMPLEMENTED AND THE FORMAT
 		 * 
-		 * How is the file constructed:
+		 * How is the file constructed (along with little parsing information):
 		 * 
 		 * 1. Build the header:
 		 * Format: MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE]
 		 * 
-		 * The ';' character separates the Magic numbers (very long with 25 character I think) from the version number
+		 * The ';' character separates the Magic numbers (very long with 25 character I think) from the version number and json metadata
 		 * 
 		 * The '$' character separates the version and magic numbers from the metadata
 		 * 
@@ -4099,7 +4151,10 @@ static int isLittleEndian(){
 		 * JSON_WHATEV_METADATA can be implementation defined
 		 * This C implementation will ignore any extra metadata
 		 * 
-		 * You should separate the '$' before separating with ';' and '>'
+		 * Parsing tips:
+		 * Split ';' from the whole archive to get the magic number first
+		 * Then split '>' from to get the special info header
+		 * The split '$' from the special info header to get the version and extra metadata
 		 * 
 		 * 
 		 * 2. Build the entries
@@ -4116,6 +4171,11 @@ static int isLittleEndian(){
 		 * 
 		 * Repeat this as required (how many entries are there you repeat)
 		 * 
+		 * Construction note:
+		 * The anomaly mention aboved is because the newline is added before the main content
+		 * 
+		 * Parsing note:
+		 * Make sure to split all the entries first (split by newline, '>' )
 		 * 
 		 * 
 		 * 

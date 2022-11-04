@@ -147,7 +147,7 @@ int main(int argc, char** argv){
             goto exit_handler;
         }
 
-        
+        printf("Queued %d files to append to archive\n", argc-pos);
         for(int i = pos; i < argc; i++){
             printf("a> %s\n", argv[i]);
             err = MPARC_push_filename(archive, argv[i]);
@@ -229,7 +229,7 @@ int main(int argc, char** argv){
             goto exit_handler;
         }
 
-        
+        printf("Queued %d files for removal from archive\n", argc-pos);
         for(int i = pos; i < argc; i++){
             printf("d> %s\n", argv[i]);
             err = MPARC_pop_file(archive, argv[i]);
@@ -267,19 +267,22 @@ int main(int argc, char** argv){
             goto exit_handler;
         }
 
-        err = MPARC_exists(archive, argv[pos]);
+        printf("Queued %d files to check\n", argc-pos);
+        for(int i = pos; i < argc; i++){
+            err = MPARC_exists(archive, argv[i]);
 
-        if(err == MPARC_OK) {
-            fprintf(stderr, "File (%s) exists\n", argv[pos]);
-            exit_c = EXIT_FAILURE;
-        }
-        else if(err == MPARC_KNOEXIST){
-            fprintf(stderr, "File (%s) does not exists\n", argv[pos]);
-            exit_c = EXIT_SUCCESS;
-        }
-        else{
-            fprintf(stderr, "Internal state error while checking for File (%s)\n", argv[pos]);
-            exit_c = EXIT_FAILURE;
+            if(err == MPARC_OK) {
+                fprintf(stderr, "File (%s) exists\n", argv[i]);
+                exit_c = EXIT_FAILURE;
+            }
+            else if(err == MPARC_KNOEXIST){
+                fprintf(stderr, "File (%s) does not exists\n", argv[i]);
+                exit_c = EXIT_SUCCESS;
+            }
+            else{
+                fprintf(stderr, "Internal state error while checking for File (%s)\n", argv[i]);
+                exit_c = EXIT_FAILURE;
+            }
         }
         goto exit_handler;
     }
