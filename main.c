@@ -96,11 +96,12 @@ int main(int argc, char** argv){
             goto exit_handler;
         }
 
-        
+        printf("Queued %d files for archival.\n", argc-pos);
         for(int i = pos; i < argc; i++){
             printf("c> %s\n", argv[i]);
             err = MPARC_push_filename(archive, argv[i]);
             if(err != MPARC_OK){
+
                 MPARC_perror(err);
                 exit_c = EXIT_FAILURE;
                 goto exit_handler;
