@@ -3543,8 +3543,21 @@ static int isLittleEndian(){
 				if(entry == NULL) return MPARC_NOTARCHIVE;
 				entry = MPARC_strtok_r(NULL, sepsis, &saveptr);
 				if(entry == NULL) return MPARC_NOTARCHIVE;
-				sepsis[0] = structure->end_entry_marker;
-				char* entry2 = MPARC_strtok_r(entry, sepsis, &saveptr);
+				char* entry2 = entry;
+				{ // it works!
+					char* endp = strrchr(entry2, structure->end_entry_marker);
+
+					if(endp == NULL) return MPARC_NOTARCHIVE;
+
+					{
+						char* ende = endp+1;
+						if(*ende != structure->end_file_marker){
+							return MPARC_NOTARCHIVE;
+						}
+					}
+
+					*endp = '\0';	
+				}
 				{
 					char* saveptr2 = NULL;
 					char septic[2] = {structure->entry_sep_or_general_marker, '\0'};
@@ -3735,16 +3748,25 @@ static int isLittleEndian(){
 			return err;
 		}
 
-		static MXPSQL_MPARC_err MPARC_i_parse_ender(MXPSQL_MPARC_t* structure, char* stringy){
-			char sep[2] = {structure->end_entry_marker, '\0'};
-			char* sptr = NULL;
-			char* tok = MPARC_strtok_r(stringy, sep, &sptr);
-			if(tok == NULL){
+		static MXPSQL_MPARC_err MPARC_i_parse_ender(MXPSQL_MPARC_t* structure, char* Stringy){
+
+			char* movend = strrchr(Stringy, '@');
+
+			if(movend == NULL){
 				return MPARC_NOTARCHIVE;
 			}
-			char lastb[2] = {structure->end_file_marker, '\0'};
-			if(strcmp(sptr, lastb) != 0){
-				return MPARC_NOTARCHIVE;
+
+			{
+				if(*movend != structure->end_entry_marker){
+					return MPARC_NOTARCHIVE;
+				}
+			}
+
+			{
+				char* movfend = movend+1;
+				if(*movfend != structure->end_file_marker){
+					return MPARC_NOTARCHIVE;
+				}
 			}
 			return MPARC_OK;
 		}
@@ -4151,6 +4173,9 @@ static int isLittleEndian(){
 		 * JSON_WHATEV_METADATA can be implementation defined
 		 * This C implementation will ignore any extra metadata
 		 * 
+		 * Construction note:
+		 * Make sure to base64 your metadata entries to prevent issues with parsing.
+		 * 
 		 * Parsing tips:
 		 * Split ';' from the whole archive to get the magic number first
 		 * Then split '>' from to get the special info header
@@ -4175,7 +4200,9 @@ static int isLittleEndian(){
 		 * The anomaly mention aboved is because the newline is added before the main content
 		 * 
 		 * Parsing note:
-		 * Make sure to split all the entries first (split by newline, '>' )
+		 * When parsing the entries, split from the begin '>' and end markers '@'.
+		 * Then split each by newlines.
+		 * Then, foreach split '%' to get the crc and json.
 		 * 
 		 * 
 		 * 
@@ -4184,6 +4211,9 @@ static int isLittleEndian(){
 		 * 
 		 * the '@' character is to signify end of entry
 		 * the '~' character is to signify end of file
+		 * 
+		 * Parsing note:
+		 * Make sure to
 		 * 
 		 * 
 		 * Follow this (with placeholder) and you get this:

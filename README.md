@@ -13,7 +13,7 @@ MPAR archive reimplemented in C instead of C++, more advanced than before.
 
 An archive format, but not just that. It's in plain text! Even binary files are in plain text because we use Base64 encoding on them!
 
-You can manipulate and extract these archives with a text editor and a base64 encoder/decoder!
+You can manipulate and extract these archives with a text editor, a crc32 encoder and a base64 encoder/decoder!
 
 Versatile! You can make it into a key value database store somehow. Can store literal bytes of structs (uh oh endian problems)!
 
