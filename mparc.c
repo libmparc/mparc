@@ -3750,7 +3750,7 @@ static int isLittleEndian(){
 
 		static MXPSQL_MPARC_err MPARC_i_parse_ender(MXPSQL_MPARC_t* structure, char* Stringy){
 
-			char* movend = strrchr(Stringy, '@');
+			char* movend = strrchr(Stringy, '@'); // less hacky
 
 			if(movend == NULL){
 				return MPARC_NOTARCHIVE;
