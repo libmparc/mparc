@@ -36,7 +36,7 @@ You only need libc for standard functions, but (the boehm garbage collector/dmal
 
 ### How can I implement this format in my own method?
 
-Go to [the source code](./mparc.c) and find the MPARC_construct_str function body, there is the instruction there for you on how to construct the archive by hand, you can also use the had construction instructions to make your own library.
+Go to [the source code](./mparc.c) and find the MPARC_construct_str function body, there is the instruction there for you on how to construct the archive by hand, you can also use the hand construction instructions to make your own library.
 
 You also know how to parse the file just by looking at the specification on file construction.
 
