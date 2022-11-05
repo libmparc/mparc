@@ -9,7 +9,7 @@ MPAR archive reimplemented in C instead of C++, more advanced than before.
 ## Enough of the boring stuff
 
 
-## Why should I use this library and archive format
+### Why should I use this library and archive format
 
 An archive format, but not just that. It's in plain text! Even binary files are in plain text because we use Base64 encoding on them!
 
@@ -18,7 +18,7 @@ You can manipulate and extract these archives with a text editor, a crc32 encode
 Versatile! You can make it into a key value database store somehow. Can store literal bytes of structs (uh oh endian problems)!
 
 
-## Why shouldn't I use this library and archive format
+### Why shouldn't I use this library and archive format
 
 The code I wrote may not be up to quality control.
 
