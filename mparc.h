@@ -260,6 +260,8 @@ extern "C"{
      * @param ustringc the bytes of string
      * @param sizy the size of ustringc
      * @return MXPSQL_MPARC_err the status code if successfully done
+     * 
+     * @note Filename only works on forward slash if stripdir is set due to basename only supporting that operation.
      */
     MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, uint_fast64_t sizy);
     /**

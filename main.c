@@ -370,13 +370,16 @@ int main(int argc, char** argv){
             exit_c = EXIT_FAILURE;
             goto pre_exit_handler;
         }
+
+        exit_c = EXIT_SUCCESS;
         goto pre_exit_handler;
+        
         pre_exit_handler:
         MPARC_destroy(&cp_archive);
         goto exit_handler;
     }
     else{
-        printf("%s\n", "Wrong options [l, c, a, x, d, e]");
+        printf("%s\n", "Wrong options [l, c, a, x, d, e, p, cp]");
         exit_c = EXIT_FAILURE;
         goto exit_handler;
     }

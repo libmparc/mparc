@@ -2878,9 +2878,9 @@ char* MPARC_dirname (char *path)
   return path;
 }
 
-// bsearch and strcoll
+// bsearch and strcmp
 static int voidstrcmp(const void* str1, const void* str2){
-	return strcoll((const char*) str1, (const char*) str2);
+	return strcmp((const char*) str1, (const char*) str2);
 }
 
 // future, may not be used
@@ -3768,6 +3768,7 @@ static int isLittleEndian(){
 					return MPARC_NOTARCHIVE;
 				}
 			}
+
 			return MPARC_OK;
 		}
 
@@ -4286,6 +4287,7 @@ static int isLittleEndian(){
 					}
 					*output = alloca_out;
 				}
+				
 				if(top) free(top);
 				if(mid) free(mid);
 				if(bottom) free(bottom);
@@ -4542,10 +4544,11 @@ static int isLittleEndian(){
 		}
 
 
-		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, char* stringy, int erronduplicate){
+		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, char* Stringy, int erronduplicate){
 			MXPSQL_MPARC_err err = MPARC_OK;
+
 			{
-				char* s3 = const_strdup(stringy);
+				char* s3 = const_strdup(Stringy);
 				if(s3 == NULL) {
 					err = MPARC_OOM;
 					goto endy;
@@ -4557,7 +4560,7 @@ static int isLittleEndian(){
 				}
 			}
 			{
-				char* s3 = const_strdup(stringy);
+				char* s3 = const_strdup(Stringy);
 				if(s3 == NULL) {
 					err = MPARC_OOM;
 					goto endy;
@@ -4569,7 +4572,7 @@ static int isLittleEndian(){
 				}
 			}
 			{
-				char* s3 = const_strdup(stringy);
+				char* s3 = const_strdup(Stringy);
 				if(s3 == NULL) {
 					err = MPARC_OOM;
 					goto endy;
