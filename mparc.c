@@ -144,7 +144,9 @@ static char *b64Encode(unsigned char *data, uint_fast64_t inlen)
 		uint_fast64_t outlen = ((((inlen) + 2) / 3) * 4);
 
 		char *out = malloc(outlen + 1);
+		CHECK_LEAKS();
 		if (out == NULL) return NULL;
+		memset(out, '\0', outlen);
 		out[outlen] = '\0';
 		char *p = out;
 
@@ -172,6 +174,7 @@ static char *b64Encode(unsigned char *data, uint_fast64_t inlen)
 				}
 				*p++ = '=';
 		}
+
 
 		return out;
 }
@@ -203,7 +206,9 @@ static unsigned char *b64Decode(char *data, uint_fast64_t inlen, uint_fast64_t* 
 		if (data[inlen - 2] == '=') outlen--;
 
 		unsigned char *out = (unsigned char*) malloc(outlen);
+		CHECK_LEAKS();
 		if (out == NULL) return NULL;
+		memset(out, '\0', outlen);
 		*outplen = outlen;
 
 		typedef size_t u32;
@@ -221,6 +226,7 @@ static unsigned char *b64Decode(char *data, uint_fast64_t inlen, uint_fast64_t* 
 				if (j < outlen) out[j++] = (triple >> 1 * 8) & 0xFF;
 				if (j < outlen) out[j++] = (triple >> 0 * 8) & 0xFF;
 		}
+
 
 		return out;
 }
@@ -415,7 +421,8 @@ struct JsonNode
 /* Sadly, strdup is not portable. */
 static char *json_strdup(const char *str)
 {
-	char *ret = (char*) malloc(strlen(str) + 1);
+	char *ret = (char*) malloc((strlen(str) + 1)*sizeof(char));
+	CHECK_LEAKS();
 	if (ret == NULL){
 		out_of_memory();
 		return NULL;
@@ -435,7 +442,8 @@ typedef struct
 
 static void sb_init(SB *sb)
 {
-	sb->start = (char*) malloc(17);
+	sb->start = (char*) malloc(17*sizeof(char));
+	CHECK_LEAKS();
 	if (sb->start == NULL){
 		out_of_memory();
 		return;
@@ -461,6 +469,7 @@ static void sb_grow(SB *sb, int need)
 	} while (alloc < length + need);
 	
 	void* newsb = realloc(sb->start, alloc + 1);
+	CHECK_LEAKS();
 	if (newsb == NULL){
 		out_of_memory();
 		return;
@@ -922,6 +931,7 @@ static JsonNode *json_first_child(const JsonNode *node)
 static JsonNode *mknode(JsonTag tag)
 {
 	JsonNode *ret = (JsonNode*) calloc(1, sizeof(JsonNode));
+	CHECK_LEAKS();
 	if (ret == NULL){
 		out_of_memory();
 		return NULL;
@@ -2408,6 +2418,7 @@ static map_node_t *map_newnode(const char *key, void *value, int vsize) {
 	int ksize = strlen(key) + 1;
 	int voffset = ksize + ((sizeof(void*) - ksize) % sizeof(void*));
 	node = malloc(sizeof(*node) + voffset + vsize);
+	CHECK_LEAKS();
 	if (!node) return NULL;
 	memcpy(node + 1, key, ksize);
 	node->hash = map_hash(key);
@@ -2449,6 +2460,7 @@ static int map_resize(map_base_t *m, int nbuckets) {
 	}
 	/* Reset buckets */
 	buckets = realloc(m->buckets, sizeof(*m->buckets) * nbuckets);
+	CHECK_LEAKS();
 	if (buckets != NULL) {
 		m->buckets = buckets;
 		m->nbuckets = nbuckets;
@@ -2586,10 +2598,12 @@ llist *llist_create(void *new_data)
 		struct node *new_node;
 
 		llist *new_list = (llist *)malloc(sizeof (llist));
+		CHECK_LEAKS();
 		if(new_list == NULL){
 				return NULL;
 		}
 		*new_list = (struct node *)malloc(sizeof (struct node));
+		CHECK_LEAKS();
 		if(new_list == NULL){
 				return NULL;
 		}
@@ -2634,6 +2648,10 @@ int llist_add_inorder(void *data, llist *list,
 		}
 
 		new_node = (struct node *)malloc(sizeof (struct node));
+		CHECK_LEAKS();
+		if(!new_node){
+			return 0;
+		}
 		new_node->data = data;
 
 		// Find spot in linked list to insert new node
@@ -2672,6 +2690,7 @@ int llist_push(llist *list, void *data)
 		// Head is not empty, add new node to front
 		else {
 				new_node = malloc(sizeof (struct node));
+				CHECK_LEAKS();
 				if(new_node == NULL){
 						return 0;
 				}
@@ -2790,20 +2809,30 @@ char * MPARC_strtok_r (char *s, const char *delim, char **save_ptr)
 	return s;
 }
 
-char* const_strdup(const char* src){
+char* _const_strdup(const char* src){
 		char *str;
 		char *p;
 		int len = 0;
 
 		while (src[len])
 				len++;
-		str = malloc(len + 1);
+		str = calloc((len + 1),sizeof(char));
+		CHECK_LEAKS();
+		if(!str) return NULL;
 		p = str;
 		while (*src)
 				*p++ = *src++;
 		*p = '\0';
 		return str;
 }
+
+#ifdef MPARC_MEM_DEBUG
+#define const_strdup(src) _const_strdup(src); printf("csdup %s:%d\n", __FILE__, __LINE__);
+#else
+char* const_strdup(const char* src){
+	return _const_strdup(src);
+}
+#endif
 
 // from glibc from https://github.com/lattera/glibc/blob/master/string/basename.c
 char* MPARC_basename (const char *filename)
@@ -2876,6 +2905,24 @@ char* MPARC_dirname (char *path)
   }
 
   return path;
+}
+
+// original filename stuff
+// full_or_not is 0 if only the last part of the extension is needed, else (1,2,3,etc...) will include every thing
+char* MPARC_get_extension(const char* fnp, int full_or_not){
+	char* fn = MPARC_dirname((char*) fnp);
+	char* epos = NULL;
+	if(full_or_not == 0){
+		epos = strrchr(fn, '.');
+	}
+	else{
+		epos = strchr(fn, '.');
+	}
+
+	if(epos){
+		epos++;
+	}
+	return epos;
 }
 
 // bsearch and strcmp
@@ -3193,6 +3240,7 @@ static int isLittleEndian(){
 						return NULL;
 				}
 				char* alloc = calloc(sps+1, sizeof(char));
+				CHECK_LEAKS();
 				if(alloc == NULL) return NULL;
 				if(snprintf(alloc, sps+1, fmt, structure->magic_byte_sep, structure->writerVersion, structure->meta_sep, s, structure->begin_entry_marker) < 0){
 						if(alloc) free(alloc);
@@ -3216,6 +3264,7 @@ static int isLittleEndian(){
 				}
 
 				jsonry = calloc(jsonentries+1, sizeof(char*));
+				CHECK_LEAKS();
 				jsonry[jsonentries]=NULL;
 
 				const char* nkey;
@@ -3273,6 +3322,7 @@ static int isLittleEndian(){
 							}
 							// +5 is hacky
 							globsum = calloc(size+5, sizeof(char));
+							CHECK_LEAKS();
 							if(globsum == NULL){
 								if(eout) *eout = MPARC_OOM;
 								MPARC_list_iterator_destroy(&itery);
@@ -3312,6 +3362,7 @@ static int isLittleEndian(){
 
 								int sp = snprintf(NULL, 0, fmt, crc, structure->entry_elem2_sep_marker_or_magic_sep_marker, stringy)+10; // silly hack workaround, somehow snprintf is kind of broken in this part
 								crcStringy = calloc((sp+1),sizeof(char));
+								CHECK_LEAKS();
 								if(crcStringy == NULL){
 									if(eout) *eout = MPARC_OOM;
 									MPARC_list_iterator_destroy(&itery);
@@ -3342,6 +3393,7 @@ static int isLittleEndian(){
 						}
 
 						char* str = calloc(iacrurate_snprintf_len+1, sizeof(char));
+						CHECK_LEAKS();
 						if(str == NULL) {
 							if(eout) *eout = MPARC_OOM;
 							goto errhandler;
@@ -3349,6 +3401,7 @@ static int isLittleEndian(){
 						memset(str, '\0', iacrurate_snprintf_len+1);
 						for(uint_fast64_t i2 = 0; i2 < jsonentries; i2++){
 								char* outstr = calloc(iacrurate_snprintf_len+1, sizeof(char));
+								CHECK_LEAKS();
 								if(outstr == NULL){
 									if(eout) *eout = MPARC_OOM;
 									if(str) free(str);
@@ -3395,6 +3448,7 @@ static int isLittleEndian(){
 						return NULL;
 				}
 				charachorder = calloc(charachorder_len+1, sizeof(char));
+				CHECK_LEAKS();
 				if(charachorder == NULL){
 						return NULL;
 				}
@@ -3612,11 +3666,16 @@ static int isLittleEndian(){
 					}
 					entries = calloc(ecount+1, sizeof(char*));
 					json_entries = calloc(ecount+1, sizeof(char*));
-					json_entries[ecount] = NULL;
+					CHECK_LEAKS();
+					if(json_entries == NULL){
+						err = MPARC_OOM;
+						goto errhandler;
+					}
 					if(entries == NULL){
 						err = MPARC_OOM;
 						goto errhandler;
 					}
+					json_entries[ecount] = NULL;
 					char* entry64 = MPARC_strtok_r(entry2, septic, &saveptr2);
 					for(uint_fast64_t i = 0; entry64 != NULL; i++){
 						entries[i] = const_strdup(entry64);
@@ -3684,6 +3743,7 @@ static int isLittleEndian(){
 							char* start = &jse[jtoken.start];
 							char* end = &jse[jtoken.end];
 							char *substr = (char *)calloc(end - start + 1, sizeof(char));
+							CHECK_LEAKS();
 							if(substr == NULL){
 								err = MPARC_OOM;
 								goto errhandler;
@@ -3794,6 +3854,7 @@ static int isLittleEndian(){
 				if(!(structure == NULL || *structure == NULL)) return MPARC_IVAL;
 
 				void* memalloc = calloc(1, sizeof(MXPSQL_MPARC_t));
+				CHECK_LEAKS();
 				if(memalloc == NULL) return MPARC_OOM;
 
 				MXPSQL_MPARC_t* istructure = (MXPSQL_MPARC_t*) memalloc;
@@ -3907,6 +3968,7 @@ static int isLittleEndian(){
 						uint_fast64_t index = 0;
 						const char* key2;
 						listout_structure = calloc(lentracker+1, sizeof(char*));
+						CHECK_LEAKS();
 						if(!listout_structure) return MPARC_OOM;
 
 						/* map_iter_t iter2 = map_iter(&structure->globby);
@@ -3981,6 +4043,7 @@ static int isLittleEndian(){
 			if(!(structure == NULL || *structure == NULL || iterator == NULL || *iterator == NULL)) return MPARC_IVAL;
 
 			void* memalloc = calloc(1, sizeof(MXPSQL_MPARC_iter_t));
+			CHECK_LEAKS();
 			if(memalloc == NULL) return MPARC_OOM;
 
 			MXPSQL_MPARC_iter_t* iter = (MXPSQL_MPARC_iter_t*) memalloc;
@@ -4060,11 +4123,21 @@ static int isLittleEndian(){
 			}
 
 			{
+				bool extmode_final = true;
+
 				if(strcmp(command, "size_bigger") == 0){
 					goto q_size_big;
-				}
-				else if(strcmp(command, "size_smaller") == 0){
+				}else if(strcmp(command, "size_equal") == 0){
+					goto q_size_equal;
+				}else if(strcmp(command, "size_smaller") == 0){
 					goto q_size_small;
+				}
+				else if(strcmp(command, "extension") == 0){
+					extmode_final = true;
+					goto q_extension_twomode;
+				}else if(strcmp(command, "rextension") == 0){
+					extmode_final = false;
+					goto q_extension_twomode;
 				}
 				else{
 					err = MPARC_KNOEXIST;
@@ -4088,7 +4161,9 @@ static int isLittleEndian(){
 						}
 					}
 
-					if(!(smacklist = calloc(hits, sizeof(char*)))){
+					smacklist = calloc(hits+1, sizeof(char*));
+					CHECK_LEAKS();
+					if(!smacklist){
 						err = MPARC_OOM;
 						goto exit_handler;
 					}
@@ -4109,6 +4184,46 @@ static int isLittleEndian(){
 					goto exit_handler;
 				}
 
+				q_size_equal:
+				{
+					uint_fast64_t user_size = va_arg(vlist, uint_fast64_t);
+
+					uint_fast64_t hits = 0;
+
+					for(uint_fast64_t i = 0; i < flist_len; i++){
+						uint_fast64_t file_size = 0;
+						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
+							goto exit_handler;
+						}
+
+						if(user_size == file_size){
+							hits++;
+						}
+					}
+
+					smacklist = calloc(hits+1, sizeof(char*));
+					CHECK_LEAKS();
+					if(smacklist){
+						err = MPARC_OOM;
+						goto exit_handler;
+					}
+
+					for(uint_fast64_t i = 0; i < flist_len; i++){
+						uint_fast64_t file_size = 0;
+						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
+							goto exit_handler;
+						}
+
+						if(user_size == file_size){
+							smacklist[i] = const_strdup(flist[i]);
+						}
+					}
+
+					smacklist[hits] = NULL;
+
+					goto exit_handler;	
+				}
+
 				q_size_small:
 				{
 					uint_fast64_t user_size = va_arg(vlist, uint_fast64_t);
@@ -4121,12 +4236,14 @@ static int isLittleEndian(){
 							goto exit_handler;
 						}
 
-						if(user_size > file_size){
+						if(user_size < file_size){
 							hits++;
 						}
 					}
 
-					if(!(smacklist = calloc(hits, sizeof(char*)))){
+					smacklist = calloc(hits+1, sizeof(char*));
+					CHECK_LEAKS();
+					if(smacklist){
 						err = MPARC_OOM;
 						goto exit_handler;
 					}
@@ -4137,8 +4254,45 @@ static int isLittleEndian(){
 							goto exit_handler;
 						}
 
-						if(user_size > file_size){
+						if(user_size < file_size){
 							smacklist[i] = const_strdup(flist[i]);
+						}
+					}
+
+					smacklist[hits] = NULL;
+
+					goto exit_handler;
+				}
+
+
+				q_extension_twomode:
+				{
+					char* extension = va_arg(vlist, char*);
+
+					uint_fast64_t hits = 0;
+
+					for(uint_fast64_t i = 0; i < flist_len; i++){
+						char* ext = MPARC_get_extension(flist[i], (int)extmode_final);
+						if(ext != NULL){
+							if(strcmp(ext, extension) == 0){
+								hits++;
+							}
+						}
+					}
+
+					smacklist = calloc(hits+1, sizeof(char*));
+					CHECK_LEAKS();
+					if(smacklist){
+						err = MPARC_OOM;
+						goto exit_handler;
+					}
+
+					for(uint_fast64_t i = 0; i < flist_len; i++){
+						char* ext = MPARC_get_extension(flist[i], (int)extmode_final);
+						if(ext != NULL){
+							if(strcmp(ext, extension) == 0){
+								smacklist[i] = const_strdup(flist[i]);
+							}
 						}
 					}
 
@@ -4238,6 +4392,10 @@ static int isLittleEndian(){
 				}
 
 				binary = calloc(filesize+1, sizeof(unsigned char));
+				CHECK_LEAKS();
+				if(!binary){
+					return MPARC_OOM;
+				}
 
 				if(filesize >= MPARC_DIRECTF_MINIMUM){
 					if(fread(binary, sizeof(unsigned char), filesize, filestream) < filesize && ferror(filestream)){
@@ -4409,6 +4567,7 @@ static int isLittleEndian(){
 						return MPARC_CONSTRUCT_FAIL;
 					}
 					char* alloca_out = calloc(sizy+1, sizeof(char));
+					CHECK_LEAKS();
 					if(alloca_out == NULL){
 						if(top) free(top);
 						if(mid) free(mid);
@@ -4504,6 +4663,7 @@ static int isLittleEndian(){
 							fname = const_strdup(nkey);
 							uint_fast64_t pathl = strlen(fname)+strlen(nkey)+1;
 							void* nfname = realloc(fname, pathl+1);
+							CHECK_LEAKS();
 							if(nfname == NULL){
 								if(fname) free(fname);
 								if(listy) free(listy);
@@ -4589,7 +4749,8 @@ static int isLittleEndian(){
 								fclose(fps);
 								return MPARC_FERROR;
 							}
-							unsigned char* binary = calloc(sout+1, sizeof(char));
+							unsigned char* binary = calloc(sout+1, sizeof(unsigned char));
+							CHECK_LEAKS();
 							if(binary == NULL){
 								if(fname) free(fname);
 								if(listy) free(listy);
@@ -4755,7 +4916,8 @@ static int isLittleEndian(){
 					return MPARC_FERROR;
 			}
 
-			char* binary = calloc(filesize+1, sizeof(unsigned char));
+			char* binary = calloc(filesize+1, sizeof(char)); // binary because files are binary, but not unsigned because it is ascii
+			CHECK_LEAKS();
 			if(binary == NULL){
 				return MPARC_OOM;
 			}

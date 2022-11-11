@@ -268,12 +268,12 @@ extern "C"{
      * size_bigger - List all files that is bigger than the specified size - [number, preferably uint_fast64_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
      * size_equal - List all files that is equal to the specified size - [number, preferably uint_fast64_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
      * size_smaller - List all files that is small than the specified size - [number, preferably uint_fast64_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
-     * extension - Get the file extension based from the first dot - [a string of the file extension]
-     * rextension - Get the file extension based from the last dot - [a string of the file extension]
+     * extension - Get the file extension based from the first dot - [a string of the file extension, do not include the first dot in the parameter]
+     * rextension - Get the file extension based from the last dot - [a string of the file extension, do not include the first dot in the parameter]
      * 
      * The output parameter is always terminated with NULL. It itself and its content is also dynamically allocated, so you must deallocate it manually using 'free', not 'delete[]'.
      * 
-     * Passing the wrong vaargs will lead to undefined behavior, I cannot defend you from against that unless you cooperate with me.
+     * Passing the wrong vaargs will lead to undefined behavior, I cannot defend you from against that unless you cooperate with me. C Standard Library says so to do undefined behaviour in vaargs implementation.
      */
     MXPSQL_MPARC_err MPARC_query(MXPSQL_MPARC_t* structure, char*** output, char* command, ...);
     /**
