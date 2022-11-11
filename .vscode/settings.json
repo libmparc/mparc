@@ -9,6 +9,7 @@
         "__locale": "cpp",
         "__string": "cpp",
         "string": "cpp",
-        "stat.h": "c"
+        "stat.h": "c",
+        "stdio.h": "c"
     }
 }

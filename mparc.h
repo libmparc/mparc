@@ -60,10 +60,12 @@
 
 #if defined(__cplusplus) || defined(c_plusplus)
 #include <cstdio>
+#include <cstdarg>
 #include <cinttypes>
 extern "C"{
 #else
 #include <stdio.h>
+#include <stdarg.h>
 #include <inttypes.h>
 #endif
 
@@ -249,6 +251,45 @@ extern "C"{
      * @return MXPSQL_MPARC_err the status code if successfully done or errors out
      */
     MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, char* filename);
+    /**
+     * @brief Query the structre for files that match a specific criteria
+     * 
+     * @param structure the target structure
+     * @param output The files that match a specific criteria.
+     * @param command The criteria to look for
+     * @param ... Vaargs that depend on the command arg
+     * @return MXPSQL_MPARC_err Success or a failure (MPARC_SUCCESS if yes, MPARC_KNOEXIST if the command is invalid, MPARC_IVAL if a problem occured)
+     * 
+     * @details
+     * 
+     * There are multiple commands available in this query function.
+     * This list is formated as the following: [command] - [description] - [required vaargs]
+     * Available commands (case sensitive):
+     * size_bigger - List all files that is bigger than the specified size - [number, preferably uint_fast64_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
+     * size_equal - List all files that is equal to the specified size - [number, preferably uint_fast64_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
+     * size_smaller - List all files that is small than the specified size - [number, preferably uint_fast64_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
+     * extension - Get the file extension based from the first dot - [a string of the file extension]
+     * rextension - Get the file extension based from the last dot - [a string of the file extension]
+     * 
+     * The output parameter is always terminated with NULL. It itself and its content is also dynamically allocated, so you must deallocate it manually using 'free', not 'delete[]'.
+     * 
+     * Passing the wrong vaargs will lead to undefined behavior, I cannot defend you from against that unless you cooperate with me.
+     */
+    MXPSQL_MPARC_err MPARC_query(MXPSQL_MPARC_t* structure, char*** output, char* command, ...);
+    /**
+     * @brief A version of MPARC_query that accepts a va_list instead
+     * 
+     * @param structure the target structure
+     * @param output The files that match a specific criteria
+     * @param command The criteria to look for
+     * @param vlist A list that is suppoused to be a vaargs that depend on the command arg
+     * @return MXPSQL_MPARC_err Success or a failure (MPARC_SUCCESS if yes, MPARC_KNOEXIST if the command is invalid, MPARC_IVAL if a problem occured)
+     * 
+     * @see MPARC_query
+     * 
+     * @note You are responsible for starting and ending vlist. Also look at MPARC_query for more bad things that could happen.
+     */
+    MXPSQL_MPARC_err MPARC_query_vlist(MXPSQL_MPARC_t* structure, char*** output, char* command, va_list vlist);
     
     /**
      * @brief Push an unsigned string as a file
