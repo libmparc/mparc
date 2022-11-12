@@ -1,3 +1,6 @@
+#ifndef _MXPSQL_MPARC_C
+#define _MXPSQL_MPARC_C
+
 /**
   * @file mparc.c
   * @author MXPSQL
@@ -49,9 +52,6 @@
   * License along with this library; if not, write to the Free Software
   * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
-#ifndef _MXPSQL_MPARC_C
-#define _MXPSQL_MPARC_C
 
 #include "mparc.h"
 
@@ -3799,11 +3799,19 @@ static int isLittleEndian(){
 				
 				{
 					uint_fast64_t bsize = 1;
-					unsigned char* un64_blob = b64.atob(blob, strlen(blob), &bsize);
+					unsigned char* un64_blob = NULL;
+					if(strlen(blob) > 1){
+						un64_blob = b64.atob(blob, strlen(blob), &bsize);
+					}
+					else{
+						un64_blob = (unsigned char*) const_strdup("");
+					}
+
 					if(un64_blob == NULL){
 						err = MPARC_OOM;
 						goto errhandler;
 					}
+
 					{
 						MPARC_blob_store store = {
 							bsize,
@@ -4661,6 +4669,10 @@ static int isLittleEndian(){
 					{
 						{
 							fname = const_strdup(nkey);
+							if(!fname){
+								if(listy) free(listy);
+								return MPARC_OOM;
+							}
 							uint_fast64_t pathl = strlen(fname)+strlen(nkey)+1;
 							void* nfname = realloc(fname, pathl+1);
 							CHECK_LEAKS();

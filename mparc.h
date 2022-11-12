@@ -1,10 +1,11 @@
+#pragma once
 #ifndef _MXPSQL_MPARC_H
 #define _MXPSQL_MPARC_H
 
 /**
   * @file mparc.h
   * @author MXPSQL
-  * @brief MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header With Implementation. Never reeterant, thread and async safe.
+  * @brief MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header With Implementation. Never reeterant, thread and async safe, probably.
   * @version 0.1
   * @date 2022-09-26
   * 
