@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <string.h>
 
 #include "mparc.h"
 
@@ -110,6 +111,14 @@ int main(int argc, char* argv[]){
     	    abort();
 		}
 	}
+    {
+        char* str = "strtok stinks, use strtok_r instead! Rip it from the Glibc Source!";
+        if((err = MPARC_push_filestr(archive, "strtok.txt", str, strlen(str)))){
+            MPARC_perror(err);
+            printf("File push failed\n");
+            abort();
+        }
+    }
     /* {
         char** listprintf( NULL;
         size_t length = 0;

@@ -70,6 +70,11 @@
 
 #ifdef MPARC_DEBUG
 #define MPARC_MEM_DEBUG 1
+
+// verbosity
+#ifdef MPARC_DEBUG_VERBOSE
+#define MPARC_MEM_DEBUG_VERBOSEPRINTF 1
+#endif
 #endif
 
 #ifdef MPARC_MEM_DEBUG
@@ -129,7 +134,10 @@
  * https://github.com/skullchap/b64
 */
 
-static char *b64Encode(unsigned char *data, uint_fast64_t inlen)
+// used to work, but somehow is broken now :P
+// the encoding is the broken part
+
+/* static char *b64Encode(unsigned char *data, uint_fast64_t inlen)
 {
 		static const char b64e[] = {
 				'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
@@ -179,6 +187,8 @@ static char *b64Encode(unsigned char *data, uint_fast64_t inlen)
 		return out;
 }
 
+
+// now decoder has problems I see.
 static unsigned char *b64Decode(char *data, uint_fast64_t inlen, uint_fast64_t* outplen)
 {
 		static const char b64d[] = {
@@ -229,14 +239,161 @@ static unsigned char *b64Decode(char *data, uint_fast64_t inlen, uint_fast64_t* 
 
 
 		return out;
+} */
+
+
+// Thanks MIT! (https://web.mit.edu/freebsd/head/contrib/wpa/src/utils/base64.c)
+// Here is the header:
+/*
+ * Base64 encoding/decoding (RFC1341)
+ * Copyright (c) 2005-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+// statics:
+static const unsigned char base64_table[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+// Documentation:
+/**
+ * base64_encode - Base64 encode
+ * @src: Data to be encoded
+ * @len: Length of the data to be encoded
+ * @out_len: Pointer to output length variable, or %NULL if not used
+ * Returns: Allocated buffer of out_len bytes of encoded data,
+ * or %NULL on failure
+ *
+ * Caller is responsible for freeing the returned buffer. Returned buffer is
+ * nul terminated to make it easier to use as a C string. The nul terminator is
+ * not included in out_len.
+ */
+static unsigned char * base64_encode(const unsigned char *src, uint_fast64_t len, uint_fast64_t *out_len)
+{
+	unsigned char *out, *pos;
+	const unsigned char *end, *in;
+	uint_fast64_t olen;
+	int line_len;
+
+	olen = len * 4 / 3 + 4; /* 3-byte blocks to 4-byte */
+	olen += olen / 72; /* line feeds */
+	olen++; /* nul termination */
+	if (olen < len)
+		return NULL; /* integer overflow */
+	out = calloc(olen, sizeof(char));
+	if (out == NULL)
+		return NULL;
+
+	end = src + len;
+	in = src;
+	pos = out;
+	line_len = 0;
+	while (end - in >= 3) {
+		*pos++ = base64_table[in[0] >> 2];
+		*pos++ = base64_table[((in[0] & 0x03) << 4) | (in[1] >> 4)];
+		*pos++ = base64_table[((in[1] & 0x0f) << 2) | (in[2] >> 6)];
+		*pos++ = base64_table[in[2] & 0x3f];
+		in += 3;
+		line_len += 4;
+		if (line_len >= 72) {
+			*pos++ = '\n';
+			line_len = 0;
+		}
+	}
+
+	if (end - in) {
+		*pos++ = base64_table[in[0] >> 2];
+		if (end - in == 1) {
+			*pos++ = base64_table[(in[0] & 0x03) << 4];
+			*pos++ = '=';
+		} else {
+			*pos++ = base64_table[((in[0] & 0x03) << 4) |
+					      (in[1] >> 4)];
+			*pos++ = base64_table[(in[1] & 0x0f) << 2];
+		}
+		*pos++ = '=';
+		line_len += 4;
+	}
+
+	if (line_len)
+		*pos++ = '\n';
+
+	*pos = '\0';
+	if (out_len)
+		*out_len = pos - out;
+	return out;
+}
+/**
+ * base64_decode - Base64 decode
+ * @src: Data to be decoded
+ * @len: Length of the data to be decoded
+ * @out_len: Pointer to output length variable
+ * Returns: Allocated buffer of out_len bytes of decoded data,
+ * or %NULL on failure
+ *
+ * Caller is responsible for freeing the returned buffer.
+ */
+unsigned char * base64_decode(const unsigned char *src, uint_fast64_t len, uint_fast64_t *out_len)
+{
+	unsigned char dtable[256], *out, *pos, block[4], tmp;
+	size_t i, count, olen;
+	int pad = 0;
+
+	memset(dtable, 0x80, 256);
+	for (i = 0; i < sizeof(base64_table) - 1; i++)
+		dtable[base64_table[i]] = (unsigned char) i;
+	dtable['='] = 0;
+
+	count = 0;
+	for (i = 0; i < len; i++) {
+		if (dtable[src[i]] != 0x80)
+			count++;
+	}
+
+	if (count == 0 || count % 4)
+		return NULL;
+
+	olen = count / 4 * 3;
+	pos = out = calloc(olen, sizeof(char));
+	if (out == NULL)
+		return NULL;
+
+	count = 0;
+	for (i = 0; i < len; i++) {
+		tmp = dtable[src[i]];
+		if (tmp == 0x80)
+			continue;
+
+		if (src[i] == '=')
+			pad++;
+		block[count] = tmp;
+		count++;
+		if (count == 4) {
+			*pos++ = (block[0] << 2) | (block[1] >> 4);
+			*pos++ = (block[1] << 4) | (block[2] >> 2);
+			*pos++ = (block[2] << 6) | block[3];
+			count = 0;
+			if (pad) {
+				if (pad == 1)
+					pos--;
+				else if (pad == 2)
+					pos -= 2;
+				else {
+					/* Invalid padding */
+					free(out);
+					return NULL;
+				}
+				break;
+			}
+		}
+	}
+
+	*out_len = pos - out;
+	return out;
 }
 
-
-
 static const struct {
-		char* (*btoa) (unsigned char*, uint_fast64_t);
-		unsigned char* (*atob) (char*, uint_fast64_t, uint_fast64_t*);
-} b64 = {b64Encode, b64Decode};
+		unsigned char* (*btoa) (const unsigned char*, uint_fast64_t, uint_fast64_t*);
+		unsigned char* (*atob) (const unsigned char*, uint_fast64_t, uint_fast64_t*);
+} b64 = {base64_encode, base64_decode};
 
 
 
@@ -2826,7 +2983,7 @@ char* _const_strdup(const char* src){
 		return str;
 }
 
-#ifdef MPARC_MEM_DEBUG
+#ifdef MPARC_MEM_DEBUG_VERBOSEPRINTF
 #define const_strdup(src) _const_strdup(src); printf("csdup %s:%d\n", __FILE__, __LINE__);
 #else
 char* const_strdup(const char* src){
@@ -3289,20 +3446,44 @@ static int isLittleEndian(){
 						crc_t crc3 = crc_init();
 						JsonNode* objectweb = json_mkobject();
 						MPARC_blob_store bob_the_blob = *bob_the_blob_raw;
-						char* btob = NULL;
+						unsigned char* btob = NULL;
+						uint_fast64_t sizey = 0;
 						if(bob_the_blob.binary_size < 1){
-							btob = const_strdup("");
+							btob = (unsigned char*) const_strdup("");
+							sizey = strlen((char*) btob); // redundant, but more programatic
 						}
 						else{
-							btob = b64.btoa(bob_the_blob.binary_blob, bob_the_blob.binary_size);
+							btob = b64.btoa(bob_the_blob.binary_blob, bob_the_blob.binary_size, &sizey);
 						}
+
+						#ifdef MPARC_MEM_DEBUG_VERBOSEPRINTF
+						{
+							printf("Viewing preb64 bytes of %s:\n", nkey);
+							for(uint_fast64_t i = 0; i < bob_the_blob.binary_size; i++){
+								printf("%c", bob_the_blob.binary_blob[i]);
+							}
+							printf("\n");
+
+							{
+								unsigned char* bblob = NULL;
+								uint_fast64_t bsea = 0;
+								bblob = b64.atob(btob, strlen((char*) btob), &bsea);
+								printf("Viewing unb64 construction bytes of %s:\n", nkey);
+								for(uint_fast64_t i = 0; i < bsea; i++){
+									printf("%c", bblob[i]);
+								}
+								printf("\n");
+							}
+						}
+						#endif
+
 						crc3 = bob_the_blob.binary_crc;
 						if(btob == NULL) {
 							if(eout) *eout = MPARC_OOM;
 							MPARC_list_iterator_destroy(&itery);
 							goto errhandler;
 						}
-						JsonNode* glob64 = json_mkstring(btob);
+						JsonNode* glob64 = json_mkstring((char*) btob);
 						JsonNode* filename = json_mkstring(nkey);
 						JsonNode* blob_chksum = NULL;
 						if(glob64 == NULL || filename == NULL) {
@@ -3801,7 +3982,7 @@ static int isLittleEndian(){
 					uint_fast64_t bsize = 1;
 					unsigned char* un64_blob = NULL;
 					if(strlen(blob) > 1){
-						un64_blob = b64.atob(blob, strlen(blob), &bsize);
+						un64_blob = b64.atob((unsigned char*) blob, strlen(blob), &bsize);
 					}
 					else{
 						un64_blob = (unsigned char*) const_strdup("");
@@ -4334,6 +4515,14 @@ static int isLittleEndian(){
 			crc3 = crc_finalize(crc3);
 			// printf("%s> %"PRIuFAST32"\n", filename, crc3);
 
+			#ifdef MPARC_MEM_DEBUG_VERBOSEPRINTF
+			printf("Viewing bytes of %s after being pushed on the archive:\n", filename);
+			for(uint_fast64_t i = 0; i < sizy; i++){
+				printf("%c", ustringc[i]);
+			}
+			printf("\n");
+			#endif
+
 			MPARC_i_push_ufilestr_advancea(structure, filename, stripdir, overwrite, ustringc, sizy, crc3);
 
 			return MPARC_OK;
@@ -4422,9 +4611,17 @@ static int isLittleEndian(){
 						if(binary) free(binary);
 						return MPARC_FERROR;
 					}
-
-					binary[i] = '\0';
 				}
+
+				#ifdef MPARC_MEM_DEBUG_VERBOSEPRINTF
+				{
+					printf("viewing bytes read from %s:\n", filename);
+					for(uint_fast64_t i = 0; i < filesize; i++){
+						printf("%c", binary[i]);
+					}
+					printf("\n");
+				}
+				#endif
 
 				MXPSQL_MPARC_err err = MPARC_push_ufilestr(structure, filename, binary, filesize);
 
