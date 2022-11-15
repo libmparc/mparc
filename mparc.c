@@ -73,7 +73,7 @@
 
 // verbosity
 #ifdef MPARC_DEBUG_VERBOSE
-#define MPARC_MEM_DEBUG_VERBOSEPRINTF 1
+#define MPARC_MEM_DEBUG_VERBOSE 1
 #endif
 #endif
 
@@ -102,6 +102,9 @@
 // special separators, only added here if necessary
 #define MPARC_MAGIC_CHKSM_SEP '%'
 
+// debug stuff defines
+#define MPARC_DEBUG_CONF_PRINTF_FILE stderr
+
 // sorting mode
 // if set to 0, then the entries will be sorted by their checksum values
 // else if set to 1 sorted by their filename
@@ -120,6 +123,14 @@
 
 /* not defines */
 
+/* Special type declaration */
+typedef uint_fast32_t crc_t;
+
+typedef struct MPARC_blob_store{
+		uint_fast64_t binary_size;
+		unsigned char* binary_blob;
+		crc_t binary_crc;
+} MPARC_blob_store;
 
 #ifndef MXPSQL_MPARC_NO_B64
 
@@ -137,7 +148,58 @@
 // used to work, but somehow is broken now :P
 // the encoding is the broken part
 
-/* static char *b64Encode(unsigned char *data, uint_fast64_t inlen)
+/* static unsigned char *_b64Encode(unsigned char *psdata, uint_fast64_t inlen, uint_fast64_t* outplen)
+{
+    static const char b64e[] = {
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+        'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+        'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+        'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+        'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+        'w', 'x', 'y', 'z', '0', '1', '2', '3',
+        '4', '5', '6', '7', '8', '9', '+', '/'};
+
+	uint_fast64_t outlen = ((((inlen) + 2) / 3) * 4);
+
+	char* data = (char*) psdata;
+
+    char *out = calloc(outlen + 1, sizeof(char));
+    if (out == NULL) return NULL;
+    out[outlen] = '\0';
+	if(outplen) *outplen = outlen;
+    char *p = out;
+
+
+    uint_fast64_t i;
+    for (i = 0; i < inlen - 2; i += 3)
+    {
+        *p++ = b64e[(data[i] >> 2) & 0x3F];
+        *p++ = b64e[((data[i] & 0x3) << 4) | ((data[i + 1] & 0xF0) >> 4)];
+        *p++ = b64e[((data[i + 1] & 0xF) << 2) | ((data[i + 2] & 0xC0) >> 6)];
+        *p++ = b64e[data[i + 2] & 0x3F];
+    }
+
+    if (i < inlen)
+    {
+        *p++ = b64e[(data[i] >> 2) & 0x3F];
+        if (i == (inlen - 1))
+        {
+            *p++ = b64e[((data[i] & 0x3) << 4)];
+            *p++ = '=';
+        }
+        else
+        {
+            *p++ = b64e[((data[i] & 0x3) << 4) | ((data[i + 1] & 0xF0) >> 4)];
+            *p++ = b64e[((data[i + 1] & 0xF) << 2)];
+        }
+        *p++ = '=';
+    }
+
+    return (unsigned char*) out;
+} */
+
+static unsigned char *b64Encode(unsigned char *psyudata, uint_fast64_t inlen, uint_fast64_t* outplen)
 {
 		static const char b64e[] = {
 				'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
@@ -151,12 +213,24 @@
 
 		uint_fast64_t outlen = ((((inlen) + 2) / 3) * 4);
 
-		char *out = malloc(outlen + 1);
+		char* data = (char*) psyudata; // ps from the old one, y on accident and u for unsigned
+
+		char *out = calloc(outlen + 1, sizeof(char));
 		CHECK_LEAKS();
 		if (out == NULL) return NULL;
-		memset(out, '\0', outlen);
 		out[outlen] = '\0';
 		char *p = out;
+		if(outplen) *outplen = outlen;
+
+	#ifdef MPARC_MEM_DEBUG_VERBOSE
+	{
+		fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of data before base64 conversion in btoa with size of %"PRIuFAST64".\n", inlen);
+		for(uint_fast64_t i = 0; i < inlen; i++){
+			fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", data[i]);
+		}
+		fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
+	}
+	#endif
 
 		uint_fast64_t i;
 		for (i = 0; i < inlen - 2; i += 3)
@@ -184,12 +258,13 @@
 		}
 
 
-		return out;
+		return (unsigned char*) out;
 }
 
 
+
 // now decoder has problems I see.
-static unsigned char *b64Decode(char *data, uint_fast64_t inlen, uint_fast64_t* outplen)
+static unsigned char *b64Decode(unsigned char *udata, uint_fast64_t inlen, uint_fast64_t* outplen)
 {
 		static const char b64d[] = {
 				64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
@@ -208,6 +283,8 @@ static unsigned char *b64Decode(char *data, uint_fast64_t inlen, uint_fast64_t* 
 				64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
 				64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
 				64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64};
+
+		char* data = (char*) udata;
 
 		if (inlen == 0 || inlen % 4) return NULL;
 		uint_fast64_t outlen = (((inlen) / 4) * 3);
@@ -239,7 +316,7 @@ static unsigned char *b64Decode(char *data, uint_fast64_t inlen, uint_fast64_t* 
 
 
 		return out;
-} */
+}
 
 
 // Thanks MIT! (https://web.mit.edu/freebsd/head/contrib/wpa/src/utils/base64.c)
@@ -252,7 +329,7 @@ static unsigned char *b64Decode(char *data, uint_fast64_t inlen, uint_fast64_t* 
  * See README for more details.
  */
 // statics:
-static const unsigned char base64_table[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+// static const unsigned char base64_table[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 // Documentation:
 /**
  * base64_encode - Base64 encode
@@ -266,61 +343,61 @@ static const unsigned char base64_table[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
  * nul terminated to make it easier to use as a C string. The nul terminator is
  * not included in out_len.
  */
-static unsigned char * base64_encode(const unsigned char *src, uint_fast64_t len, uint_fast64_t *out_len)
-{
-	unsigned char *out, *pos;
-	const unsigned char *end, *in;
-	uint_fast64_t olen;
-	int line_len;
-
-	olen = len * 4 / 3 + 4; /* 3-byte blocks to 4-byte */
-	olen += olen / 72; /* line feeds */
-	olen++; /* nul termination */
-	if (olen < len)
-		return NULL; /* integer overflow */
-	out = calloc(olen, sizeof(char));
-	if (out == NULL)
-		return NULL;
-
-	end = src + len;
-	in = src;
-	pos = out;
-	line_len = 0;
-	while (end - in >= 3) {
-		*pos++ = base64_table[in[0] >> 2];
-		*pos++ = base64_table[((in[0] & 0x03) << 4) | (in[1] >> 4)];
-		*pos++ = base64_table[((in[1] & 0x0f) << 2) | (in[2] >> 6)];
-		*pos++ = base64_table[in[2] & 0x3f];
-		in += 3;
-		line_len += 4;
-		if (line_len >= 72) {
-			*pos++ = '\n';
-			line_len = 0;
-		}
-	}
-
-	if (end - in) {
-		*pos++ = base64_table[in[0] >> 2];
-		if (end - in == 1) {
-			*pos++ = base64_table[(in[0] & 0x03) << 4];
-			*pos++ = '=';
-		} else {
-			*pos++ = base64_table[((in[0] & 0x03) << 4) |
-					      (in[1] >> 4)];
-			*pos++ = base64_table[(in[1] & 0x0f) << 2];
-		}
-		*pos++ = '=';
-		line_len += 4;
-	}
-
-	if (line_len)
-		*pos++ = '\n';
-
-	*pos = '\0';
-	if (out_len)
-		*out_len = pos - out;
-	return out;
-}
+// static unsigned char * base64_encode(const unsigned char *src, uint_fast64_t len, uint_fast64_t *out_len)
+// {
+// 	unsigned char *out, *pos;
+// 	const unsigned char *end, *in;
+// 	uint_fast64_t olen;
+// 	int line_len;
+// 
+// 	olen = len * 4 / 3 + 4; /* 3-byte blocks to 4-byte */
+// 	olen += olen / 72; /* line feeds */
+// 	olen++; /* nul termination */
+// 	if (olen < len)
+// 		return NULL; /* integer overflow */
+// 	out = calloc(olen, sizeof(char));
+// 	if (out == NULL)
+// 		return NULL;
+// 
+// 	end = src + len;
+// 	in = src;
+// 	pos = out;
+// 	line_len = 0;
+// 	while (end - in >= 3) {
+// 		*pos++ = base64_table[in[0] >> 2];
+// 		*pos++ = base64_table[((in[0] & 0x03) << 4) | (in[1] >> 4)];
+// 		*pos++ = base64_table[((in[1] & 0x0f) << 2) | (in[2] >> 6)];
+// 		*pos++ = base64_table[in[2] & 0x3f];
+// 		in += 3;
+// 		line_len += 4;
+// 		if (line_len >= 72) {
+// 			*pos++ = '\n';
+// 			line_len = 0;
+// 		}
+// 	}
+// 
+// 	if (end - in) {
+// 		*pos++ = base64_table[in[0] >> 2];
+// 		if (end - in == 1) {
+// 			*pos++ = base64_table[(in[0] & 0x03) << 4];
+// 			*pos++ = '=';
+// 		} else {
+// 			*pos++ = base64_table[((in[0] & 0x03) << 4) |
+// 					      (in[1] >> 4)];
+// 			*pos++ = base64_table[(in[1] & 0x0f) << 2];
+// 		}
+// 		*pos++ = '=';
+// 		line_len += 4;
+// 	}
+// 
+// 	if (line_len)
+// 		*pos++ = '\n';
+// 
+// 	*pos = '\0';
+// 	if (out_len)
+// 		*out_len = pos - out;
+// 	return out;
+// }
 /**
  * base64_decode - Base64 decode
  * @src: Data to be decoded
@@ -331,69 +408,69 @@ static unsigned char * base64_encode(const unsigned char *src, uint_fast64_t len
  *
  * Caller is responsible for freeing the returned buffer.
  */
-unsigned char * base64_decode(const unsigned char *src, uint_fast64_t len, uint_fast64_t *out_len)
-{
-	unsigned char dtable[256], *out, *pos, block[4], tmp;
-	size_t i, count, olen;
-	int pad = 0;
-
-	memset(dtable, 0x80, 256);
-	for (i = 0; i < sizeof(base64_table) - 1; i++)
-		dtable[base64_table[i]] = (unsigned char) i;
-	dtable['='] = 0;
-
-	count = 0;
-	for (i = 0; i < len; i++) {
-		if (dtable[src[i]] != 0x80)
-			count++;
-	}
-
-	if (count == 0 || count % 4)
-		return NULL;
-
-	olen = count / 4 * 3;
-	pos = out = calloc(olen, sizeof(char));
-	if (out == NULL)
-		return NULL;
-
-	count = 0;
-	for (i = 0; i < len; i++) {
-		tmp = dtable[src[i]];
-		if (tmp == 0x80)
-			continue;
-
-		if (src[i] == '=')
-			pad++;
-		block[count] = tmp;
-		count++;
-		if (count == 4) {
-			*pos++ = (block[0] << 2) | (block[1] >> 4);
-			*pos++ = (block[1] << 4) | (block[2] >> 2);
-			*pos++ = (block[2] << 6) | block[3];
-			count = 0;
-			if (pad) {
-				if (pad == 1)
-					pos--;
-				else if (pad == 2)
-					pos -= 2;
-				else {
-					/* Invalid padding */
-					free(out);
-					return NULL;
-				}
-				break;
-			}
-		}
-	}
-
-	*out_len = pos - out;
-	return out;
-}
+// unsigned char * base64_decode(const unsigned char *src, uint_fast64_t len, uint_fast64_t *out_len)
+// {
+// 	unsigned char dtable[256], *out, *pos, block[4], tmp;
+// 	size_t i, count, olen;
+// 	int pad = 0;
+// 
+// 	memset(dtable, 0x80, 256);
+// 	for (i = 0; i < sizeof(base64_table) - 1; i++)
+// 		dtable[base64_table[i]] = (unsigned char) i;
+// 	dtable['='] = 0;
+// 
+// 	count = 0;
+// 	for (i = 0; i < len; i++) {
+// 		if (dtable[src[i]] != 0x80)
+// 			count++;
+// 	}
+// 
+// 	if (count == 0 || count % 4)
+// 		return NULL;
+// 
+// 	olen = count / 4 * 3;
+// 	pos = out = calloc(olen, sizeof(char));
+// 	if (out == NULL)
+// 		return NULL;
+// 
+// 	count = 0;
+// 	for (i = 0; i < len; i++) {
+// 		tmp = dtable[src[i]];
+// 		if (tmp == 0x80)
+// 			continue;
+// 
+// 		if (src[i] == '=')
+// 			pad++;
+// 		block[count] = tmp;
+// 		count++;
+// 		if (count == 4) {
+// 			*pos++ = (block[0] << 2) | (block[1] >> 4);
+// 			*pos++ = (block[1] << 4) | (block[2] >> 2);
+// 			*pos++ = (block[2] << 6) | block[3];
+// 			count = 0;
+// 			if (pad) {
+// 				if (pad == 1)
+// 					pos--;
+// 				else if (pad == 2)
+// 					pos -= 2;
+// 				else {
+// 					/* Invalid padding */
+// 					free(out);
+// 					return NULL;
+// 				}
+// 				break;
+// 			}
+// 		}
+// 	}
+// 
+// 	*out_len = pos - out;
+// 	return out;
+// }
 
 static const struct {
-		unsigned char* (*btoa) (const unsigned char*, uint_fast64_t, uint_fast64_t*);
-		unsigned char* (*atob) (const unsigned char*, uint_fast64_t, uint_fast64_t*);
-} b64 = {base64_encode, base64_decode};
+		unsigned char* (*btoa) (unsigned char*, uint_fast64_t, uint_fast64_t*);
+		unsigned char* (*atob) (unsigned char*, uint_fast64_t, uint_fast64_t*);
+} b64 = {b64Encode, b64Decode};
 
 
 
@@ -412,7 +489,7 @@ static const struct {
  *
  * This type must be big enough to contain at least 32 bits.
  */
-typedef uint_fast32_t crc_t;
+// not here, moved up
 
 
 /**
@@ -2495,11 +2572,11 @@ typedef struct map_node_t map_node_t;
 
 typedef struct {
 	map_node_t **buckets;
-	unsigned nbuckets, nnodes;
+	uint_fast64_t nbuckets, nnodes;
 } map_base_t;
 
 typedef struct {
-	unsigned bucketidx;
+	uint_fast64_t bucketidx;
 	map_node_t *node;
 } map_iter_t;
 
@@ -2553,7 +2630,7 @@ typedef map_t(float) map_float_t;
 typedef map_t(double) map_double_t;
 
 struct map_node_t {
-	unsigned hash;
+	uint_fast64_t hash;
 	void *value;
 	map_node_t *next;
 	/* char key[]; */
@@ -2561,8 +2638,8 @@ struct map_node_t {
 };
 
 
-static unsigned map_hash(const char *str) {
-	unsigned hash = 5381;
+static uint_fast64_t map_hash(const char *str) {
+	uint_fast64_t hash = 5381;
 	while (*str) {
 		hash = ((hash << 5) + hash) ^ *str++;
 	}
@@ -2585,7 +2662,7 @@ static map_node_t *map_newnode(const char *key, void *value, int vsize) {
 }
 
 
-static int map_bucketidx(map_base_t *m, unsigned hash) {
+static int map_bucketidx(map_base_t *m, uint_fast64_t hash) {
 	/* If the implementation is changed to allow a non-power-of-2 bucket count,
 	 * the line below should be changed to use mod instead of AND */
 	return hash & (m->nbuckets - 1);
@@ -2596,6 +2673,16 @@ static void map_addnode(map_base_t *m, map_node_t *node) {
 	int n = map_bucketidx(m, node->hash);
 	node->next = m->buckets[n];
 	m->buckets[n] = node;
+	#ifdef MPARC_MEM_DEBUG_VERBOSE
+	{
+		MPARC_blob_store* storeptr = m->buckets[n]->value;
+		fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of data after map node is added with size of %"PRIuFAST64" and bucket index of %i.\n", storeptr->binary_size, n);
+		for(uint_fast64_t i = 0; i < storeptr->binary_size; i++){
+			fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", storeptr->binary_blob[i]);
+		}
+		fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
+	}
+	#endif
 }
 
 
@@ -2638,12 +2725,32 @@ static int map_resize(map_base_t *m, int nbuckets) {
 
 
 static map_node_t **map_getref(map_base_t *m, const char *key) {
-	unsigned hash = map_hash(key);
+	uint_fast64_t hash = map_hash(key);
 	map_node_t **next;
 	if (m->nbuckets > 0) {
 		next = &m->buckets[map_bucketidx(m, hash)];
 		while (*next) {
+			#ifdef MPARC_MEM_DEBUG_VERBOSE
+			{
+				MPARC_blob_store* storeptr = (MPARC_blob_store*) (*next)->value;
+				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of unfiltered entry while getting reference to the hashmap bucket with size of %"PRIuFAST64".\n", storeptr->binary_size);
+				for(uint_fast64_t i = 0; i < storeptr->binary_size; i++){
+					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c",storeptr->binary_blob[i]);
+				}
+				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
+			}
+			#endif
 			if ((*next)->hash == hash && !strcmp((char*) (*next + 1), key)) {
+				#ifdef MPARC_MEM_DEBUG_VERBOSE
+				{
+					MPARC_blob_store* storeptr = (MPARC_blob_store*) m->buckets[map_bucketidx(m, hash)]->value;
+					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of filtered %s while getting reference to the hashmap bucket with size of %"PRIuFAST64" and bucket index of %i.\n", key, storeptr->binary_size, map_bucketidx(m, hash));
+					for(uint_fast64_t i = 0; i < storeptr->binary_size; i++){
+						fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c",storeptr->binary_blob[i]);
+					}
+					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
+				}
+				#endif
 				return next;
 			}
 			next = &(*next)->next;
@@ -2692,6 +2799,17 @@ static int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
 		err = map_resize(m, n);
 		if (err) goto fail;
 	}
+    #ifdef MPARC_MEM_DEBUG_VERBOSE
+    {
+		MPARC_blob_store* storeptr = (MPARC_blob_store*) value;
+		MPARC_blob_store store = *storeptr;
+        fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "View of %s after being added to map with sizeof %"PRIuFAST64":\n", key, store.binary_size);
+        for(uint_fast64_t i = 0; i < store.binary_size; i++){
+                fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", store.binary_blob[i]);
+        }
+        fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
+    }
+    #endif
 	map_addnode(m, node);
 	m->nnodes++;
 	return 0;
@@ -2983,8 +3101,8 @@ char* _const_strdup(const char* src){
 		return str;
 }
 
-#ifdef MPARC_MEM_DEBUG_VERBOSEPRINTF
-#define const_strdup(src) _const_strdup(src); printf("csdup %s:%d\n", __FILE__, __LINE__);
+#ifdef MPARC_MEM_DEBUG_VERBOSE
+#define const_strdup(src) _const_strdup(src); fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "csdup %s:%d\n", __FILE__, __LINE__);
 #else
 char* const_strdup(const char* src){
 	return _const_strdup(src);
@@ -3113,11 +3231,6 @@ static int isLittleEndian(){
 		
 
 		/* MAIN CODE OK */
-		typedef struct MPARC_blob_store{
-				uint_fast64_t binary_size;
-				unsigned char* binary_blob;
-				crc_t binary_crc;
-		} MPARC_blob_store;
 
 		typedef map_t(MPARC_blob_store) map_blob_t;
 
@@ -3245,6 +3358,16 @@ static int isLittleEndian(){
 			if(overwrite == 0 && MPARC_exists(structure, pfilename) != MPARC_KNOEXIST){
 				return MPARC_KEXISTS;
 			}
+
+			#ifdef MPARC_MEM_DEBUG_VERBOSE
+			{
+				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Printing %s after doing some static advancea magic with size of %"PRIuFAST64":\n", filename, sizy);
+				for(uint_fast64_t i = 0; i < sizy; i++){
+					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", ustringc[i]);
+				}
+				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
+			}
+			#endif
 
 			if(map_set(&structure->globby, pfilename, blob) != 0){
 				return MPARC_IVAL;
@@ -3456,23 +3579,24 @@ static int isLittleEndian(){
 							btob = b64.btoa(bob_the_blob.binary_blob, bob_the_blob.binary_size, &sizey);
 						}
 
-						#ifdef MPARC_MEM_DEBUG_VERBOSEPRINTF
+						#ifdef MPARC_MEM_DEBUG_VERBOSE
 						{
-							printf("Viewing preb64 bytes of %s:\n", nkey);
+							fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Viewing preb64 bytes of %s with size of %"PRIuFAST64":\n", nkey, bob_the_blob.binary_size);
 							for(uint_fast64_t i = 0; i < bob_the_blob.binary_size; i++){
-								printf("%c", bob_the_blob.binary_blob[i]);
+								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", bob_the_blob.binary_blob[i]);
 							}
-							printf("\n");
+							fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
 
 							{
 								unsigned char* bblob = NULL;
 								uint_fast64_t bsea = 0;
 								bblob = b64.atob(btob, strlen((char*) btob), &bsea);
-								printf("Viewing unb64 construction bytes of %s:\n", nkey);
+								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Viewing unb64 construction bytes of %s with size of %"PRIuFAST64":\n", nkey, bsea);
 								for(uint_fast64_t i = 0; i < bsea; i++){
-									printf("%c", bblob[i]);
+									fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", bblob[i]);
 								}
-								printf("\n");
+								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
+								free(bblob);
 							}
 						}
 						#endif
@@ -4000,6 +4124,16 @@ static int isLittleEndian(){
 							crc3
 						};
 
+						#ifdef MPARC_MEM_DEBUG_VERBOSE
+						{
+							fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Printing unb64 blob after parsing of %s with size of %"PRIuFAST64":\n", filename, store.binary_size);
+							for(uint_fast64_t i = 0; i < store.binary_size; i++){
+								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", store.binary_blob[i]);
+							}
+							printf("\n");
+						}
+						#endif
+
 						crc_t crc = crc_init();
 						crc = crc_update(crc, store.binary_blob, store.binary_size);
 						crc = crc_finalize(crc);
@@ -4515,12 +4649,12 @@ static int isLittleEndian(){
 			crc3 = crc_finalize(crc3);
 			// printf("%s> %"PRIuFAST32"\n", filename, crc3);
 
-			#ifdef MPARC_MEM_DEBUG_VERBOSEPRINTF
-			printf("Viewing bytes of %s after being pushed on the archive:\n", filename);
+			#ifdef MPARC_MEM_DEBUG_VERBOSE
+			fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Viewing bytes of %s after being pushed on the archive with size of %"PRIuFAST64":\n", filename, sizy);
 			for(uint_fast64_t i = 0; i < sizy; i++){
-				printf("%c", ustringc[i]);
+				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", ustringc[i]);
 			}
-			printf("\n");
+			fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
 			#endif
 
 			MPARC_i_push_ufilestr_advancea(structure, filename, stripdir, overwrite, ustringc, sizy, crc3);
@@ -4613,13 +4747,13 @@ static int isLittleEndian(){
 					}
 				}
 
-				#ifdef MPARC_MEM_DEBUG_VERBOSEPRINTF
+				#ifdef MPARC_MEM_DEBUG_VERBOSE
 				{
-					printf("viewing bytes read from %s:\n", filename);
+					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "viewing bytes read from %s with size of %"PRIuFAST64":\n", filename, filesize);
 					for(uint_fast64_t i = 0; i < filesize; i++){
-						printf("%c", binary[i]);
+						fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", binary[i]);
 					}
-					printf("\n");
+					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
 				}
 				#endif
 
@@ -4651,9 +4785,21 @@ static int isLittleEndian(){
 
 		static MXPSQL_MPARC_err MPARC_peek_file_advance(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint_fast64_t* sout, crc_t* crout){ // users don't need to know the crc
 				if(MPARC_exists(structure, filename) == MPARC_KNOEXIST) return MPARC_KNOEXIST;
-				if(bout != NULL) *bout = map_get(&structure->globby, filename)->binary_blob;
-				if(sout != NULL) *sout = map_get(&structure->globby, filename)->binary_size;
-				if(crout != NULL) *crout = map_get(&structure->globby, filename)->binary_crc;
+				MPARC_blob_store* storeptr = map_get(&structure->globby, filename);
+				if(bout != NULL) {
+					*bout = storeptr->binary_blob;
+					#ifdef MPARC_MEM_DEBUG_VERBOSE
+					{
+						fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of peeked data with size of %"PRIuFAST64".\n", storeptr->binary_size);
+						for(uint_fast64_t i = 0; i < storeptr->binary_size; i++){
+							fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", storeptr->binary_blob[i]);
+						}
+						fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
+					}
+					#endif
+				}
+				if(sout != NULL) *sout = storeptr->binary_size;
+				if(crout != NULL) *crout = storeptr->binary_crc;
 				return MPARC_OK;
 		}
 

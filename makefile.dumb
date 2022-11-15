@@ -62,6 +62,7 @@ clean:
 mkar:
 	./mparc.exe ./my.mpar c ./*.c ./*.h ./Makefile.dumb ./configure.ac ./Makefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
 	./mparc.exe ./mini.mpar c ./misc/lsarah.txt ./misc/logobase.txt
+	./mparc.exe ./tiny.mpar c ./misc/lsarah.txt
 
 
 mkat:
