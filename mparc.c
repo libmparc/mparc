@@ -2586,7 +2586,8 @@ typedef struct {
 
 
 #define map_init(m)\
-	memset(m, 0, sizeof(*(m)))
+	memset(m, '\0', sizeof(*(m)))
+
 
 
 #define map_deinit(m)\
@@ -2773,6 +2774,7 @@ static void map_deinit_(map_base_t *m) {
 		}
 	}
 	if(m && m->buckets) free(m->buckets);
+	memset(m, '\0', sizeof(*(m)));
 }
 
 
@@ -4757,8 +4759,10 @@ static int isLittleEndian(){
 				}
 				#endif
 
-				MXPSQL_MPARC_err err = MPARC_push_ufilestr(structure, filename, binary, filesize);
-
+				unsigned char* strd = (unsigned char*) const_strdup((char*) binary);
+				if(!strd) return MPARC_OOM;
+				MXPSQL_MPARC_err err = MPARC_push_ufilestr(structure, filename, strd, filesize);
+				
 				if(binary) free(binary);
 				return err;
 		}
