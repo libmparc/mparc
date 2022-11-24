@@ -62,12 +62,12 @@
 #if defined(__cplusplus) || defined(c_plusplus)
 #include <cstdio>
 #include <cstdarg>
-#include <cinttypes>
+#include <cstdint>
 extern "C"{
 #else
 #include <stdio.h>
 #include <stdarg.h>
-#include <inttypes.h>
+#include <stdint.h>
 #endif
 
     /**
@@ -182,6 +182,14 @@ extern "C"{
      * This can never be declared as a non pointer object.
      */
     typedef struct MXPSQL_MPARC_iter_t MXPSQL_MPARC_iter_t;
+    /**
+     * @brief Typedef our uint representation to make it easy to refactor
+     * 
+     * @details
+     * 
+     * This is currently typedef'd to uint_fast64_t, but we can switch to unsigned long long or size_t
+     */
+    typedef uint_fast64_t MXPSQL_MPARC_uint_repr_t;
 
     /**
      * @brief Initialize sturcture
@@ -216,7 +224,7 @@ extern "C"{
      * 
      * @note Free listout manually with 'free', not 'delete'
      */
-    MXPSQL_MPARC_err MPARC_list_array(MXPSQL_MPARC_t* structure, char*** listout, uint_fast64_t* length);
+    MXPSQL_MPARC_err MPARC_list_array(MXPSQL_MPARC_t* structure, char*** listout, MXPSQL_MPARC_uint_repr_t* length);
     /**
      * @brief Initialize the iterator that list the current files included
      * 
@@ -245,13 +253,34 @@ extern "C"{
      */
     MXPSQL_MPARC_err MPARC_list_iterator_destroy(MXPSQL_MPARC_iter_t** iterator);
     /**
+     * @brief Foreach, with call backs
+     * 
+     * @param structure the target structure
+     * @param cb_aborted a flag that indicated if an error code resulted from abortion request or an internal error. Can be NULL.
+     * @param callback callback function that gets called on every iteration
+     * @return MXPSQL_MPARC_err the status code if successfully done. MPARC_OK if successfull, other error codes if aborted (dependent on callback).
+     * 
+     * @details
+     * 
+     * For the callback function:
+     * 
+     * To continue an iteration, return MPARC_OK.
+     * 
+     * To abort the loop, return any other values in MXPSQL_MPARC_err other than MPARC_OK. cb_aborted is set to 1 and the value is returned from callback.
+     * 
+     * Other details:
+     * 
+     * If an internal error occurs, the error code corresponding to the error is returned, but cb_aborted is set to 0.
+     */
+    MXPSQL_MPARC_err MPARC_list_foreach(MXPSQL_MPARC_t* structure, int* cb_aborted, MXPSQL_MPARC_err (*callback)(MXPSQL_MPARC_t*, const char*));
+    /**
      * @brief Check if file entry exists
      * 
      * @param structure the target structure
      * @param filename the filename to check
      * @return MXPSQL_MPARC_err the status code if successfully done or errors out
      */
-    MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, char* filename);
+    MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, const char* filename);
     /**
      * @brief Query the structre for files that match a specific criteria
      * 
@@ -266,9 +295,9 @@ extern "C"{
      * There are multiple commands available in this query function.
      * This list is formated as the following: [command] - [description] - [required vaargs]
      * Available commands (case sensitive):
-     * size_bigger - List all files that is bigger than the specified size - [number, preferably uint_fast64_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
-     * size_equal - List all files that is equal to the specified size - [number, preferably uint_fast64_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
-     * size_smaller - List all files that is small than the specified size - [number, preferably uint_fast64_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
+     * size_bigger - List all files that is bigger than the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
+     * size_equal - List all files that is equal to the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
+     * size_smaller - List all files that is small than the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
      * extension - Get the file extension based from the first dot - [a string of the file extension, do not include the first dot in the parameter]
      * rextension - Get the file extension based from the last dot - [a string of the file extension, do not include the first dot in the parameter]
      * 
@@ -305,7 +334,7 @@ extern "C"{
      * 
      * @note Filename only works on forward slash if stripdir is set due to basename only supporting that operation.
      */
-    MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, uint_fast64_t sizy);
+    MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy);
     /**
      * @brief Simple version of MPARC_push_ufilestr_advance that does not strip the directory name
      * 
@@ -317,7 +346,7 @@ extern "C"{
      * 
      * @see MPARC_push_ufilestr_advance
      */
-    MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint_fast64_t sizy);
+    MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy);
     /**
      * @brief Push a void pointer as a file
      * 
@@ -327,7 +356,7 @@ extern "C"{
      * @param sizy the size of buffer_guffer
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, uint_fast64_t sizy);
+    MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, MXPSQL_MPARC_uint_repr_t sizy);
     /**
      * @brief Push a string as a file
      * 
@@ -337,7 +366,7 @@ extern "C"{
      * @param sizey the size of stringc
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, uint_fast64_t sizey);
+    MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, MXPSQL_MPARC_uint_repr_t sizey);
     /**
      * @brief Push a file read from the filesystem into the archive
      * 
@@ -383,7 +412,7 @@ extern "C"{
      * @param sout the output pointer to a variable that represent the size of bout
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint_fast64_t* sout);
+    MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, const char* filename, unsigned char** bout, MXPSQL_MPARC_uint_repr_t* sout);
 
     /**
      * @brief Construct the archive into a string
@@ -506,6 +535,16 @@ extern "C"{
      * @return MXPSQL_MPARC_err Did it parse well or did not
      */
     MXPSQL_MPARC_err MPARC_parse_filename(MXPSQL_MPARC_t* structure, char* filename);
+
+    #ifdef MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
+    extern char* MPARC_strtok_r (char *s, const char *delim, char **save_ptr);
+    extern void* MPARC_memdup(const void* src, size_t len);
+    extern char* MPARC_strndup(const char* src, size_t ilen);
+    extern char* MPARC_strdup(const char* src);
+    extern char* MPARC_basename (const char *filename);
+    extern char* MPARC_dirname (char *path);
+    extern char* MPARC_get_extension(const char* fnp, int full_or_not);
+    #endif
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

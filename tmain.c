@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <string.h>
 
+#define MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
 #include "mparc.h"
 
 /**

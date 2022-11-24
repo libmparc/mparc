@@ -97,7 +97,7 @@ int main(int argc, char** argv){
         }
 
         printf("Queued %d files for archival.\n", argc-pos);
-        for(int i = pos; i < argc; i++){
+        for(int i = pos; i < argc && argv[i] != NULL; i++){
             printf("c> %s\n", argv[i]);
             err = MPARC_push_filename(archive, argv[i]);
             if(err != MPARC_OK){
@@ -389,7 +389,9 @@ int main(int argc, char** argv){
 
     exit_handler:
     printf("Tearing down archive\n");
-    if(err != MPARC_OK || exit_c == EXIT_FAILURE) printf("Failure detected\n");
+    if(err != MPARC_OK || exit_c == EXIT_FAILURE) printf("Failure detected (%d)\n", (int) err);
+    fflush(stderr);
+    fflush(stdout);
     MPARC_destroy(&archive);
     return exit_c;
 }

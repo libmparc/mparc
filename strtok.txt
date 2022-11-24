@@ -1,0 +1,1 @@
+strtok stinks, use strtok_r instead! Rip it from the Glibc Source!

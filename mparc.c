@@ -67,6 +67,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <time.h>
+#include <stdint.h>
 
 #ifdef MPARC_DEBUG
 #define MPARC_MEM_DEBUG 1
@@ -96,7 +97,7 @@
 // define for format version number and representation
 #define STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER 1
 #define STANKY_MPAR_FILE_FORMAT_VERSION_HASH_ADDED 1
-// #define STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION uint_fast64_t
+// #define STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION MXPSQL_MPARC_uint_repr_t
 #define STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION unsigned long long
 
 // special separators, only added here if necessary
@@ -127,7 +128,7 @@
 typedef uint_fast32_t crc_t;
 
 typedef struct MPARC_blob_store{
-		uint_fast64_t binary_size;
+		MXPSQL_MPARC_uint_repr_t binary_size;
 		unsigned char* binary_blob;
 		crc_t binary_crc;
 } MPARC_blob_store;
@@ -148,7 +149,7 @@ typedef struct MPARC_blob_store{
 // used to work, but somehow is broken now :P
 // the encoding is the broken part
 
-/* static unsigned char *_b64Encode(unsigned char *psdata, uint_fast64_t inlen, uint_fast64_t* outplen)
+/* static unsigned char *_b64Encode(unsigned char *psdata, MXPSQL_MPARC_uint_repr_t inlen, MXPSQL_MPARC_uint_repr_t* outplen)
 {
     static const char b64e[] = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
@@ -160,7 +161,7 @@ typedef struct MPARC_blob_store{
         'w', 'x', 'y', 'z', '0', '1', '2', '3',
         '4', '5', '6', '7', '8', '9', '+', '/'};
 
-	uint_fast64_t outlen = ((((inlen) + 2) / 3) * 4);
+	MXPSQL_MPARC_uint_repr_t outlen = ((((inlen) + 2) / 3) * 4);
 
 	char* data = (char*) psdata;
 
@@ -171,7 +172,7 @@ typedef struct MPARC_blob_store{
     char *p = out;
 
 
-    uint_fast64_t i;
+    MXPSQL_MPARC_uint_repr_t i;
     for (i = 0; i < inlen - 2; i += 3)
     {
         *p++ = b64e[(data[i] >> 2) & 0x3F];
@@ -199,7 +200,8 @@ typedef struct MPARC_blob_store{
     return (unsigned char*) out;
 } */
 
-static unsigned char *b64Encode(unsigned char *psyudata, uint_fast64_t inlen, uint_fast64_t* outplen)
+// not a problem
+static unsigned char *b64Encode(unsigned char *psyudata, MXPSQL_MPARC_uint_repr_t inlen, MXPSQL_MPARC_uint_repr_t* outplen)
 {
 		static const char b64e[] = {
 				'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
@@ -211,7 +213,7 @@ static unsigned char *b64Encode(unsigned char *psyudata, uint_fast64_t inlen, ui
 				'w', 'x', 'y', 'z', '0', '1', '2', '3',
 				'4', '5', '6', '7', '8', '9', '+', '/'};
 
-		uint_fast64_t outlen = ((((inlen) + 2) / 3) * 4);
+		MXPSQL_MPARC_uint_repr_t outlen = ((((inlen) + 2) / 3) * 4);
 
 		char* data = (char*) psyudata; // ps from the old one, y on accident and u for unsigned
 
@@ -225,14 +227,14 @@ static unsigned char *b64Encode(unsigned char *psyudata, uint_fast64_t inlen, ui
 	#ifdef MPARC_MEM_DEBUG_VERBOSE
 	{
 		fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of data before base64 conversion in btoa with size of %"PRIuFAST64".\n", inlen);
-		for(uint_fast64_t i = 0; i < inlen; i++){
+		for(MXPSQL_MPARC_uint_repr_t i = 0; i < inlen; i++){
 			fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", data[i]);
 		}
 		fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
 	}
 	#endif
 
-		uint_fast64_t i;
+		MXPSQL_MPARC_uint_repr_t i;
 		for (i = 0; i < inlen - 2; i += 3)
 		{
 				*p++ = b64e[(data[i] >> 2) & 0x3F];
@@ -263,8 +265,8 @@ static unsigned char *b64Encode(unsigned char *psyudata, uint_fast64_t inlen, ui
 
 
 
-// now decoder has problems I see.
-static unsigned char *b64Decode(unsigned char *udata, uint_fast64_t inlen, uint_fast64_t* outplen)
+// now decoder has problems I see. Nope, no more.
+static unsigned char *b64Decode(unsigned char *udata, MXPSQL_MPARC_uint_repr_t inlen, MXPSQL_MPARC_uint_repr_t* outplen)
 {
 		static const char b64d[] = {
 				64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
@@ -287,24 +289,23 @@ static unsigned char *b64Decode(unsigned char *udata, uint_fast64_t inlen, uint_
 		char* data = (char*) udata;
 
 		if (inlen == 0 || inlen % 4) return NULL;
-		uint_fast64_t outlen = (((inlen) / 4) * 3);
+		MXPSQL_MPARC_uint_repr_t outlen = (((inlen) / 4) * 3);
 
 		if (data[inlen - 1] == '=') outlen--;
 		if (data[inlen - 2] == '=') outlen--;
 
-		unsigned char *out = (unsigned char*) malloc(outlen);
+		unsigned char *out = (unsigned char*) calloc(outlen, sizeof(unsigned char));
 		CHECK_LEAKS();
 		if (out == NULL) return NULL;
-		memset(out, '\0', outlen);
 		*outplen = outlen;
 
 		typedef size_t u32;
-		for (uint_fast64_t i = 0, j = 0; i < inlen;)
+		for (MXPSQL_MPARC_uint_repr_t i = 0, j = 0; i < inlen;)
 		{
-				u32 a = data[i] == '=' ? 0 & i++ : (uint_fast64_t) b64d[((uint_fast64_t) data[(uint_fast64_t) i++])];
-				u32 b = data[i] == '=' ? 0 & i++ : (uint_fast64_t) b64d[((uint_fast64_t) data[(uint_fast64_t) i++])];
-				u32 c = data[i] == '=' ? 0 & i++ : (uint_fast64_t) b64d[((uint_fast64_t) data[(uint_fast64_t) i++])];
-				u32 d = data[i] == '=' ? 0 & i++ : (uint_fast64_t) b64d[((uint_fast64_t) data[(uint_fast64_t) i++])];
+				u32 a = data[i] == '=' ? 0 & i++ : (MXPSQL_MPARC_uint_repr_t) b64d[((MXPSQL_MPARC_uint_repr_t) data[(MXPSQL_MPARC_uint_repr_t) i++])];
+				u32 b = data[i] == '=' ? 0 & i++ : (MXPSQL_MPARC_uint_repr_t) b64d[((MXPSQL_MPARC_uint_repr_t) data[(MXPSQL_MPARC_uint_repr_t) i++])];
+				u32 c = data[i] == '=' ? 0 & i++ : (MXPSQL_MPARC_uint_repr_t) b64d[((MXPSQL_MPARC_uint_repr_t) data[(MXPSQL_MPARC_uint_repr_t) i++])];
+				u32 d = data[i] == '=' ? 0 & i++ : (MXPSQL_MPARC_uint_repr_t) b64d[((MXPSQL_MPARC_uint_repr_t) data[(MXPSQL_MPARC_uint_repr_t) i++])];
 
 				u32 triple = (a << 3 * 6) + (b << 2 * 6) +
 													(c << 1 * 6) + (d << 0 * 6);
@@ -343,11 +344,11 @@ static unsigned char *b64Decode(unsigned char *udata, uint_fast64_t inlen, uint_
  * nul terminated to make it easier to use as a C string. The nul terminator is
  * not included in out_len.
  */
-// static unsigned char * base64_encode(const unsigned char *src, uint_fast64_t len, uint_fast64_t *out_len)
+// static unsigned char * base64_encode(const unsigned char *src, MXPSQL_MPARC_uint_repr_t len, MXPSQL_MPARC_uint_repr_t *out_len)
 // {
 // 	unsigned char *out, *pos;
 // 	const unsigned char *end, *in;
-// 	uint_fast64_t olen;
+// 	MXPSQL_MPARC_uint_repr_t olen;
 // 	int line_len;
 // 
 // 	olen = len * 4 / 3 + 4; /* 3-byte blocks to 4-byte */
@@ -408,7 +409,7 @@ static unsigned char *b64Decode(unsigned char *udata, uint_fast64_t inlen, uint_
  *
  * Caller is responsible for freeing the returned buffer.
  */
-// unsigned char * base64_decode(const unsigned char *src, uint_fast64_t len, uint_fast64_t *out_len)
+// unsigned char * base64_decode(const unsigned char *src, MXPSQL_MPARC_uint_repr_t len, MXPSQL_MPARC_uint_repr_t *out_len)
 // {
 // 	unsigned char dtable[256], *out, *pos, block[4], tmp;
 // 	size_t i, count, olen;
@@ -468,8 +469,8 @@ static unsigned char *b64Decode(unsigned char *udata, uint_fast64_t inlen, uint_
 // }
 
 static const struct {
-		unsigned char* (*btoa) (unsigned char*, uint_fast64_t, uint_fast64_t*);
-		unsigned char* (*atob) (unsigned char*, uint_fast64_t, uint_fast64_t*);
+		unsigned char* (*btoa) (unsigned char*, MXPSQL_MPARC_uint_repr_t, MXPSQL_MPARC_uint_repr_t*);
+		unsigned char* (*atob) (unsigned char*, MXPSQL_MPARC_uint_repr_t, MXPSQL_MPARC_uint_repr_t*);
 } b64 = {b64Encode, b64Decode};
 
 
@@ -511,7 +512,7 @@ static inline crc_t crc_init(void)
  * \param[in] data_len Number of bytes in the \a data buffer.
  * \return             The updated crc value.
  */
-static crc_t crc_update(crc_t crc, const void *data, uint_fast64_t data_len)
+static crc_t crc_update(crc_t crc, const void *data, MXPSQL_MPARC_uint_repr_t data_len)
 {
 	static const crc_t crc_table[256] = {
 		0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
@@ -2572,11 +2573,11 @@ typedef struct map_node_t map_node_t;
 
 typedef struct {
 	map_node_t **buckets;
-	uint_fast64_t nbuckets, nnodes;
+	MXPSQL_MPARC_uint_repr_t nbuckets, nnodes;
 } map_base_t;
 
 typedef struct {
-	uint_fast64_t bucketidx;
+	MXPSQL_MPARC_uint_repr_t bucketidx;
 	map_node_t *node;
 } map_iter_t;
 
@@ -2631,7 +2632,7 @@ typedef map_t(float) map_float_t;
 typedef map_t(double) map_double_t;
 
 struct map_node_t {
-	uint_fast64_t hash;
+	MXPSQL_MPARC_uint_repr_t hash;
 	void *value;
 	map_node_t *next;
 	/* char key[]; */
@@ -2639,8 +2640,8 @@ struct map_node_t {
 };
 
 
-static uint_fast64_t map_hash(const char *str) {
-	uint_fast64_t hash = 5381;
+static MXPSQL_MPARC_uint_repr_t map_hash(const char *str) {
+	MXPSQL_MPARC_uint_repr_t hash = 5381;
 	while (*str) {
 		hash = ((hash << 5) + hash) ^ *str++;
 	}
@@ -2663,7 +2664,7 @@ static map_node_t *map_newnode(const char *key, void *value, int vsize) {
 }
 
 
-static int map_bucketidx(map_base_t *m, uint_fast64_t hash) {
+static int map_bucketidx(map_base_t *m, MXPSQL_MPARC_uint_repr_t hash) {
 	/* If the implementation is changed to allow a non-power-of-2 bucket count,
 	 * the line below should be changed to use mod instead of AND */
 	return hash & (m->nbuckets - 1);
@@ -2678,7 +2679,7 @@ static void map_addnode(map_base_t *m, map_node_t *node) {
 	{
 		MPARC_blob_store* storeptr = m->buckets[n]->value;
 		fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of data after map node is added with size of %"PRIuFAST64" and bucket index of %i.\n", storeptr->binary_size, n);
-		for(uint_fast64_t i = 0; i < storeptr->binary_size; i++){
+		for(MXPSQL_MPARC_uint_repr_t i = 0; i < storeptr->binary_size; i++){
 			fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", storeptr->binary_blob[i]);
 		}
 		fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
@@ -2726,7 +2727,7 @@ static int map_resize(map_base_t *m, int nbuckets) {
 
 
 static map_node_t **map_getref(map_base_t *m, const char *key) {
-	uint_fast64_t hash = map_hash(key);
+	MXPSQL_MPARC_uint_repr_t hash = map_hash(key);
 	map_node_t **next;
 	if (m->nbuckets > 0) {
 		next = &m->buckets[map_bucketidx(m, hash)];
@@ -2735,7 +2736,7 @@ static map_node_t **map_getref(map_base_t *m, const char *key) {
 			{
 				MPARC_blob_store* storeptr = (MPARC_blob_store*) (*next)->value;
 				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of unfiltered entry while getting reference to the hashmap bucket with size of %"PRIuFAST64".\n", storeptr->binary_size);
-				for(uint_fast64_t i = 0; i < storeptr->binary_size; i++){
+				for(MXPSQL_MPARC_uint_repr_t i = 0; i < storeptr->binary_size; i++){
 					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c",storeptr->binary_blob[i]);
 				}
 				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
@@ -2746,7 +2747,7 @@ static map_node_t **map_getref(map_base_t *m, const char *key) {
 				{
 					MPARC_blob_store* storeptr = (MPARC_blob_store*) m->buckets[map_bucketidx(m, hash)]->value;
 					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of filtered %s while getting reference to the hashmap bucket with size of %"PRIuFAST64" and bucket index of %i.\n", key, storeptr->binary_size, map_bucketidx(m, hash));
-					for(uint_fast64_t i = 0; i < storeptr->binary_size; i++){
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < storeptr->binary_size; i++){
 						fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c",storeptr->binary_blob[i]);
 					}
 					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
@@ -2806,7 +2807,7 @@ static int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
 		MPARC_blob_store* storeptr = (MPARC_blob_store*) value;
 		MPARC_blob_store store = *storeptr;
         fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "View of %s after being added to map with sizeof %"PRIuFAST64":\n", key, store.binary_size);
-        for(uint_fast64_t i = 0; i < store.binary_size; i++){
+        for(MXPSQL_MPARC_uint_repr_t i = 0; i < store.binary_size; i++){
                 fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", store.binary_blob[i]);
         }
         fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
@@ -3032,6 +3033,7 @@ void *llist_pop(llist *list)
 */
 
 // Nah, but I can still put it in here though
+// Oh hey, free advertisement!
 
 /* end of LZ77 Section: FastL7 */
 
@@ -3056,7 +3058,7 @@ void *llist_pop(llist *list)
 		You should have received a copy of the GNU Lesser General Public
 		License along with the GNU C Library; if not, see
 		<https://www.gnu.org/licenses/>.  */
-char * MPARC_strtok_r (char *s, const char *delim, char **save_ptr)
+char* MPARC_strtok_r (char *s, const char *delim, char **save_ptr)
 {
 	char *end;
 	if (s == NULL)
@@ -3086,36 +3088,89 @@ char * MPARC_strtok_r (char *s, const char *delim, char **save_ptr)
 	return s;
 }
 
-char* _const_strdup(const char* src){
-		char *str;
-		char *p;
-		int len = 0;
+/**
+ * @brief Our own strdup, but for binary arrays.
+ * 
+ * @param src Source array, interpreted as unsigned char*
+ * @param len length of array, interpreted as unsigned char*
+ * @return void* New duplicated array
+ */
+void* MPARC_memdup(const void* src, size_t len){
+	unsigned char* ustr;
+	const unsigned char* usrc = src;
 
-		while (src[len])
-				len++;
-		str = calloc((len + 1),sizeof(char));
-		CHECK_LEAKS();
-		if(!str) return NULL;
-		p = str;
-		while (*src)
-				*p++ = *src++;
-		*p = '\0';
-		return str;
+	ustr = (unsigned char*) malloc(len);
+	CHECK_LEAKS();
+	if(!ustr) return NULL;
+
+	memset(ustr, '\0', len);
+
+	#ifdef MPARC_MEM_DEBUG_VERBOSE
+	printf("memdup> ustr = %p (%s), src = %p (%s)\n", ustr, ((ustr == NULL) ? "NULL" : "NOT NULL"), src, (src == NULL) ? "NULL" : "NOT NULL");
+	#endif
+
+	return memcpy(ustr, usrc, len);
+}
+
+char* MPARC_strndup(const char* src, size_t ilen){
+	size_t len = strnlen(src, ilen);
+
+	// char* dupstr = MPARC_memdup(src, len*sizeof(char));
+	char* dupstr = calloc(len, sizeof(char));
+
+	if(dupstr){
+		memcpy(dupstr, src, sizeof(char)*len);
+	}
+
+	return dupstr;
+}
+
+char* MPARC_strdup(const char* src){
+	return MPARC_strndup(src, strlen(src));
 }
 
 #ifdef MPARC_MEM_DEBUG_VERBOSE
-#define const_strdup(src) _const_strdup(src); fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "csdup %s:%d\n", __FILE__, __LINE__);
-#else
-char* const_strdup(const char* src){
-	return _const_strdup(src);
-}
+#define MPARC_memdup(src, len) MPARC_memdup(src, len); fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "MPARC_memdup %s:%d\n", __FILE__, __LINE__);
+#define MPARC_strndup(src, ilen) MPARC_strndup(src, ilen); fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "MPARC_strndup %s:%s", __FILE__, __LINE__);
+#define MPARC_strdup(src) MPARC_strdup(src); fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "MPARC_strdup %s:%d\n", __FILE__, __LINE__);
 #endif
+
+// bionic's turn to get copy pasted on: https://android.googlesource.com/platform/bionic/+/ics-mr0/libc/string/strlcpy.c
+// This is a blatantly obvious attempt to use the strl* family of functions
+// static this thing, we use our representation of integers
+static MXPSQL_MPARC_uint_repr_t strlcpy(char *dst, const char *src, MXPSQL_MPARC_uint_repr_t siz)
+{
+	char *d = dst;
+	const char *s = src;
+	MXPSQL_MPARC_uint_repr_t n = siz;
+	/* Copy as many bytes as will fit */
+	if (n != 0) {
+		while (--n != 0) {
+			if ((*d++ = *s++) == '\0')
+				break;
+		}
+	}
+	/* Not enough room in dst, add NUL and traverse rest of src */
+	if (n == 0) {
+		if (siz != 0)
+			*d = '\0';		/* NUL-terminate dst */
+		while (*s++)
+			;
+	}
+	return(s - src - 1);	/* count does not include NUL */
+}
 
 // from glibc from https://github.com/lattera/glibc/blob/master/string/basename.c
 char* MPARC_basename (const char *filename)
 {
-  char *p = strrchr (filename, '/');
-  return p ? p + 1 : (char *) filename;
+	char* p = NULL;
+	#if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
+	p = strrchr(filename, '/');
+	p = p ? p : strrchr(filename, '\\');
+	#else
+	p = strrchr (filename, '/');
+	#endif
+	return p ? p + 1 : (char *) filename;
 }
 
 // from glibc from https://github.com/lattera/glibc/blob/master/misc/dirname.c
@@ -3204,6 +3259,9 @@ char* MPARC_get_extension(const char* fnp, int full_or_not){
 
 // bsearch and strcmp
 static int voidstrcmp(const void* str1, const void* str2){
+	if(!str1 || !str2){
+		return 0;
+	}
 	return strcmp((const char*) str1, (const char*) str2);
 }
 
@@ -3269,56 +3327,56 @@ static int isLittleEndian(){
 			((void)isLittleEndian);
 			switch(err){
 				case MPARC_OK:
-				*out = const_strdup("it fine, no error");
+				*out = MPARC_strdup("it fine, no error");
 				break;
 
 				case MPARC_IDK:
-				*out = const_strdup("it fine cause idk, unknown error");
+				*out = MPARC_strdup("it fine cause idk, unknown error");
 				return 1;
 				case MPARC_INTERNAL:
-				*out = const_strdup("Internal error detected");
+				*out = MPARC_strdup("Internal error detected");
 				return 1;
 
 
 				case MPARC_IVAL:
-				*out = const_strdup("Bad vals or just generic but less generic than MPARC_IDK");
+				*out = MPARC_strdup("Bad vals or just generic but less generic than MPARC_IDK");
 				break;
 
 				case MPARC_KNOEXIST:
-				*out = const_strdup("It does not exist you dumb dumb, basically that key does not exist");
+				*out = MPARC_strdup("It does not exist you dumb dumb, basically that key does not exist");
 				break;
 				case MPARC_KEXISTS:
-				*out = const_strdup("Key exists");
+				*out = MPARC_strdup("Key exists");
 				break;
 
 				case MPARC_OOM:
-				*out = const_strdup("Oh noes I run out of memory, you need to deal with your ram cause there is a problem with your memory due to encountering out of memory condition");
+				*out = MPARC_strdup("Oh noes I run out of memory, you need to deal with your ram cause there is a problem with your memory due to encountering out of memory condition");
 				break;
 
 				case MPARC_NOTARCHIVE:
-				*out = const_strdup("You dumb person what you put in is not an archive by the 25 character long magic number it has or maybe we find out it is not a valid archive by the json or anything else");
+				*out = MPARC_strdup("You dumb person what you put in is not an archive by the 25 character long magic number it has or maybe we find out it is not a valid archive by the json or anything else");
 				break;
 				case MPARC_ARCHIVETOOSHINY:
-				*out = const_strdup("You dumb person the valid archive you put in me is too new for me to process, this archive processor may be version 1, but the archive is version 2");
+				*out = MPARC_strdup("You dumb person the valid archive you put in me is too new for me to process, this archive processor may be version 1, but the archive is version 2");
 				break;
 				case MPARC_CHKSUM:
-				*out = const_strdup("My content is gone or I can't write my content properly because it failed the CRC32 test :P");
+				*out = MPARC_strdup("My content is gone or I can't write my content properly because it failed the CRC32 test :P");
 				break;
 
 				case MPARC_CONSTRUCT_FAIL:
-				*out = const_strdup("Failed to construct archive.");
+				*out = MPARC_strdup("Failed to construct archive.");
 				break;
 
 				case MPARC_OPPART:
-				*out = const_strdup("Operation was not complete, continue the operation after giving it the remedy it needs.");
+				*out = MPARC_strdup("Operation was not complete, continue the operation after giving it the remedy it needs.");
 				break;
 
 				case MPARC_FERROR:
-				*out = const_strdup("FILE.exe has stopped responding as there is a problem with the FILE IO operation");
+				*out = MPARC_strdup("FILE.exe has stopped responding as there is a problem with the FILE IO operation");
 				break;
 
 				default:
-				*out = const_strdup("Man what happened here that was not a valid code");
+				*out = MPARC_strdup("Man what happened here that was not a valid code");
 				return 1;
 			}
 			return 0;
@@ -3328,7 +3386,11 @@ static int isLittleEndian(){
 			char* s = "";
 			// printf("%d", err);
 			int r = MPARC_strerror(err, &s);
-			fprintf(filepstream, "%s%s\n", emsg, s);
+			if(s == NULL){
+				fprintf(filepstream, "%sFailed to get error message. (%d)\n", emsg, err);
+				return r;
+			}
+			fprintf(filepstream, "%s%s (%d)\n", emsg, s, err);
 			// free(s);
 			return r;
 		}
@@ -3342,7 +3404,7 @@ static int isLittleEndian(){
 		}
 
 
-		static MXPSQL_MPARC_err MPARC_i_push_ufilestr_advancea(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, uint_fast64_t sizy, crc_t crc3){
+		static MXPSQL_MPARC_err MPARC_i_push_ufilestr_advancea(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy, crc_t crc3){
 			MPARC_blob_store blob = {
 				sizy,
 				ustringc,
@@ -3364,7 +3426,7 @@ static int isLittleEndian(){
 			#ifdef MPARC_MEM_DEBUG_VERBOSE
 			{
 				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Printing %s after doing some static advancea magic with size of %"PRIuFAST64":\n", filename, sizy);
-				for(uint_fast64_t i = 0; i < sizy; i++){
+				for(MXPSQL_MPARC_uint_repr_t i = 0; i < sizy; i++){
 					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", ustringc[i]);
 				}
 				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
@@ -3398,9 +3460,9 @@ static int isLittleEndian(){
 					char* str2d = NULL;
 
 					{
-						str1d = const_strdup(str1);
+						str1d = MPARC_strdup(str1);
 						if(str1d == NULL) goto me_my_errhandler;
-						str2d = const_strdup(str2);
+						str2d = MPARC_strdup(str2);
 						if(str2d == NULL) goto me_my_errhandler;
 					}
 
@@ -3480,20 +3542,22 @@ static int isLittleEndian(){
 		static MXPSQL_MPARC_err MPARC_i_sort(char** sortedstr){
 			if(sortedstr == NULL) return MPARC_IVAL;
 
-			uint_fast64_t counter = 0;
+			MXPSQL_MPARC_uint_repr_t counter = 0;
 			{
-				uint_fast64_t i = 0;
-				for(i = 0; 
-					sortedstr[i] != NULL
-					; i++);
+				MXPSQL_MPARC_uint_repr_t i = 0;
+				for(i = 0; sortedstr[i] != NULL; i++){
+					#ifdef MPARC_MEM_DEBUG_VERBOSE
+					printf("sort %"PRIuFAST64"> %p (NULL: %d)\n", i, sortedstr[i], (sortedstr[i] == NULL) ? 1 : 0);
+					#endif
+				}
 				counter = i;
 			}
 			{
 				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp);
-				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp);
+				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp); // double for the fun (and redundancy)
 			}
-			/* {
-				uint_fast64_t i = 0, j = 0;
+			/* { // I forgot this piece, is this insertion sort? Or is it bubble sort?
+				MXPSQL_MPARC_uint_repr_t i = 0, j = 0;
 				char* temp = NULL;
 				for (i=0;i<counter-1;i++)
 				{
@@ -3514,6 +3578,7 @@ static int isLittleEndian(){
 		static char* MPARC_i_construct_header(MXPSQL_MPARC_t* structure){
 			JsonNode* nod = json_mkobject();
 			char* s = json_encode(nod);
+			if(!s) return NULL;
 
 			{
 				static char* fmt = STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25"%c%llu%c%s%c";
@@ -3538,7 +3603,7 @@ static int isLittleEndian(){
 				char* estring = NULL;
 
 				char** jsonry = NULL;
-				uint_fast64_t jsonentries;
+				MXPSQL_MPARC_uint_repr_t jsonentries;
 
 				if(MPARC_list_array(structure, NULL, &jsonentries) != MPARC_OK){
 					if(eout) *eout = MPARC_KNOEXIST;
@@ -3552,7 +3617,7 @@ static int isLittleEndian(){
 				const char* nkey;
 				MXPSQL_MPARC_iter_t* itery = NULL;
 				// map_iter_t itery = map_iter(&structure->globby);
-				uint_fast64_t indexy = 0;
+				MXPSQL_MPARC_uint_repr_t indexy = 0;
 
 				{
 					MXPSQL_MPARC_err err = MPARC_list_iterator_init(&structure, &itery);
@@ -3572,9 +3637,9 @@ static int isLittleEndian(){
 						JsonNode* objectweb = json_mkobject();
 						MPARC_blob_store bob_the_blob = *bob_the_blob_raw;
 						unsigned char* btob = NULL;
-						uint_fast64_t sizey = 0;
+						MXPSQL_MPARC_uint_repr_t sizey = 0;
 						if(bob_the_blob.binary_size < 1){
-							btob = (unsigned char*) const_strdup("");
+							btob = (unsigned char*) MPARC_strdup("");
 							sizey = strlen((char*) btob); // redundant, but more programatic
 						}
 						else{
@@ -3584,17 +3649,17 @@ static int isLittleEndian(){
 						#ifdef MPARC_MEM_DEBUG_VERBOSE
 						{
 							fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Viewing preb64 bytes of %s with size of %"PRIuFAST64":\n", nkey, bob_the_blob.binary_size);
-							for(uint_fast64_t i = 0; i < bob_the_blob.binary_size; i++){
+							for(MXPSQL_MPARC_uint_repr_t i = 0; i < bob_the_blob.binary_size; i++){
 								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", bob_the_blob.binary_blob[i]);
 							}
 							fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
 
 							{
 								unsigned char* bblob = NULL;
-								uint_fast64_t bsea = 0;
+								MXPSQL_MPARC_uint_repr_t bsea = 0;
 								bblob = b64.atob(btob, strlen((char*) btob), &bsea);
 								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Viewing unb64 construction bytes of %s with size of %"PRIuFAST64":\n", nkey, bsea);
-								for(uint_fast64_t i = 0; i < bsea; i++){
+								for(MXPSQL_MPARC_uint_repr_t i = 0; i < bsea; i++){
 									fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", bblob[i]);
 								}
 								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
@@ -3657,6 +3722,11 @@ static int isLittleEndian(){
 							goto errhandler;
 						}
 						char* stringy = json_encode(objectweb);
+						if(!stringy) {
+							if(eout) *eout = MPARC_CONSTRUCT_FAIL;
+							MPARC_list_iterator_destroy(&itery);
+							goto errhandler;
+						}
 
 
 						{
@@ -3691,12 +3761,12 @@ static int isLittleEndian(){
 				MPARC_list_iterator_destroy(&itery);
 
 				// ((void)MPARC_i_sort);
-				MPARC_i_sort(jsonry); // We qsort this, qsort can be quicksort, insertion sort or BOGOSORT. It is ordered by the checksum instead of the name lmao.
+				MPARC_i_sort(jsonry); // We qsort this, qsort can be quicksort, insertion sort or BOGOSORT. It is ordered by the checksum instead of the name lmao (or the name, yeah we set to name).
 
 				{
-						uint_fast64_t iacrurate_snprintf_len = 1;
-						for(uint_fast64_t i = 0; i < jsonentries; i++){
-								iacrurate_snprintf_len += strlen(jsonry[i])+10;
+						MXPSQL_MPARC_uint_repr_t iacrurate_snprintf_len = 1;
+						for(MXPSQL_MPARC_uint_repr_t i = 0; i < jsonentries; i++){
+							iacrurate_snprintf_len += strlen(jsonry[i])+10;
 						}
 
 						char* str = calloc(iacrurate_snprintf_len+1, sizeof(char));
@@ -3706,22 +3776,36 @@ static int isLittleEndian(){
 							goto errhandler;
 						}
 						memset(str, '\0', iacrurate_snprintf_len+1);
-						for(uint_fast64_t i2 = 0; i2 < jsonentries; i2++){
-								char* outstr = calloc(iacrurate_snprintf_len+1, sizeof(char));
-								CHECK_LEAKS();
-								if(outstr == NULL){
-									if(eout) *eout = MPARC_OOM;
-									if(str) free(str);
-									goto errhandler;
-								}
-								strcpy(outstr, str);
-								int len = snprintf(outstr, iacrurate_snprintf_len, "%s%c%s", str, structure->entry_sep_or_general_marker, jsonry[i2]);
-								if(len < 0 || ((uint_fast64_t)len) > iacrurate_snprintf_len){
-									if(eout) *eout = MPARC_CONSTRUCT_FAIL;
-									if(outstr) free(outstr);
-									goto errhandler;
-								}
-								strcpy(str, outstr);
+						for(MXPSQL_MPARC_uint_repr_t i2 = 0; i2 < jsonentries; i2++){
+							MXPSQL_MPARC_uint_repr_t strlcpy_r = 0;
+							char* outstr = calloc(iacrurate_snprintf_len+1, sizeof(char));
+							CHECK_LEAKS();
+							if(outstr == NULL){
+								if(eout) *eout = MPARC_OOM;
+								if(str) free(str);
+								goto errhandler;
+							}
+							strlcpy_r = strlcpy(outstr, str, iacrurate_snprintf_len);
+							if(strlcpy_r > iacrurate_snprintf_len){
+								if(eout) *eout = MPARC_CONSTRUCT_FAIL;
+								if(str) free(str);
+								if(outstr) free(outstr);
+								goto errhandler;
+							}
+							int len = snprintf(outstr, iacrurate_snprintf_len, "%s%c%s", str, structure->entry_sep_or_general_marker, jsonry[i2]);
+							if(len < 0 || ((MXPSQL_MPARC_uint_repr_t)len) > iacrurate_snprintf_len){
+								if(eout) *eout = MPARC_CONSTRUCT_FAIL;
+								if(str) free(str);
+								if(outstr) free(outstr);
+								goto errhandler;
+							}
+							strlcpy_r = strlcpy(str, outstr, iacrurate_snprintf_len);
+							if(strlcpy_r > iacrurate_snprintf_len){
+								if(eout) *eout = MPARC_CONSTRUCT_FAIL;
+								if(str) free(str);
+								if(outstr) free(outstr);
+								goto errhandler;
+							}
 						}
 
 						estring = str;
@@ -3737,7 +3821,7 @@ static int isLittleEndian(){
 
 				commonexit:
 				{
-					for(uint_fast64_t i = 0; i < jsonentries; i++){
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < jsonentries; i++){
 							if(jsonry[i]) free(jsonry[i]);
 					}
 					if(jsonry) free(jsonry);
@@ -3932,7 +4016,7 @@ static int isLittleEndian(){
 			char** entries = NULL;
 			char** json_entries = NULL;
 			MXPSQL_MPARC_err err = MPARC_OK;
-			uint_fast64_t ecount = 0;
+			MXPSQL_MPARC_uint_repr_t ecount = 0;
 			{
 				char* entry = NULL;
 				
@@ -3958,7 +4042,7 @@ static int isLittleEndian(){
 					char* saveptr2 = NULL;
 					char septic[2] = {structure->entry_sep_or_general_marker, '\0'};
 					{
-						char* edup = const_strdup(entry2);
+						char* edup = MPARC_strdup(entry2);
 						if(edup == NULL){
 							err = MPARC_OOM;
 							goto errhandler;
@@ -3984,8 +4068,8 @@ static int isLittleEndian(){
 					}
 					json_entries[ecount] = NULL;
 					char* entry64 = MPARC_strtok_r(entry2, septic, &saveptr2);
-					for(uint_fast64_t i = 0; entry64 != NULL; i++){
-						entries[i] = const_strdup(entry64);
+					for(MXPSQL_MPARC_uint_repr_t i = 0; entry64 != NULL; i++){
+						entries[i] = MPARC_strdup(entry64);
 						if(entries[i] == NULL){
 							err = MPARC_OOM;
 							goto errhandler;
@@ -3996,7 +4080,7 @@ static int isLittleEndian(){
 				}
 			}
 
-			for(uint_fast64_t i = 0; i < ecount; i++){
+			for(MXPSQL_MPARC_uint_repr_t i = 0; i < ecount; i++){
 				crc_t crc = crc_init();
 				crc_t tcrc = crc_init();
 				char* entry = entries[i];
@@ -4025,7 +4109,7 @@ static int isLittleEndian(){
 
 			jsmn_parser jsmn;
 			jsmn_init(&jsmn);
-			for(uint_fast64_t i = 0; i < ecount; i++){
+			for(MXPSQL_MPARC_uint_repr_t i = 0; i < ecount; i++){
 				char* filename = NULL;
 				char* blob = NULL;
 				crc_t crc3 = crc_init();
@@ -4036,14 +4120,14 @@ static int isLittleEndian(){
 				char* jse = json_entries[i];
 
 				if(false){ // disable jsmn for now due to eroneous results (problem with the token ordering)
-					static const uint_fast64_t jtokens_count = 128; // we only need 4 but we don't expect more than 128, we put more just in case for other metadata
+					static const MXPSQL_MPARC_uint_repr_t jtokens_count = 128; // we only need 4 but we don't expect more than 128, we put more just in case for other metadata
 					jsmntok_t jtokens[jtokens_count]; // this says no to C++
 					int jsmn_err = jsmn_parse(&jsmn, jse, strlen(jse), jtokens, jtokens_count);
 					if(jsmn_err < 0){
 						err = MPARC_NOTARCHIVE;
 						goto errhandler;
 					}
-					for(uint_fast64_t i_jse = 1; i_jse < 5; i_jse++){ // we only need 4 to scan
+					for(MXPSQL_MPARC_uint_repr_t i_jse = 1; i_jse < 5; i_jse++){ // we only need 4 to scan
 						jsmntok_t jtoken = jtokens[i_jse];
 						char* tok1 = "";
 						{
@@ -4105,13 +4189,13 @@ static int isLittleEndian(){
 				}
 				
 				{
-					uint_fast64_t bsize = 1;
+					MXPSQL_MPARC_uint_repr_t bsize = 1;
 					unsigned char* un64_blob = NULL;
 					if(strlen(blob) > 1){
 						un64_blob = b64.atob((unsigned char*) blob, strlen(blob), &bsize);
 					}
 					else{
-						un64_blob = (unsigned char*) const_strdup("");
+						un64_blob = (unsigned char*) MPARC_strdup("");
 					}
 
 					if(un64_blob == NULL){
@@ -4129,7 +4213,7 @@ static int isLittleEndian(){
 						#ifdef MPARC_MEM_DEBUG_VERBOSE
 						{
 							fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Printing unb64 blob after parsing of %s with size of %"PRIuFAST64":\n", filename, store.binary_size);
-							for(uint_fast64_t i = 0; i < store.binary_size; i++){
+							for(MXPSQL_MPARC_uint_repr_t i = 0; i < store.binary_size; i++){
 								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", store.binary_blob[i]);
 							}
 							printf("\n");
@@ -4160,7 +4244,7 @@ static int isLittleEndian(){
 			goto errhandler; // redundant I know
 
 			errhandler:
-			for(uint_fast64_t i = 0; i < ecount; i++){
+			for(MXPSQL_MPARC_uint_repr_t i = 0; i < ecount; i++){
 				if(entries[i] != NULL) free(entries[i]);
 				// if(json_entries[i] != NULL) free(json_entries[i]);
 			}
@@ -4224,12 +4308,12 @@ static int isLittleEndian(){
 			// partial deep copy
 			{
 				char** listy_structure_out = NULL;
-				uint_fast64_t listy_structure_sizy_sizey_size = 0;
+				MXPSQL_MPARC_uint_repr_t listy_structure_sizy_sizey_size = 0;
 				err = MPARC_list_array(*structure, &listy_structure_out, &listy_structure_sizy_sizey_size);
 				if(err != MPARC_OK){
 					return err;
 				}
-				for(uint_fast64_t i = 0; i < listy_structure_sizy_sizey_size; i++){
+				for(MXPSQL_MPARC_uint_repr_t i = 0; i < listy_structure_sizy_sizey_size; i++){
 					char* filename = listy_structure_out[i];
 					MPARC_blob_store e = {0};
 					err = MPARC_peek_file(*structure, filename, &e.binary_blob, &e.binary_size);
@@ -4250,6 +4334,33 @@ static int isLittleEndian(){
 		MXPSQL_MPARC_err MPARC_destroy(MXPSQL_MPARC_t** structure){
 				if(structure == NULL || *structure == NULL) return MPARC_IVAL;
 
+				{
+					MXPSQL_MPARC_err err = MPARC_OK;
+
+					MXPSQL_MPARC_iter_t* iterator = NULL;
+					if((err = MPARC_list_iterator_init(structure, &iterator)) != MPARC_OK){
+						return err;
+					}
+
+					{
+						const char* key = NULL;
+						while((err = MPARC_list_iterator_next(&iterator, &key)) == MPARC_OK){
+							unsigned char* blob = NULL;
+							MXPSQL_MPARC_uint_repr_t s64 = 0;
+							if((err = MPARC_peek_file(*structure, key, &blob, &s64)) != MPARC_OK){
+								break;
+							}
+							free(blob);
+						}
+
+						MPARC_list_iterator_destroy(&iterator);
+
+						if(err != MPARC_KNOEXIST){
+							return err;
+						}
+					}
+				}
+
 				map_deinit(&(*structure)->globby);
 
 				if(*structure) free(*structure);
@@ -4261,17 +4372,17 @@ static int isLittleEndian(){
 
 
 
-		MXPSQL_MPARC_err MPARC_list_array(MXPSQL_MPARC_t* structure, char*** listout,	uint_fast64_t* length){
+		MXPSQL_MPARC_err MPARC_list_array(MXPSQL_MPARC_t* structure, char*** listout,	MXPSQL_MPARC_uint_repr_t* length){
 				if(structure == NULL) {
 						return MPARC_IVAL;
 				}
 
 				typedef struct anystruct {
-						uint_fast64_t len;
+						MXPSQL_MPARC_uint_repr_t len;
 						const char* nam;
 				} abufinfo;
 
-				uint_fast64_t lentracker = 0;
+				MXPSQL_MPARC_uint_repr_t lentracker = 0;
 
 				char** listout_structure = NULL;
 
@@ -4290,7 +4401,7 @@ static int isLittleEndian(){
 
 				if(listout != NULL){
 
-						uint_fast64_t index = 0;
+						MXPSQL_MPARC_uint_repr_t index = 0;
 						const char* key2;
 						listout_structure = calloc(lentracker+1, sizeof(char*));
 						CHECK_LEAKS();
@@ -4306,7 +4417,7 @@ static int isLittleEndian(){
 										key2
 								};
 
-								listout_structure[index] = const_strdup(bi.nam);
+								listout_structure[index] = MPARC_strdup(bi.nam);
 
 								// free((char*)bi.nam);
 
@@ -4336,7 +4447,7 @@ static int isLittleEndian(){
 								// printf("%de\n", key2 == NULL);
 								// fflush(stdout);
 
-								listout_structure[index] = const_strdup(bi.nam);
+								listout_structure[index] = MPARC_strdup(bi.nam);
 
 								// free((char*)bi.nam);
 
@@ -4352,7 +4463,7 @@ static int isLittleEndian(){
 						*listout = listout_structure;
 				}
 				else{
-					for(uint_fast64_t i = 0; i < lentracker; i++){
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < lentracker; i++){
 						if(listout_structure) {
 							if(listout_structure[i]) free(listout_structure[i]);
 						}
@@ -4405,14 +4516,56 @@ static int isLittleEndian(){
 			return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, char* filename){
+		MXPSQL_MPARC_err MPARC_list_foreach(MXPSQL_MPARC_t* structure, int* cb_aborted, MXPSQL_MPARC_err (*callback)(MXPSQL_MPARC_t*, const char*)){
+			MXPSQL_MPARC_err err = MPARC_OK;
+			int cb_status = 0;
+
+			MXPSQL_MPARC_iter_t* iterator = NULL;
+
+			err = MPARC_list_iterator_init(&structure, &iterator);
+			if(err != MPARC_OK){
+				cb_status = 0;
+				goto exit_handler;
+			}
+
+			{
+				MXPSQL_MPARC_err err_l = MPARC_OK;
+				const char* key = NULL;
+				while((err = MPARC_list_iterator_next(&iterator, &key)) == MPARC_OK){
+					err_l = callback(structure, key);
+					if(err_l != MPARC_OK){
+						cb_status = 1;
+						goto atexit_handler;
+					}
+				}
+
+				if(err == MPARC_KNOEXIST){
+					err = MPARC_OK;
+				}
+
+				if(err_l != MPARC_OK){
+					err = err_l;
+				}
+			}
+
+			goto atexit_handler; // redundant
+
+			atexit_handler:
+			MPARC_list_iterator_destroy(&iterator);
+
+			exit_handler:
+			if(cb_aborted) *cb_aborted = cb_status;
+			return err;
+		}
+
+		MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, const char* filename){
 				if(structure == NULL || filename == NULL) return MPARC_IVAL;
 				if(true){
 					if((map_get(&structure->globby, filename)) == NULL) return MPARC_KNOEXIST;
 				}
 				else{
 					char** listy_out = NULL;
-					uint_fast64_t listy_size = 0;
+					MXPSQL_MPARC_uint_repr_t listy_size = 0;
 					{
 						MXPSQL_MPARC_err err = MPARC_list_array(structure, &listy_out, &listy_size);
 						if(err != MPARC_OK) return err;
@@ -4440,7 +4593,7 @@ static int isLittleEndian(){
 		MXPSQL_MPARC_err MPARC_query_vlist(MXPSQL_MPARC_t* structure, char*** output, char* command, va_list vlist){
 			MXPSQL_MPARC_err err = MPARC_OK;
 			char** flist = NULL;
-			uint_fast64_t flist_len = 0;
+			MXPSQL_MPARC_uint_repr_t flist_len = 0;
 			char** smacklist = NULL;
 
 			if((err = MPARC_list_array(structure, &flist, &flist_len)) != MPARC_OK){
@@ -4471,12 +4624,12 @@ static int isLittleEndian(){
 
 				q_size_big:
 				{
-					uint_fast64_t user_size = va_arg(vlist, uint_fast64_t);
+					MXPSQL_MPARC_uint_repr_t user_size = va_arg(vlist, MXPSQL_MPARC_uint_repr_t);
 
-					uint_fast64_t hits = 0;
+					MXPSQL_MPARC_uint_repr_t hits = 0;
 
-					for(uint_fast64_t i = 0; i < flist_len; i++){
-						uint_fast64_t file_size = 0;
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
+						MXPSQL_MPARC_uint_repr_t file_size = 0;
 						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
 							goto exit_handler;
 						}
@@ -4493,14 +4646,14 @@ static int isLittleEndian(){
 						goto exit_handler;
 					}
 
-					for(uint_fast64_t i = 0; i < flist_len; i++){
-						uint_fast64_t file_size = 0;
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
+						MXPSQL_MPARC_uint_repr_t file_size = 0;
 						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
 							goto exit_handler;
 						}
 
 						if(user_size > file_size){
-							smacklist[i] = const_strdup(flist[i]);
+							smacklist[i] = MPARC_strdup(flist[i]);
 						}
 					}
 
@@ -4511,12 +4664,12 @@ static int isLittleEndian(){
 
 				q_size_equal:
 				{
-					uint_fast64_t user_size = va_arg(vlist, uint_fast64_t);
+					MXPSQL_MPARC_uint_repr_t user_size = va_arg(vlist, MXPSQL_MPARC_uint_repr_t);
 
-					uint_fast64_t hits = 0;
+					MXPSQL_MPARC_uint_repr_t hits = 0;
 
-					for(uint_fast64_t i = 0; i < flist_len; i++){
-						uint_fast64_t file_size = 0;
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
+						MXPSQL_MPARC_uint_repr_t file_size = 0;
 						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
 							goto exit_handler;
 						}
@@ -4533,14 +4686,14 @@ static int isLittleEndian(){
 						goto exit_handler;
 					}
 
-					for(uint_fast64_t i = 0; i < flist_len; i++){
-						uint_fast64_t file_size = 0;
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
+						MXPSQL_MPARC_uint_repr_t file_size = 0;
 						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
 							goto exit_handler;
 						}
 
 						if(user_size == file_size){
-							smacklist[i] = const_strdup(flist[i]);
+							smacklist[i] = MPARC_strdup(flist[i]);
 						}
 					}
 
@@ -4551,12 +4704,12 @@ static int isLittleEndian(){
 
 				q_size_small:
 				{
-					uint_fast64_t user_size = va_arg(vlist, uint_fast64_t);
+					MXPSQL_MPARC_uint_repr_t user_size = va_arg(vlist, MXPSQL_MPARC_uint_repr_t);
 
-					uint_fast64_t hits = 0;
+					MXPSQL_MPARC_uint_repr_t hits = 0;
 
-					for(uint_fast64_t i = 0; i < flist_len; i++){
-						uint_fast64_t file_size = 0;
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
+						MXPSQL_MPARC_uint_repr_t file_size = 0;
 						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
 							goto exit_handler;
 						}
@@ -4573,14 +4726,14 @@ static int isLittleEndian(){
 						goto exit_handler;
 					}
 
-					for(uint_fast64_t i = 0; i < flist_len; i++){
-						uint_fast64_t file_size = 0;
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
+						MXPSQL_MPARC_uint_repr_t file_size = 0;
 						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
 							goto exit_handler;
 						}
 
 						if(user_size < file_size){
-							smacklist[i] = const_strdup(flist[i]);
+							smacklist[i] = MPARC_strdup(flist[i]);
 						}
 					}
 
@@ -4594,9 +4747,9 @@ static int isLittleEndian(){
 				{
 					char* extension = va_arg(vlist, char*);
 
-					uint_fast64_t hits = 0;
+					MXPSQL_MPARC_uint_repr_t hits = 0;
 
-					for(uint_fast64_t i = 0; i < flist_len; i++){
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
 						char* ext = MPARC_get_extension(flist[i], (int)extmode_final);
 						if(ext != NULL){
 							if(strcmp(ext, extension) == 0){
@@ -4612,11 +4765,11 @@ static int isLittleEndian(){
 						goto exit_handler;
 					}
 
-					for(uint_fast64_t i = 0; i < flist_len; i++){
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
 						char* ext = MPARC_get_extension(flist[i], (int)extmode_final);
 						if(ext != NULL){
 							if(strcmp(ext, extension) == 0){
-								smacklist[i] = const_strdup(flist[i]);
+								smacklist[i] = MPARC_strdup(flist[i]);
 							}
 						}
 					}
@@ -4645,7 +4798,7 @@ static int isLittleEndian(){
 
 
 
-		MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, uint_fast64_t sizy){
+		MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy){
 			crc_t crc3 = crc_init();
 			crc3 = crc_update(crc3, ustringc, sizy);
 			crc3 = crc_finalize(crc3);
@@ -4653,7 +4806,7 @@ static int isLittleEndian(){
 
 			#ifdef MPARC_MEM_DEBUG_VERBOSE
 			fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Viewing bytes of %s after being pushed on the archive with size of %"PRIuFAST64":\n", filename, sizy);
-			for(uint_fast64_t i = 0; i < sizy; i++){
+			for(MXPSQL_MPARC_uint_repr_t i = 0; i < sizy; i++){
 				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", ustringc[i]);
 			}
 			fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
@@ -4664,15 +4817,15 @@ static int isLittleEndian(){
 			return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, uint_fast64_t sizy){
+		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy){
 			return MPARC_push_ufilestr_advance(structure, filename, 0, 1, ustringc, sizy);
 		}
 
-		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, uint_fast64_t sizey){
+		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, MXPSQL_MPARC_uint_repr_t sizey){
 			return MPARC_push_ufilestr(structure, filename, (unsigned char*)buffer_guffer, sizey);
 		}
 
-		MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, uint_fast64_t sizey){
+		MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, MXPSQL_MPARC_uint_repr_t sizey){
 				return MPARC_push_ufilestr(structure, filename, (unsigned char*) stringc, sizey);
 		}
 
@@ -4708,7 +4861,7 @@ static int isLittleEndian(){
 
 				unsigned char* binary = NULL;
 
-				uint_fast64_t filesize = 0; // byte count
+				MXPSQL_MPARC_uint_repr_t filesize = 0; // byte count
 				if(fseek(filestream, 0, SEEK_SET) != 0){
 					return MPARC_FERROR;
 				}
@@ -4738,7 +4891,7 @@ static int isLittleEndian(){
 				}
 				else{
 					int c = 0;
-					uint_fast64_t i = 0;
+					MXPSQL_MPARC_uint_repr_t i = 0;
 					while((c = fgetc(filestream)) != EOF){
 						binary[i++] = c;
 					}
@@ -4752,14 +4905,15 @@ static int isLittleEndian(){
 				#ifdef MPARC_MEM_DEBUG_VERBOSE
 				{
 					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "viewing bytes read from %s with size of %"PRIuFAST64":\n", filename, filesize);
-					for(uint_fast64_t i = 0; i < filesize; i++){
+					for(MXPSQL_MPARC_uint_repr_t i = 0; i < filesize; i++){
 						fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", binary[i]);
 					}
 					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
 				}
 				#endif
 
-				unsigned char* strd = (unsigned char*) const_strdup((char*) binary);
+				if(!binary) return MPARC_OOM;
+				unsigned char* strd = (unsigned char*) MPARC_memdup(binary, filesize*sizeof(unsigned char));
 				if(!strd) return MPARC_OOM;
 				MXPSQL_MPARC_err err = MPARC_push_ufilestr(structure, filename, strd, filesize);
 				
@@ -4776,10 +4930,10 @@ static int isLittleEndian(){
 
 		MXPSQL_MPARC_err MPARC_clear_file(MXPSQL_MPARC_t* structure){
 			char** entryos = NULL;
-			uint_fast64_t eos_s = 0;
+			MXPSQL_MPARC_uint_repr_t eos_s = 0;
 			MXPSQL_MPARC_err err = MPARC_list_array(structure, &entryos, &eos_s);
 			if(err != MPARC_OK) return err;
-			for(uint_fast64_t i = 0; i < eos_s; i++){
+			for(MXPSQL_MPARC_uint_repr_t i = 0; i < eos_s; i++){
 				MPARC_pop_file(structure, entryos[i]);
 			}
 			if(entryos) free(entryos);
@@ -4787,7 +4941,7 @@ static int isLittleEndian(){
 		}
 
 
-		static MXPSQL_MPARC_err MPARC_peek_file_advance(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint_fast64_t* sout, crc_t* crout){ // users don't need to know the crc
+		static MXPSQL_MPARC_err MPARC_peek_file_advance(MXPSQL_MPARC_t* structure, const char* filename, unsigned char** bout, MXPSQL_MPARC_uint_repr_t* sout, crc_t* crout){ // users don't need to know the crc
 				if(MPARC_exists(structure, filename) == MPARC_KNOEXIST) return MPARC_KNOEXIST;
 				MPARC_blob_store* storeptr = map_get(&structure->globby, filename);
 				if(bout != NULL) {
@@ -4795,7 +4949,7 @@ static int isLittleEndian(){
 					#ifdef MPARC_MEM_DEBUG_VERBOSE
 					{
 						fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of peeked data with size of %"PRIuFAST64".\n", storeptr->binary_size);
-						for(uint_fast64_t i = 0; i < storeptr->binary_size; i++){
+						for(MXPSQL_MPARC_uint_repr_t i = 0; i < storeptr->binary_size; i++){
 							fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", storeptr->binary_blob[i]);
 						}
 						fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
@@ -4807,7 +4961,7 @@ static int isLittleEndian(){
 				return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, char* filename, unsigned char** bout, uint_fast64_t* sout){
+		MXPSQL_MPARC_err MPARC_peek_file(MXPSQL_MPARC_t* structure, const char* filename, unsigned char** bout, MXPSQL_MPARC_uint_repr_t* sout){
 			return MPARC_peek_file_advance(structure, filename, bout, sout, NULL);
 		}
 
@@ -4816,7 +4970,7 @@ static int isLittleEndian(){
 		 * SEE THIS TO SEE THE FILE FORMAT OF THE ARCHIVE
 		 * THIS PART IS IMPORTANT TO SEE HOW IT IS IMPLEMENTED AND THE FORMAT
 		 * 
-		 * How is the file constructed (along with little parsing information):
+		 * How is the file constructed (along with little parsing information to make your own parser):
 		 * 
 		 * 1. Build the header:
 		 * Format: MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE]
@@ -4846,7 +5000,7 @@ static int isLittleEndian(){
 		 * The '%' character is to separate the checksum of the JSON from the JSON itself
 		 * 
 		 * You can add other metadata like date of creation, but there must be the entries "filename", "blob" and "crcsum" in the JSON
-		 * This C implementation will ignore any extra metadata
+		 * This C implementation will ignore any extra metadata.
 		 * 
 		 * "filename" should contain the filename. (don't do any effects and magic on this field called "filename")
 		 * "blob" should contain the base64 of the binary or text file. (base64 to make it a text file and not binary)
@@ -4858,10 +5012,13 @@ static int isLittleEndian(){
 		 * The anomaly mention aboved is because the newline is added before the main content
 		 * 
 		 * Parsing note:
-		 * When parsing the entries, split from the begin '>' and end markers '@'.
+		 * When parsing the entries, split from the begin '>' marker first, and then the end '@' marker.
 		 * Then split each by newlines.
 		 * Then, foreach split '%' to get the crc and json.
+		 * Then compare the JSON to the crc.
+		 * Then parse the JSON as usual.
 		 * 
+		 * You could parse extra info in your implementation, but this C Based implementation will ignore extra ones. I repeat this line again.
 		 * 
 		 * 
 		 * 3. Build the footer
@@ -4871,9 +5028,12 @@ static int isLittleEndian(){
 		 * the '~' character is to signify end of file
 		 * 
 		 * Parsing note:
-		 * Make sure to
+		 * Make sure to not have anything beyond the footer, not even a newline.
 		 * 
+		 * Final note:
+		 * This file should not have binary characters.
 		 * 
+		 * 		 
 		 * Follow this (with placeholder) and you get this:
 		 * MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE][CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]@~
 		 * 
@@ -4976,7 +5136,7 @@ static int isLittleEndian(){
 				if(archive) free(archive);
 				return err;
 			}
-			uint_fast64_t count = strlen(archive);
+			MXPSQL_MPARC_uint_repr_t count = strlen(archive);
 			if(count >= MPARC_DIRECTF_MINIMUM){
 				if(fwrite(archive, sizeof(char), count, fpstream) < count && ferror(fpstream)){
 					if(archive) free(archive);
@@ -4984,7 +5144,7 @@ static int isLittleEndian(){
 				}
 			}
 			else{
-				for(uint_fast64_t i = 0; i < count; i++){
+				for(MXPSQL_MPARC_uint_repr_t i = 0; i < count; i++){
 					if(fputc(archive[i], fpstream) == EOF){
 						if(archive) free(archive);
 						err = MPARC_FERROR;
@@ -5001,12 +5161,12 @@ static int isLittleEndian(){
 		MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*)){
 			{
 				char** listy = NULL;
-				uint_fast64_t listys = 0;
+				MXPSQL_MPARC_uint_repr_t listys = 0;
 				if(MPARC_list_array(structure, &listy, &listys) != MPARC_OK){
 					return MPARC_IVAL;
 				}
 
-				for(uint_fast64_t i = 0; i < listys; i++){
+				for(MXPSQL_MPARC_uint_repr_t i = 0; i < listys; i++){
 					if(dir2make != NULL) *dir2make = NULL;
 					char* fname = NULL;
 					const char* nkey = listy[i];
@@ -5015,12 +5175,12 @@ static int isLittleEndian(){
 					rmkdir_goto_label_spot:
 					{
 						{
-							fname = const_strdup(nkey);
+							fname = MPARC_strdup(nkey);
 							if(!fname){
 								if(listy) free(listy);
 								return MPARC_OOM;
 							}
-							uint_fast64_t pathl = strlen(fname)+strlen(nkey)+1;
+							MXPSQL_MPARC_uint_repr_t pathl = strlen(fname)+strlen(nkey)+1;
 							void* nfname = realloc(fname, pathl+1);
 							CHECK_LEAKS();
 							if(nfname == NULL){
@@ -5030,7 +5190,7 @@ static int isLittleEndian(){
 							}
 							fname = (char*) nfname;
 							int splen = snprintf(fname, pathl, "%s/%s", destdir, nkey);
-							if(splen < 0 || ((uint_fast64_t)splen) > pathl){
+							if(splen < 0 || ((MXPSQL_MPARC_uint_repr_t)splen) > pathl){
 								if(fname) free(fname);
 								if(listy) free(listy);
 								return MPARC_IVAL;
@@ -5071,7 +5231,7 @@ static int isLittleEndian(){
 						}
 						{
 							unsigned char* bout = NULL;
-							uint_fast64_t sout = 0;
+							MXPSQL_MPARC_uint_repr_t sout = 0;
 							crc_t crc3 = 0;
 							MXPSQL_MPARC_err err = MPARC_peek_file_advance(structure, (char*) nkey, &bout, &sout, &crc3);
 							if(err != MPARC_OK){
@@ -5092,7 +5252,7 @@ static int isLittleEndian(){
 							}
 							else{
 								// char abc = {'a', 'b', 'c', '\0'};
-								for(uint_fast64_t i = 0; i < sout; i++){
+								for(MXPSQL_MPARC_uint_repr_t i = 0; i < sout; i++){
 									if(fputc(bout[i], fps) == EOF){
 										if(fname) free(fname);
 										if(listy) free(listy);
@@ -5129,7 +5289,7 @@ static int isLittleEndian(){
 							}
 							else{
 								int c = 0;
-								uint_fast64_t i = 0;
+								MXPSQL_MPARC_uint_repr_t i = 0;
 								while((c = fgetc(fps)) != EOF){
 									binary[i++] = c;
 								}
@@ -5187,7 +5347,7 @@ static int isLittleEndian(){
 				goto main_errhandler;
 			}
 
-			for(uint_fast64_t i = 0; flists[i] != NULL; i++){
+			for(MXPSQL_MPARC_uint_repr_t i = 0; flists[i] != NULL; i++){
 				err = MPARC_push_filename(structure, flists[i]);
 				if(err != MPARC_OK){
 					goto main_errhandler;
@@ -5197,7 +5357,7 @@ static int isLittleEndian(){
 
 			goto main_errhandler;
 			main_errhandler:
-			for(uint_fast64_t i = 0; flists[i] != NULL; i++){
+			for(MXPSQL_MPARC_uint_repr_t i = 0; flists[i] != NULL; i++){
 				if(flists[i] != NULL) {
 					free(flists[i]);
 				}
@@ -5212,7 +5372,7 @@ static int isLittleEndian(){
 			MXPSQL_MPARC_err err = MPARC_OK;
 
 			{
-				char* s3 = const_strdup(Stringy);
+				char* s3 = MPARC_strdup(Stringy);
 				if(s3 == NULL) {
 					err = MPARC_OOM;
 					goto endy;
@@ -5224,7 +5384,7 @@ static int isLittleEndian(){
 				}
 			}
 			{
-				char* s3 = const_strdup(Stringy);
+				char* s3 = MPARC_strdup(Stringy);
 				if(s3 == NULL) {
 					err = MPARC_OOM;
 					goto endy;
@@ -5236,7 +5396,7 @@ static int isLittleEndian(){
 				}
 			}
 			{
-				char* s3 = const_strdup(Stringy);
+				char* s3 = MPARC_strdup(Stringy);
 				if(s3 == NULL) {
 					err = MPARC_OOM;
 					goto endy;
@@ -5259,7 +5419,7 @@ static int isLittleEndian(){
 		}
 
 		MXPSQL_MPARC_err MPARC_parse_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream){
-			uint_fast64_t filesize = 0;
+			MXPSQL_MPARC_uint_repr_t filesize = 0;
 			if(fseek(fpstream, 0, SEEK_SET) != 0){
 				return MPARC_FERROR;
 			}
@@ -5289,7 +5449,7 @@ static int isLittleEndian(){
 			}
 			else{
 				int c = 0;
-				uint_fast64_t i = 0;
+				MXPSQL_MPARC_uint_repr_t i = 0;
 				while((c = fgetc(fpstream)) != EOF){
 					binary[i++] = c;
 				}
