@@ -470,7 +470,7 @@ int cmdline_main(int argc, char* exe, char** argv){
 
     int opt = 0;
 
-    while((opt = optparse(&parser, "f:edxalchv")) != -1){
+    while((opt = optparse(&parser, "f:rksuypedxalchv")) != -1){
         switch(opt){
             case 'h':
                 printf("Help shall be here\n");
@@ -490,6 +490,12 @@ int cmdline_main(int argc, char* exe, char** argv){
             case 'x':
             case 'd':
             case 'e':
+            case 'p':
+            case 'y':
+            case 'u':
+            case 's':
+            case 'k':
+            case 'r':
                 mode = opt;
                 break;
 
@@ -608,6 +614,101 @@ int cmdline_main(int argc, char* exe, char** argv){
             }
             printf("\n");
         }
+    }
+    else if(mode == 'p'){
+        err = MPARC_parse_filename(archive, filename);
+        MPARC_CHECKXIT(err);
+        while((arg = optparse_arg(&parser))){
+            err = MPARC_exists(archive, arg);
+            MPARC_CHECKXIT(err);
+            {
+                unsigned char* b = 0;
+                MXPSQL_MPARC_uint_repr_t bs = 0;
+                err = MPARC_peek_file(archive, arg, &b, &bs);
+                MPARC_CHECKXIT(err);
+                for(MXPSQL_MPARC_uint_repr_t i = 0; i < bs; i++){
+                    printf("%c", (char) b[i]);
+                }
+                printf("\n");
+            }
+        }
+    }
+    else if(mode == 'y' || mode == 'u'){
+        err = MPARC_parse_filename(archive, filename);
+        MPARC_CHECKXIT(err);
+        while((arg = optparse_arg(&parser))){
+            MXPSQL_MPARC_t* cp_archive = NULL;
+            err = MPARC_copy(&archive, &cp_archive);
+            if(err != MPARC_OK) goto lh;
+
+            err = MPARC_construct_filename(cp_archive, arg);
+            if(err != MPARC_OK) goto lh;
+            if(verbose) printf("CMD (%c)> %s\n", mode, arg);
+
+            lh:
+            MPARC_destroy(&cp_archive);
+            MPARC_CHECKXIT(err);
+        }
+    }
+    else if(mode == 's'){
+        err = MPARC_parse_filename(archive, filename);
+        MPARC_CHECKXIT(err);
+        char* f1 = optparse_arg(&parser);
+        if(!f1){
+            printf("%s: Missing argument for swapping entry\n", exe);
+            ex = EXIT_FAILURE;
+            goto exit_handler;
+        }
+        char* f2 = optparse_arg(&parser);
+        if(!f2){
+            printf("%s: Missing argument for swapping entry\n", exe);
+            ex = EXIT_FAILURE;
+            goto exit_handler;
+        }
+        err = MPARC_swap_file(archive, f1, f2);
+        MPARC_CHECKXIT(err);
+        err = MPARC_construct_filename(archive, filename);
+        MPARC_CHECKXIT(err);
+    }
+    else if(mode == 'k'){
+        err = MPARC_parse_filename(archive, filename);
+        MPARC_CHECKXIT(err);
+        char* f1 = optparse_arg(&parser);
+        if(!f1){
+            printf("%s: Missing argument for duplicating entry (source)\n", exe);
+            ex = EXIT_FAILURE;
+            goto exit_handler;
+        }
+        char* f2 = optparse_arg(&parser);
+        if(!f2){
+            printf("%s: Missing argument for duplicating entry (destination)\n", exe);
+            ex = EXIT_FAILURE;
+            goto exit_handler;
+        }
+        err = MPARC_duplicate_file(archive, 0, f1, f2);
+        MPARC_CHECKXIT(err);
+        err = MPARC_construct_filename(archive, filename);
+        MPARC_CHECKXIT(err);
+    }
+    else if(mode == 'r'){
+        err = MPARC_parse_filename(archive, filename);
+        MPARC_CHECKXIT(err);
+        char* f1 = optparse_arg(&parser);
+        if(!f1){
+            printf("%s: Missing argument for renaming entry (old name)\n", exe);
+            ex = EXIT_FAILURE;
+            goto exit_handler;
+        }
+        char* f2 = optparse_arg(&parser);
+        if(!f2){
+            printf("%s: Missing argument for renaming entry (new name)\n", exe);
+            ex = EXIT_FAILURE;
+            goto exit_handler;
+        }
+        err = MPARC_rename_file(archive, 0, f1, f2);
+        MPARC_CHECKXIT(err);
+        err = MPARC_construct_filename(archive, filename);
+        MPARC_CHECKXIT(err);
     }
     else{
         printf("What are you trying to do? (%s)\n", filename);

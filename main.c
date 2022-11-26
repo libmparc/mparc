@@ -296,23 +296,23 @@ int main(int argc, char** argv){
         int pos = 3;
         if(argc < 4){
             char** listy = NULL;
-            uint_fast64_t sizy = 0;
+            MXPSQL_MPARC_uint_repr_t sizy = 0;
             err = MPARC_list_array(archive, &listy, &sizy);
             if(err != MPARC_OK){
                 MPARC_perror(err);
                 exit_c = EXIT_FAILURE;
                 goto exit_handler;
             }
-            for(uint_fast64_t i = 0; i < sizy; i++){
+            for(MXPSQL_MPARC_uint_repr_t i = 0; i < sizy; i++){
                 unsigned char* binary_blob;
-                uint_fast64_t binary_size;
+                MXPSQL_MPARC_uint_repr_t binary_size;
                 err = MPARC_peek_file(archive, listy[i], &binary_blob, &binary_size);
                 if(err != MPARC_OK){
                     MPARC_perror(err);
                     exit_c = EXIT_FAILURE;
                     goto exit_handler;
                 }
-                for(uint_fast64_t i = 0; i < binary_size; i++){
+                for(MXPSQL_MPARC_uint_repr_t i = 0; i < binary_size; i++){
                     printf("%c", (char) binary_blob[i]);
                 }
                 printf("\n");
@@ -324,14 +324,14 @@ int main(int argc, char** argv){
                 char* filename = argv[i];
                 if((err = MPARC_exists(archive, filename)) == MPARC_OK){
                     unsigned char* binary_blob;
-                    uint_fast64_t binary_size;
+                    MXPSQL_MPARC_uint_repr_t binary_size;
                     err = MPARC_peek_file(archive, filename, &binary_blob, &binary_size);
                     if(err != MPARC_OK){
                         MPARC_perror(err);
                         exit_c = EXIT_FAILURE;
                         goto exit_handler;
                     }
-                    for(uint_fast64_t i = 0; i < binary_size; i++){
+                    for(MXPSQL_MPARC_uint_repr_t i = 0; i < binary_size; i++){
                         printf("%c", (char) binary_blob[i]);
                     }
                     printf("\n");
