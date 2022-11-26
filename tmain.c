@@ -175,5 +175,6 @@ int main(int argc, char* argv[]){
 		MPARC_sfperror(err, stderr, "DFialed to extract archive");
 	}
     MPARC_destroy(&archive);
+    printf("Sizeof MXPSQL_MPARC_t: %zu\nSizeof MXPSQL_MPARC_iter_t: %zu", MPARC_MXPSQL_MPARC_t_sizeof(), MPARC_MXPSQL_MPARC_iter_t_sizeof());
     return 0;
 }

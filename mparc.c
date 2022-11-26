@@ -5708,6 +5708,16 @@ static int isLittleEndian(){
 			fclose(filepointerstream);
 			return err;
 		}
+
+
+
+		size_t MPARC_MXPSQL_MPARC_t_sizeof(){
+			return sizeof(MXPSQL_MPARC_t);
+		}
+
+		size_t MPARC_MXPSQL_MPARC_iter_t_sizeof(){
+			return sizeof(MXPSQL_MPARC_iter_t);
+		}
 		/* END OF MAIN CODE */
 
 /* END OF MY SECTION */

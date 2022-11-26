@@ -63,13 +63,16 @@
 #include <cstdio>
 #include <cstdarg>
 #include <cstdint>
+#include <cstddef>
 extern "C"{
 #else
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
+#include <stddef.h>
 #endif
 
+    // Error reporting
     /**
      * @brief Error states, these are self explanatory. But I give them brief anyways
      * 
@@ -158,6 +161,8 @@ extern "C"{
     int MPARC_fperror(MXPSQL_MPARC_err err, FILE* fileptrstream);
     int MPARC_perror(MXPSQL_MPARC_err err);
 
+
+    // Types
     /**
      * @brief Ptr type of the archive, should be initialized to null on first use
      * 
@@ -193,6 +198,8 @@ extern "C"{
      */
     typedef uint_fast64_t MXPSQL_MPARC_uint_repr_t;
 
+
+    // Main functions
     /**
      * @brief Initialize sturcture
      * 
@@ -589,6 +596,26 @@ extern "C"{
      */
     MXPSQL_MPARC_err MPARC_parse_filename(MXPSQL_MPARC_t* structure, char* filename);
 
+
+    // Type internal utilities
+    /**
+     * @brief Get sizeof MXPSQL_MPARC_t
+     * 
+     * @return size_t sizeof(MXPSQL_MPARC_t)
+     * 
+     * @see MXPSQL_MPARC_t
+     */
+    size_t MPARC_MXPSQL_MPARC_t_sizeof();
+    /**
+     * @brief Get sizeof MXPSQL_MPARC_iter_t
+     * 
+     * @return size_t sizeof(MXPSQL_MPARC_iter_t)
+     * 
+     * @see MXPSQL_MPARC_iter_t
+     */
+    size_t MPARC_MXPSQL_MPARC_iter_t_sizeof();
+
+    // Auxiliary function
     #ifdef MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
     extern char* MPARC_strtok_r (char *s, const char *delim, char **save_ptr);
     extern void* MPARC_memdup(const void* src, size_t len);
