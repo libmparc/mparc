@@ -3307,6 +3307,9 @@ static int isLittleEndian(){
 				/* storage actually */
 				map_blob_t globby;
 
+				/* Internal status for later usage */
+				MXPSQL_MPARC_err my_err;
+
 				
 				/* hidden */
 				va_list vlist;
@@ -3617,6 +3620,7 @@ static int isLittleEndian(){
 				{
 					MXPSQL_MPARC_err err = MPARC_list_iterator_init(&structure, &itery);
 					if(err != MPARC_OK){
+						structure->my_err = err;
 						if(eout) *eout = MPARC_KNOEXIST;
 						MPARC_list_iterator_destroy(&itery);
 						goto errhandler;
@@ -4028,6 +4032,7 @@ static int isLittleEndian(){
 					if(endp == NULL) return MPARC_NOTARCHIVE;
 
 					if((err = MPARC_i_verify_ender(structure, endp)) != MPARC_OK){
+						structure->my_err = err;
 						return err;
 					}
 
@@ -4234,6 +4239,7 @@ static int isLittleEndian(){
 						if(crc != crc3){
 							// errno = EILSEQ;
 							// err = MPARC_CHKSUM;
+							// structure->my_err = err;
 							// goto errhandler;
 						}
 						store.binary_crc = crc;
@@ -4241,6 +4247,7 @@ static int isLittleEndian(){
 						// map_set(&structure->globby, filename, store);
 						err = MPARC_i_push_ufilestr_advancea(structure, filename, 0, erronduplicate, store.binary_blob, store.binary_size, store.binary_crc);
 						if(err != MPARC_OK){
+							structure->my_err = err;
 							goto errhandler;
 						}
 					}
@@ -4251,6 +4258,7 @@ static int isLittleEndian(){
 			goto errhandler; // redundant I know
 
 			errhandler:
+			structure->my_err = err;
 			for(MXPSQL_MPARC_uint_repr_t i = 0; i < ecount; i++){
 				if(entries[i] != NULL) free(entries[i]);
 				// if(json_entries[i] != NULL) free(json_entries[i]);
@@ -4303,12 +4311,14 @@ static int isLittleEndian(){
 			if(structure == NULL || targetdest == NULL) return MPARC_IVAL;
 			if(*targetdest != NULL){
 				err = MPARC_destroy(targetdest);
+				(*structure)->my_err = err;
 				if(err != MPARC_OK){
 					return err;
 				}
 			}
 			MXPSQL_MPARC_t* cp_archive = NULL;
 			err = MPARC_init(&cp_archive);
+			(*structure)->my_err = err;
 			if(err != MPARC_OK){
 				return err;
 			}
@@ -4332,9 +4342,11 @@ static int isLittleEndian(){
 
 				goto my_err_handler;
 				my_err_handler:
+				(*structure)->my_err = err;
 				if(listy_structure_out) MPARC_list_array_free(&listy_structure_out);
 			}
 			*targetdest = cp_archive;
+			(*structure)->my_err = err;
 			return err;
 		}
 
@@ -4345,6 +4357,7 @@ static int isLittleEndian(){
 					MXPSQL_MPARC_err err = MPARC_OK;
 
 					MXPSQL_MPARC_iter_t* iterator = NULL;
+					(*structure)->my_err = err;
 					if((err = MPARC_list_iterator_init(structure, &iterator)) != MPARC_OK){
 						return err;
 					}
@@ -4355,6 +4368,7 @@ static int isLittleEndian(){
 							unsigned char* blob = NULL;
 							MXPSQL_MPARC_uint_repr_t s64 = 0;
 							if((err = MPARC_peek_file(*structure, key, &blob, &s64)) != MPARC_OK){
+								(*structure)->my_err = err;
 								break;
 							}
 							free(blob);
@@ -4373,7 +4387,7 @@ static int isLittleEndian(){
 				if(*structure) free(*structure);
 
 				*structure = NULL; // invalidation for security
-
+				
 				return MPARC_OK;
 		}
 
@@ -4434,6 +4448,7 @@ static int isLittleEndian(){
 						MXPSQL_MPARC_iter_t* iterator = NULL;
 						{
 							MXPSQL_MPARC_err err = MPARC_list_iterator_init(&structure, &iterator);
+							structure->my_err = err;
 							if(err != MPARC_OK){
 								if(listout_structure) free(listout_structure);
 								return err;
@@ -4479,6 +4494,7 @@ static int isLittleEndian(){
 					if(listout_structure) free(listout_structure);
 				}
 
+				structure->my_err = MPARC_OK;
 				return MPARC_OK;
 		}
 
@@ -4507,6 +4523,7 @@ static int isLittleEndian(){
 
 			*iterator = iter;
 
+			(*structure)->my_err = MPARC_OK;
 			return MPARC_OK;
 		}
 
@@ -4568,6 +4585,7 @@ static int isLittleEndian(){
 			goto atexit_handler; // redundant
 
 			atexit_handler:
+			structure->my_err = err;
 			MPARC_list_iterator_destroy(&iterator);
 
 			exit_handler:
@@ -4580,7 +4598,10 @@ static int isLittleEndian(){
 				switch(1){
 					case 1:
 					{
-						if((map_get(&structure->globby, filename)) == NULL) return MPARC_KNOEXIST;
+						if((map_get(&structure->globby, filename)) == NULL) {
+							structure->my_err = MPARC_KNOEXIST;
+							return MPARC_KNOEXIST;
+						}
 						break;
 					}
 
@@ -4590,12 +4611,16 @@ static int isLittleEndian(){
 						MXPSQL_MPARC_uint_repr_t listy_size = 0;
 						{
 							MXPSQL_MPARC_err err = MPARC_list_array(structure, &listy_out, &listy_size);
+							structure->my_err = err;
 							if(err != MPARC_OK) return err;
 						}
 						{
 							char* p = bsearch(filename, listy_out, listy_size, sizeof(*listy_out), voidstrcmp);
 							MPARC_list_array_free(&listy_out);
-							if( p == NULL && map_get(&structure->globby, filename) == NULL) return MPARC_KNOEXIST;
+							if( p == NULL && map_get(&structure->globby, filename) == NULL) {
+								structure->my_err = MPARC_KNOEXIST;
+								return MPARC_KNOEXIST;
+							}
 						}
 
 						break;
@@ -4607,13 +4632,16 @@ static int isLittleEndian(){
 						const char* nkey = NULL;
 						while((nkey = map_next(&structure->globby, &iter))){
 							if(strcmp(nkey, filename) == 0){
+								structure->my_err = MPARC_OK;
 								return MPARC_OK;
 							}
 						}
+						structure->my_err = MPARC_KNOEXIST;
 						return MPARC_KNOEXIST;
 					}
 				}
 				
+				structure->my_err = MPARC_KNOEXIST;
 				return MPARC_OK;
 		}
 
@@ -4823,6 +4851,8 @@ static int isLittleEndian(){
 
 			exit_handler:
 
+			structure->my_err = err;
+
 			if(smacklist){
 				*output = smacklist;
 			}
@@ -4852,6 +4882,7 @@ static int isLittleEndian(){
 
 			MPARC_i_push_ufilestr_advancea(structure, filename, stripdir, overwrite, ustringc, sizy, crc3);
 
+			structure->my_err = MPARC_OK;
 			return MPARC_OK;
 		}
 
@@ -4872,11 +4903,13 @@ static int isLittleEndian(){
 					return MPARC_IVAL;
 				}
 				if(filename == NULL) {
+					structure->my_err = MPARC_FERROR;
 					return MPARC_IVAL;
 				}
 
 				FILE* fpstream = fopen(filename, "rb");
 				if(fpstream == NULL){
+					structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
 				}
 
@@ -4889,10 +4922,12 @@ static int isLittleEndian(){
 
 		MXPSQL_MPARC_err MPARC_push_filestream(MXPSQL_MPARC_t* structure, FILE* filestream, char* filename){
 				if(filestream == NULL){
+					structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
 				}
 
 				if(filename == NULL){
+					structure->my_err = MPARC_IVAL;
 					return MPARC_IVAL;
 				}
 				
@@ -4901,6 +4936,7 @@ static int isLittleEndian(){
 
 				MXPSQL_MPARC_uint_repr_t filesize = 0; // byte count
 				if(fseek(filestream, 0, SEEK_SET) != 0){
+						structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
 				}
 
@@ -4908,22 +4944,26 @@ static int isLittleEndian(){
 						filesize += 1;
 				}
 				if(ferror(filestream)){
+						structure->my_err = MPARC_FERROR;
 						return MPARC_FERROR;
 				}
 
 				if(fseek(filestream, 0, SEEK_SET) != 0){
+						structure->my_err = MPARC_FERROR;
 						return MPARC_FERROR;
 				}
 
 				binary = calloc(filesize+1, sizeof(unsigned char));
 				CHECK_LEAKS();
 				if(!binary){
+					structure->my_err = MPARC_OOM;
 					return MPARC_OOM;
 				}
 
 				if(filesize >= MPARC_DIRECTF_MINIMUM){
 					if(fread(binary, sizeof(unsigned char), filesize, filestream) < filesize && ferror(filestream)){
 						if(binary) free(binary);
+							structure->my_err = MPARC_FERROR;
 						return MPARC_FERROR;
 					}
 				}
@@ -4936,6 +4976,7 @@ static int isLittleEndian(){
 
 					if(ferror(filestream)){
 						if(binary) free(binary);
+						structure->my_err = MPARC_FERROR;
 						return MPARC_FERROR;
 					}
 				}
@@ -4950,9 +4991,15 @@ static int isLittleEndian(){
 				}
 				#endif
 
-				if(!binary) return MPARC_OOM;
+				if(!binary) {
+					structure->my_err = MPARC_OOM;
+					return MPARC_OOM;
+				}
 				unsigned char* strd = (unsigned char*) MPARC_memdup(binary, filesize*sizeof(unsigned char));
-				if(!strd) return MPARC_OOM;
+				if(!strd) {
+					structure->my_err = MPARC_OOM;
+					return MPARC_OOM;
+				}
 				MXPSQL_MPARC_err err = MPARC_push_ufilestr(structure, filename, strd, filesize);
 				
 				if(binary) free(binary);
@@ -4962,29 +5009,37 @@ static int isLittleEndian(){
 
 		MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, int overwrite, char* oldname, char* newname){
 			MXPSQL_MPARC_err err = MPARC_OK;
-			if((err = MPARC_exists(structure, oldname)) == MPARC_KNOEXIST) return err;
+			if((err = MPARC_exists(structure, oldname)) == MPARC_KNOEXIST) {
+				structure->my_err = err;
+				return err;
+			}
+
 			{
 				unsigned char* binary = NULL;
 				MXPSQL_MPARC_uint_repr_t bsize = 0;
 
 				err = MPARC_peek_file(structure, oldname, &binary, &bsize);
+				structure->my_err = err;
 				if(err != MPARC_OK){
 					return err;
 				}
 
 				{
 					if((err = MPARC_exists(structure, newname)) == MPARC_OK && overwrite == 0){
+						structure->my_err = MPARC_KEXISTS;
 						return MPARC_KEXISTS;
 					}
 
 					err = MPARC_push_ufilestr(structure, newname, binary, bsize);
 					if(err != MPARC_OK){
+						structure->my_err = err;
 						return err;
 					}
 
 					{
 						err = MPARC_pop_file(structure, oldname);
 						if(err != MPARC_OK){
+							structure->my_err = err;
 							return err;
 						}
 					}
@@ -4995,23 +5050,29 @@ static int isLittleEndian(){
 
 		MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, int overwrite, char* srcfile, char* destfile){
 			MXPSQL_MPARC_err err = MPARC_OK;
-			if((err = MPARC_exists(structure, srcfile)) == MPARC_KNOEXIST) return err;
+			if((err = MPARC_exists(structure, srcfile)) == MPARC_KNOEXIST) {
+				structure->my_err = err;
+				return err;
+			}
 			{
 				unsigned char* binary = NULL;
 				MXPSQL_MPARC_uint_repr_t bsize = 0;
 
 				err = MPARC_peek_file(structure, srcfile, &binary, &bsize);
 				if(err != MPARC_OK){
+					structure->my_err = err;
 					return err;
 				}
 
 				{
 					if((err = MPARC_exists(structure, destfile)) == MPARC_OK && overwrite == 0){
+						structure->my_err = err;
 						return MPARC_KEXISTS;
 					}
 
 					err = MPARC_push_ufilestr(structure, destfile, binary, bsize);
 					if(err != MPARC_OK){
+						structure->my_err = err;
 						return err;
 					}
 				}
@@ -5022,8 +5083,14 @@ static int isLittleEndian(){
 		MXPSQL_MPARC_err MPARC_swap_file(MXPSQL_MPARC_t* structure, char* file1, char* file2){
 			MXPSQL_MPARC_err err = MPARC_OK;
 
-			if((err = MPARC_exists(structure, file1)) == MPARC_KNOEXIST) return err;
-			if((err = MPARC_exists(structure, file2)) == MPARC_KNOEXIST) return err;
+			if((err = MPARC_exists(structure, file1)) == MPARC_KNOEXIST) {
+				structure->my_err = MPARC_KNOEXIST;
+				return err;
+			}
+			if((err = MPARC_exists(structure, file2)) == MPARC_KNOEXIST) {
+				structure->my_err = MPARC_KNOEXIST;
+				return err;
+			}
 			
 			{
 				unsigned char* binary1 = NULL;
@@ -5032,10 +5099,22 @@ static int isLittleEndian(){
 				unsigned char* binary2 = NULL;
 				MXPSQL_MPARC_uint_repr_t bsize2 = 0;
 
-				if((err = MPARC_peek_file(structure, file1, &binary1, &bsize1)) != MPARC_OK) return err;
-				if((err = MPARC_peek_file(structure, file2, &binary2, &bsize2)) != MPARC_OK) return err;
-				if((err = MPARC_push_ufilestr(structure, file1, binary2, bsize2)) != MPARC_OK) return err;
-				if((err = MPARC_push_ufilestr(structure, file2, binary1, bsize1)) != MPARC_OK) return err;
+				if((err = MPARC_peek_file(structure, file1, &binary1, &bsize1)) != MPARC_OK) {
+					structure->my_err = err;
+					return err;
+				}
+				if((err = MPARC_peek_file(structure, file2, &binary2, &bsize2)) != MPARC_OK) {
+					structure->my_err = err;
+					return err;
+				}
+				if((err = MPARC_push_ufilestr(structure, file1, binary2, bsize2)) != MPARC_OK) {
+					structure->my_err = err;
+					return err;
+				}
+				if((err = MPARC_push_ufilestr(structure, file2, binary1, bsize1)) != MPARC_OK) {
+					structure->my_err = err;
+					return err;
+				}
 			}
 
 			return err;
@@ -5052,6 +5131,7 @@ static int isLittleEndian(){
 			char** entryos = NULL;
 			MXPSQL_MPARC_uint_repr_t eos_s = 0;
 			MXPSQL_MPARC_err err = MPARC_list_array(structure, &entryos, &eos_s);
+			structure->my_err = err;
 			if(err != MPARC_OK) return err;
 			for(MXPSQL_MPARC_uint_repr_t i = 0; i < eos_s; i++){
 				MPARC_pop_file(structure, entryos[i]);
@@ -5174,13 +5254,15 @@ static int isLittleEndian(){
 
 				char* top = MPARC_i_construct_header(structure);
 				if(top == NULL) {
+					structure->my_err = MPARC_CONSTRUCT_FAIL;
 					return MPARC_CONSTRUCT_FAIL;
 				}
 				char* mid = MPARC_i_construct_entries(structure, &err);
 				if(mid == NULL) {
 					if(top) free(top);
 					top = NULL;
-					return err;
+					structure->my_err = MPARC_CONSTRUCT_FAIL;
+					return MPARC_CONSTRUCT_FAIL;
 				}
 				char* bottom = MPARC_i_construct_ender(structure);
 				if(bottom == NULL) {
@@ -5188,6 +5270,7 @@ static int isLittleEndian(){
 					if(mid) free(mid);
 					top = NULL;
 					mid = NULL;
+					structure->my_err = MPARC_CONSTRUCT_FAIL;
 					return MPARC_CONSTRUCT_FAIL;
 				}
 
@@ -5201,6 +5284,7 @@ static int isLittleEndian(){
 						top = NULL;
 						mid = NULL;
 						bottom = NULL;
+						structure->my_err = MPARC_CONSTRUCT_FAIL;
 						return MPARC_CONSTRUCT_FAIL;
 					}
 					char* alloca_out = calloc(sizy+1, sizeof(char));
@@ -5212,6 +5296,7 @@ static int isLittleEndian(){
 						top = NULL;
 						mid = NULL;
 						bottom = NULL;
+						structure->my_err = MPARC_OOM;
 						return MPARC_OOM;
 					}
 					if(snprintf(alloca_out, sizy+1, fmt, top, mid, bottom) < 0){
@@ -5223,6 +5308,7 @@ static int isLittleEndian(){
 						mid = NULL;
 						bottom = NULL;
 						alloca_out = NULL;
+						structure->my_err = MPARC_CONSTRUCT_FAIL;
 						return MPARC_CONSTRUCT_FAIL;
 					}
 					*output = alloca_out;
@@ -5234,12 +5320,14 @@ static int isLittleEndian(){
 				top = NULL;
 				mid = NULL;
 				bottom = NULL;
+				structure->my_err = MPARC_OK;
 				return MPARC_OK;
 		}
 
 		MXPSQL_MPARC_err MPARC_construct_filename(MXPSQL_MPARC_t* structure, char* filename){
 			FILE* fpstream = fopen(filename, "wb+");
 			if(fpstream == NULL){
+				structure->my_err = MPARC_FERROR;
 				return MPARC_FERROR;
 			}
 			MXPSQL_MPARC_err err = MPARC_construct_filestream(structure, fpstream);
@@ -5262,6 +5350,7 @@ static int isLittleEndian(){
 			if(count >= MPARC_DIRECTF_MINIMUM){
 				if(fwrite(archive, sizeof(char), count, fpstream) < count && ferror(fpstream)){
 					if(archive) free(archive);
+					structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
 				}
 			}
@@ -5270,6 +5359,7 @@ static int isLittleEndian(){
 					if(fputc(archive[i], fpstream) == EOF){
 						if(archive) free(archive);
 						err = MPARC_FERROR;
+						structure->my_err = err;
 						return err;
 					}
 				}
@@ -5285,6 +5375,7 @@ static int isLittleEndian(){
 				char** listy = NULL;
 				MXPSQL_MPARC_uint_repr_t listys = 0;
 				if(MPARC_list_array(structure, &listy, &listys) != MPARC_OK){
+					structure->my_err = MPARC_IVAL;
 					return MPARC_IVAL;
 				}
 
@@ -5300,6 +5391,7 @@ static int isLittleEndian(){
 							fname = MPARC_strdup(nkey);
 							if(!fname){
 								if(listy) free(listy);
+								structure->my_err = MPARC_OOM;
 								return MPARC_OOM;
 							}
 							MXPSQL_MPARC_uint_repr_t pathl = strlen(fname)+strlen(nkey)+1;
@@ -5308,6 +5400,7 @@ static int isLittleEndian(){
 							if(nfname == NULL){
 								if(fname) free(fname);
 								if(listy) free(listy);
+								structure->my_err = MPARC_OOM;
 								return MPARC_OOM;
 							}
 							fname = (char*) nfname;
@@ -5315,6 +5408,7 @@ static int isLittleEndian(){
 							if(splen < 0 || ((MXPSQL_MPARC_uint_repr_t)splen) > pathl){
 								if(fname) free(fname);
 								if(listy) free(listy);
+								structure->my_err = MPARC_IVAL;
 								return MPARC_IVAL;
 							}
 						}
@@ -5328,6 +5422,7 @@ static int isLittleEndian(){
 									if((*mk_dir)(dname) != 0){
 										if(fname) free(fname);
 										if(listy) free(listy);
+										structure->my_err = MPARC_FERROR;
 										return MPARC_FERROR;
 									}
 									if(fname) free(fname);
@@ -5341,6 +5436,7 @@ static int isLittleEndian(){
 								}
 								if(fname) free(fname);
 								if(listy) free(listy);
+								structure->my_err = MPARC_OPPART;
 								return MPARC_OPPART;
 							}
 							#else
@@ -5349,6 +5445,7 @@ static int isLittleEndian(){
 							#endif
 							if(fname) free(fname);
 							if(listy) free(listy);
+							structure->my_err = MPARC_IVAL;
 							return MPARC_IVAL;
 						}
 						{
@@ -5368,6 +5465,7 @@ static int isLittleEndian(){
 										if(fname) free(fname);
 										if(listy) free(listy);
 										fclose(fps);
+										structure->my_err = MPARC_FERROR;
 										return MPARC_FERROR;
 									}
 								}
@@ -5379,6 +5477,7 @@ static int isLittleEndian(){
 										if(fname) free(fname);
 										if(listy) free(listy);
 										fclose(fps);
+										structure->my_err = MPARC_FERROR;
 										return MPARC_FERROR;
 									}
 								}
@@ -5388,6 +5487,7 @@ static int isLittleEndian(){
 								if(fname) free(fname);
 								if(listy) free(listy);
 								fclose(fps);
+								structure->my_err = MPARC_FERROR;
 								return MPARC_FERROR;
 							}
 							unsigned char* binary = calloc(sout+1, sizeof(unsigned char));
@@ -5396,6 +5496,7 @@ static int isLittleEndian(){
 								if(fname) free(fname);
 								if(listy) free(listy);
 								fclose(fps);
+								structure->my_err = MPARC_OOM;
 								return MPARC_OOM;
 							}
 							if(sout >= MPARC_DIRECTF_MINIMUM){
@@ -5405,6 +5506,7 @@ static int isLittleEndian(){
 										if(binary) free(binary);
 										if(listy) free(listy);
 										fclose(fps);
+										structure->my_err = MPARC_FERROR;
 										return MPARC_FERROR;
 									}
 								}
@@ -5418,6 +5520,7 @@ static int isLittleEndian(){
 
 								if(ferror(fps)){
 									if(binary) free(binary);
+									structure->my_err = MPARC_FERROR;
 									return MPARC_FERROR;
 								}
 
@@ -5433,6 +5536,7 @@ static int isLittleEndian(){
 									if(listy) free(listy);
 									fclose(fps);
 									errno = EILSEQ;
+									structure->my_err = MPARC_CHKSUM;
 									return MPARC_CHKSUM;
 								}
 							}
@@ -5441,6 +5545,7 @@ static int isLittleEndian(){
 							if(fname) free(fname);
 							if(listy) free(listy);
 							fclose(fps);
+							structure->my_err = MPARC_FERROR;
 							return MPARC_FERROR;
 						}
 					}
@@ -5479,6 +5584,7 @@ static int isLittleEndian(){
 
 			goto main_errhandler;
 			main_errhandler:
+			structure->my_err = err;
 			for(MXPSQL_MPARC_uint_repr_t i = 0; flists[i] != NULL; i++){
 				if(flists[i] != NULL) {
 					free(flists[i]);
@@ -5533,6 +5639,7 @@ static int isLittleEndian(){
 			goto endy; // redundant
 
 			endy:
+			structure->my_err = err;
 			return err;
 		}
 
@@ -5543,6 +5650,7 @@ static int isLittleEndian(){
 		MXPSQL_MPARC_err MPARC_parse_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream){
 			MXPSQL_MPARC_uint_repr_t filesize = 0;
 			if(fseek(fpstream, 0, SEEK_SET) != 0){
+				structure->my_err = MPARC_FERROR;
 				return MPARC_FERROR;
 			}
 
@@ -5550,22 +5658,26 @@ static int isLittleEndian(){
 				filesize += 1;
 			}
 			if(ferror(fpstream)){
+				structure->my_err = MPARC_FERROR;
 				return MPARC_FERROR;
 			}
 
 			if(fseek(fpstream, 0, SEEK_SET) != 0){
+					structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
 			}
 
 			char* binary = calloc(filesize+1, sizeof(char)); // binary because files are binary, but not unsigned because it is ascii
 			CHECK_LEAKS();
 			if(binary == NULL){
+				structure->my_err = MPARC_FERROR;
 				return MPARC_OOM;
 			}
 
 			if(filesize >= MPARC_DIRECTF_MINIMUM){
 				if(fread(binary, sizeof(unsigned char), filesize, fpstream) < filesize && ferror(fpstream)){
 					if(binary) free(binary);
+					structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
 				}
 			}
@@ -5578,6 +5690,7 @@ static int isLittleEndian(){
 
 				if(ferror(fpstream)){
 					if(binary) free(binary);
+					structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
 				}
 
