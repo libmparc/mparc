@@ -550,7 +550,7 @@ int cmdline_main(int argc, char* exe, char** argv){
             err = MPARC_list_array(archive, &listy_out, &listy_len);
             if(err != MPARC_OK) goto myexit;
             for(MXPSQL_MPARC_uint_repr_t i = 0; i < listy_len; i++){
-                if(verbose) printf("CMD (l)> %s\n", listy_out[i]);
+                printf("CMD (l)> %s\n", listy_out[i]);
             }
             myexit:
             MPARC_list_array_free(&listy_out);

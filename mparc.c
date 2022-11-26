@@ -3113,14 +3113,9 @@ void* MPARC_memdup(const void* src, size_t len){
 }
 
 char* MPARC_strndup(const char* src, size_t ilen){
-	size_t len = strnlen(src, ilen);
+	size_t len = strnlen(src, ilen)+1;
 
-	// char* dupstr = MPARC_memdup(src, len*sizeof(char));
-	char* dupstr = calloc(len, sizeof(char));
-
-	if(dupstr){
-		memcpy(dupstr, src, sizeof(char)*len);
-	}
+	char* dupstr = MPARC_memdup(src, len*sizeof(char));
 
 	return dupstr;
 }
@@ -3357,7 +3352,7 @@ static int isLittleEndian(){
 				*out = MPARC_strdup("You dumb person what you put in is not an archive by the 25 character long magic number it has or maybe we find out it is not a valid archive by the json or anything else");
 				break;
 				case MPARC_ARCHIVETOOSHINY:
-				*out = MPARC_strdup("You dumb person the valid archive you put in me is too new for me to process, this archive processor may be version 1, but the archive is version 2");
+				*out = MPARC_strdup("You dumb person the valid archive you put in me is too new for me to process. This archive processor may be version 1, but the archive is version 2, maybe.");
 				break;
 				case MPARC_CHKSUM:
 				*out = MPARC_strdup("My content is gone or I can't write my content properly because it failed the CRC32 test :P");
@@ -4039,6 +4034,7 @@ static int isLittleEndian(){
 					*endp = '\0';	
 
 				}
+				// printf("e2.%s\n", entry2);
 				{
 					char* saveptr2 = NULL;
 					char septic[2] = {structure->entry_sep_or_general_marker, '\0'};
@@ -4071,6 +4067,8 @@ static int isLittleEndian(){
 					char* entry64 = MPARC_strtok_r(entry2, septic, &saveptr2);
 					for(MXPSQL_MPARC_uint_repr_t i = 0; entry64 != NULL; i++){
 						entries[i] = MPARC_strdup(entry64);
+
+						// printf("d%s\n", entries[i]);
 						if(entries[i] == NULL){
 							err = MPARC_OOM;
 							goto errhandler;
@@ -4085,6 +4083,7 @@ static int isLittleEndian(){
 				crc_t crc = crc_init();
 				crc_t tcrc = crc_init();
 				char* entry = entries[i];
+				// printf("r%s\n", entry);
 				char* sptr = NULL;
 				char seps[2] = {structure->entry_elem2_sep_marker_or_magic_sep_marker, '\0'};
 				char* crcstr = MPARC_strtok_r(entry, seps, &sptr);
