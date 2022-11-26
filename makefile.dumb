@@ -6,11 +6,13 @@ DMALLOC_PATH:="/mingw64/lib/libdmallocth.a"
 # DMALLOC_PATH:=
 
 MAINcFILE=main.c
+MAINcFILE2=mainv2.c
 MAINcppFILE=cxmain.cpp
 
 LIBO:=mparc.o
 LIBA:=libmparc.a
 EXEC:=mparc.exe
+EXEC2:=mparc2.exe
 
 CC?=gcc
 
@@ -36,6 +38,7 @@ tmparc.exe: libmparc.a
 
 mparc.exe: libmparc.a
 	$(CC) $(CFLAGS) $(MAINcFILE) $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(EXEC)
+	$(CC) $(CFLAGS) $(MAINcFILE2) $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(EXEC2)
 
 
 docs:
@@ -60,9 +63,9 @@ clean:
 
 
 mkar:
-	./mparc.exe ./my.mpar c ./*.c ./*.h ./Makefile.dumb ./configure.ac ./Makefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
-	./mparc.exe ./mini.mpar c ./misc/lsarah.txt ./misc/logobase.txt
-	./mparc.exe ./tiny.mpar c ./misc/lsarah.txt
+	./mparc2.exe CMD -v -f ./my.mpar -c ./*.c ./*.h ./Makefile.dumb ./configure.ac ./Makefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
+	./mparc2.exe CMD -v -f ./mini.mpar -c ./misc/lsarah.txt ./misc/logobase.txt
+	./mparc2.exe CMD -v -f ./tiny.mpar -c ./misc/lsarah.txt
 
 
 mkat:

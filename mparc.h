@@ -168,6 +168,8 @@ extern "C"{
      * Don't ever try to dereference this thing.
      * 
      * This can never be declared as a non pointer object.
+     * 
+     * Not atomic or thread safe (never aim to be that, you do it yourself).
      */
     typedef struct MXPSQL_MPARC_t MXPSQL_MPARC_t;
     /**
@@ -225,6 +227,15 @@ extern "C"{
      * @note Free listout manually with 'free', not 'delete'
      */
     MXPSQL_MPARC_err MPARC_list_array(MXPSQL_MPARC_t* structure, char*** listout, MXPSQL_MPARC_uint_repr_t* length);
+    /**
+     * @brief Utility function that free the list that you created with MPARC_list_array
+     * 
+     * @param list the list you got
+     * @return MXPSQL_MPARC_err successful?
+     * 
+     * @see MPARC_list_array
+     */
+    MXPSQL_MPARC_err MPARC_list_array_free(char*** list);
     /**
      * @brief Initialize the iterator that list the current files included
      * 
@@ -386,6 +397,48 @@ extern "C"{
      * @note filestream should be opened and closed manually
      */
     MXPSQL_MPARC_err MPARC_push_filestream(MXPSQL_MPARC_t* structure, FILE* filestream, char* filename);
+
+    /**
+     * @brief Rename an entry
+     * 
+     * @param structure the target structure
+     * @param overwrite you want to overwrite? set to a non zero value. No overwrite? then set to 0
+     * @param oldname the file you want to change name
+     * @param newname the new name
+     * @return MXPSQL_MPARC_err the sttaus code if successfully done. MPARC_KNOEXIST if oldname is not there and more...
+     * 
+     * @details
+     * 
+     * Internally implemented with MPARC_push_ufilestr, MPARC_pop_file and MPARC_peek_file
+     */
+    MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, int overwrite, char* oldname, char* newname);
+    /**
+     * @brief Duplicate an entry
+     * 
+     * @param structure the target structure
+     * @param overwrite you want to overwrite? set to a non zero value. No overwrite? then set to 0
+     * @param srcfile the source file to duplicate from.
+     * @param destfile the destination file
+     * @return MXPSQL_MPARC_err Yes.
+     * 
+     * @details
+     * 
+     * Internally implemented with MPARC_push_ufilestr and MPARC_peek_file
+     */
+    MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, int overwrite, char* srcfile, char* destfile);
+    /**
+     * @brief Swap 2 entries
+     * 
+     * @param structure the target structure.
+     * @param file1 the filename to swap with file2.
+     * @param file2 the filename to swap with file1.
+     * @return MXPSQL_MPARC_err Lazy.
+     * 
+     * @details
+     * 
+     * Internally implemnted with MPARC_push_ufilestr and MPARC_peek_file
+     */
+    MXPSQL_MPARC_err MPARC_swap_file(MXPSQL_MPARC_t* structure, char* file1, char* file2);
 
     /**
      * @brief Pop a file off the archive

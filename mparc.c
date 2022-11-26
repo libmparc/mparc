@@ -4037,6 +4037,7 @@ static int isLittleEndian(){
 					}
 
 					*endp = '\0';	
+
 				}
 				{
 					char* saveptr2 = NULL;
@@ -4080,7 +4081,7 @@ static int isLittleEndian(){
 				}
 			}
 
-			for(MXPSQL_MPARC_uint_repr_t i = 0; i < ecount; i++){
+			for(MXPSQL_MPARC_uint_repr_t i = 0; i < ecount && entries[i] != NULL; i++){
 				crc_t crc = crc_init();
 				crc_t tcrc = crc_init();
 				char* entry = entries[i];
@@ -4100,6 +4101,9 @@ static int isLittleEndian(){
 				tcrc = crc_update(tcrc, tok, strlen(tok));
 				tcrc = crc_finalize(tcrc);
 				if(tcrc != crc){
+					#ifdef MPARC_EPARSE_DEBUG_VERBOSE
+					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "ravioli ala crc32\n");
+					#endif
 					errno = EILSEQ;
 					err = MPARC_CHKSUM;
 					goto errhandler;
@@ -4184,6 +4188,9 @@ static int isLittleEndian(){
 				}
 
 				if(!filename_parsed || !blob_parsed || !crc3_parsed){
+					#ifdef MPARC_EPARSE_DEBUG_VERBOSE
+					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "no ravioli? (filename: %d, blob: %d, crc: %d)\n", filename_parsed, blob_parsed, crc3_parsed);
+					#endif
 					err = MPARC_NOTARCHIVE;
 					goto errhandler;
 				}
@@ -4223,11 +4230,12 @@ static int isLittleEndian(){
 						crc_t crc = crc_init();
 						crc = crc_update(crc, store.binary_blob, store.binary_size);
 						crc = crc_finalize(crc);
+			
 						/* printf("%"PRIuFAST32" %"PRIuFAST32"\n", crc, crc3); */
 						if(crc != crc3){
-							/* errno = EILSEQ;
-							err = MPARC_CHKSUM;
-							goto errhandler; */
+							// errno = EILSEQ;
+							// err = MPARC_CHKSUM;
+							// goto errhandler;
 						}
 						store.binary_crc = crc;
 
@@ -4325,7 +4333,7 @@ static int isLittleEndian(){
 
 				goto my_err_handler;
 				my_err_handler:
-				if(listy_structure_out) free(listy_structure_out);
+				if(listy_structure_out) MPARC_list_array_free(&listy_structure_out);
 			}
 			*targetdest = cp_archive;
 			return err;
@@ -4475,6 +4483,16 @@ static int isLittleEndian(){
 				return MPARC_OK;
 		}
 
+		MXPSQL_MPARC_err MPARC_list_array_free(char*** list){
+			if(list == NULL || *list == NULL) return MPARC_IVAL;
+			char** l = *list;
+			for(MXPSQL_MPARC_uint_repr_t i = 0; l[i] != NULL; i++){
+				free(l[i]);
+			}
+			free(l);
+			return MPARC_OK;
+		}
+
 		MXPSQL_MPARC_err MPARC_list_iterator_init(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_iter_t** iterator){
 			if(!(structure == NULL || *structure == NULL || iterator == NULL || *iterator == NULL)) return MPARC_IVAL;
 
@@ -4560,22 +4578,43 @@ static int isLittleEndian(){
 
 		MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, const char* filename){
 				if(structure == NULL || filename == NULL) return MPARC_IVAL;
-				if(true){
-					if((map_get(&structure->globby, filename)) == NULL) return MPARC_KNOEXIST;
-				}
-				else{
-					char** listy_out = NULL;
-					MXPSQL_MPARC_uint_repr_t listy_size = 0;
+				switch(1){
+					case 1:
 					{
-						MXPSQL_MPARC_err err = MPARC_list_array(structure, &listy_out, &listy_size);
-						if(err != MPARC_OK) return err;
+						if((map_get(&structure->globby, filename)) == NULL) return MPARC_KNOEXIST;
+						break;
 					}
+
+					case 2:
 					{
-						char* p = bsearch(filename, listy_out, listy_size, sizeof(*listy_out), voidstrcmp);
-						if(listy_out) free(listy_out);
-						if( p == NULL && map_get(&structure->globby, filename) == NULL) return MPARC_KNOEXIST;
+						char** listy_out = NULL;
+						MXPSQL_MPARC_uint_repr_t listy_size = 0;
+						{
+							MXPSQL_MPARC_err err = MPARC_list_array(structure, &listy_out, &listy_size);
+							if(err != MPARC_OK) return err;
+						}
+						{
+							char* p = bsearch(filename, listy_out, listy_size, sizeof(*listy_out), voidstrcmp);
+							MPARC_list_array_free(&listy_out);
+							if( p == NULL && map_get(&structure->globby, filename) == NULL) return MPARC_KNOEXIST;
+						}
+
+						break;
+					}
+
+					case 3:
+					{
+						map_iter_t iter = map_iter(&structure->globby);
+						const char* nkey = NULL;
+						while((nkey = map_next(&structure->globby, &iter))){
+							if(strcmp(nkey, filename) == 0){
+								return MPARC_OK;
+							}
+						}
+						return MPARC_KNOEXIST;
 					}
 				}
+				
 				return MPARC_OK;
 		}
 
@@ -4790,7 +4829,7 @@ static int isLittleEndian(){
 			}
 
 			if(flist) {
-				free(flist);
+				MPARC_list_array_free(&flist);
 			}
 
 			return err;
@@ -4922,6 +4961,88 @@ static int isLittleEndian(){
 		}
 
 
+		MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, int overwrite, char* oldname, char* newname){
+			MXPSQL_MPARC_err err = MPARC_OK;
+			if((err = MPARC_exists(structure, oldname)) == MPARC_KNOEXIST) return err;
+			{
+				unsigned char* binary = NULL;
+				MXPSQL_MPARC_uint_repr_t bsize = 0;
+
+				err = MPARC_peek_file(structure, oldname, &binary, &bsize);
+				if(err != MPARC_OK){
+					return err;
+				}
+
+				{
+					if((err = MPARC_exists(structure, newname)) == MPARC_OK && overwrite == 0){
+						return MPARC_KEXISTS;
+					}
+
+					err = MPARC_push_ufilestr(structure, newname, binary, bsize);
+					if(err != MPARC_OK){
+						return err;
+					}
+
+					{
+						err = MPARC_pop_file(structure, oldname);
+						if(err != MPARC_OK){
+							return err;
+						}
+					}
+				}
+			}
+			return err;
+		}
+
+		MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, int overwrite, char* srcfile, char* destfile){
+			MXPSQL_MPARC_err err = MPARC_OK;
+			if((err = MPARC_exists(structure, srcfile)) == MPARC_KNOEXIST) return err;
+			{
+				unsigned char* binary = NULL;
+				MXPSQL_MPARC_uint_repr_t bsize = 0;
+
+				err = MPARC_peek_file(structure, srcfile, &binary, &bsize);
+				if(err != MPARC_OK){
+					return err;
+				}
+
+				{
+					if((err = MPARC_exists(structure, destfile)) == MPARC_OK && overwrite == 0){
+						return MPARC_KEXISTS;
+					}
+
+					err = MPARC_push_ufilestr(structure, destfile, binary, bsize);
+					if(err != MPARC_OK){
+						return err;
+					}
+				}
+			}
+			return err;
+		}
+
+		MXPSQL_MPARC_err MPARC_swap_file(MXPSQL_MPARC_t* structure, char* file1, char* file2){
+			MXPSQL_MPARC_err err = MPARC_OK;
+
+			if((err = MPARC_exists(structure, file1)) == MPARC_KNOEXIST) return err;
+			if((err = MPARC_exists(structure, file2)) == MPARC_KNOEXIST) return err;
+			
+			{
+				unsigned char* binary1 = NULL;
+				MXPSQL_MPARC_uint_repr_t bsize1 = 0;
+
+				unsigned char* binary2 = NULL;
+				MXPSQL_MPARC_uint_repr_t bsize2 = 0;
+
+				if((err = MPARC_peek_file(structure, file1, &binary1, &bsize1)) != MPARC_OK) return err;
+				if((err = MPARC_peek_file(structure, file2, &binary2, &bsize2)) != MPARC_OK) return err;
+				if((err = MPARC_push_ufilestr(structure, file1, binary2, bsize2)) != MPARC_OK) return err;
+				if((err = MPARC_push_ufilestr(structure, file2, binary1, bsize1)) != MPARC_OK) return err;
+			}
+
+			return err;
+		}
+
+
 		MXPSQL_MPARC_err MPARC_pop_file(MXPSQL_MPARC_t* structure, char* filename){
 				if(MPARC_exists(structure, filename) == MPARC_KNOEXIST) return MPARC_KNOEXIST;
 				map_remove(&structure->globby, filename);
@@ -4936,7 +5057,9 @@ static int isLittleEndian(){
 			for(MXPSQL_MPARC_uint_repr_t i = 0; i < eos_s; i++){
 				MPARC_pop_file(structure, entryos[i]);
 			}
-			if(entryos) free(entryos);
+			if(entryos) {
+				MPARC_list_array_free(&entryos);
+			}
 			return err;
 		}
 
@@ -5326,7 +5449,7 @@ static int isLittleEndian(){
 					if(fname) free(fname);
 					fclose(fps);
 				}
-				if(listy) free(listy);
+				if(listy) MPARC_list_array_free(&listy);
 			}
 			return MPARC_OK;
 		}
