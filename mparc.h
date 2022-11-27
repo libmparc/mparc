@@ -156,9 +156,43 @@ extern "C"{
          */
         MPARC_FERROR=10
     } MXPSQL_MPARC_err;
+    /**
+     * @brief Get error string from MXPSQL_MPARC_err
+     * 
+     * @param err error code
+     * @param out output error string, can be NULL if an error occured
+     * @return int Level of error
+     */
     int MPARC_strerror(MXPSQL_MPARC_err err, char** out);
+    /**
+     * @brief Print the error message to your stream of choice with a message of your choice
+     * 
+     * @param err error code
+     * @param filepstream stream of your choice
+     * @param emsg message of your choice
+     * @return int Level of error
+     * 
+     * @see MPARC_strerror
+     */
     int MPARC_sfperror(MXPSQL_MPARC_err err, FILE* filepstream, char* emsg);
+    /**
+     * @brief Print the error message of your stream of choice
+     * 
+     * @param err error code
+     * @param fileptrstream stream of your choice
+     * @return int Level of error
+     * 
+     * @see MPARC_sfperror
+     */
     int MPARC_fperror(MXPSQL_MPARC_err err, FILE* fileptrstream);
+    /**
+     * @brief Print the error message to stderr
+     * 
+     * @param err error code
+     * @return int Level of error
+     * 
+     * @see MPARC_fperror
+     */
     int MPARC_perror(MXPSQL_MPARC_err err);
 
 
