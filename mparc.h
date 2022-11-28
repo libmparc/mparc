@@ -208,7 +208,7 @@ extern "C"{
      * 
      * This can never be declared as a non pointer object.
      * 
-     * Not atomic or thread safe (never aim to be that, you do it yourself).
+     * Not atomic or thread safe (never aim to be that for C99 suport and portability, you do it yourself with platform threads (pthreads, winapi threads or C11 threads if you can)).
      */
     typedef struct MXPSQL_MPARC_t MXPSQL_MPARC_t;
     /**
@@ -661,7 +661,7 @@ extern "C"{
      * @param save_ptr storage space for the rest of the 'she' string
      * @return char* The token
      */
-    extern char* MPARC_strtok_r (char *s, const char *delim, char **save_ptr);
+    char* MPARC_strtok_r (char *s, const char *delim, char **save_ptr);
     /**
      * @brief Copy memory
      * 
@@ -673,7 +673,7 @@ extern "C"{
      * 
      * @see MPARC_memdup
      */
-    extern void* MPARC_memdup(const void* src, size_t len);
+    void* MPARC_memdup(const void* src, size_t len);
     /**
      * @brief Copy string with length limits
      * 
@@ -685,7 +685,7 @@ extern "C"{
      * 
      * @see MPARC_strndup
      */
-    extern char* MPARC_strndup(const char* src, size_t ilen);
+    char* MPARC_strndup(const char* src, size_t ilen);
     /**
      * @brief Copy string with no length limits
      * 
@@ -696,7 +696,7 @@ extern "C"{
      * 
      * @see MPARC_strdup
      */
-    extern char* MPARC_strdup(const char* src);
+    char* MPARC_strdup(const char* src);
     /**
      * @brief Get the basename of the file paht
      * 
@@ -709,14 +709,14 @@ extern "C"{
      * 
      * On windows, it is not only strrchr'd on '/', it is also strchrr'd on '\\' (How you say the \ character on C)
      */
-    extern char* MPARC_basename (const char *filename);
+    char* MPARC_basename (const char *filename);
     /**
      * @brief Get directory
      * 
      * @param path file path
      * @return char* the directory path without the filename
      */
-    extern char* MPARC_dirname (char *path);
+    char* MPARC_dirname (char *path);
     /**
      * @brief Get the extension. Dodgy implementation
      * 
@@ -724,7 +724,7 @@ extern "C"{
      * @param full_or_not if set to 0, strip from the last '.', else strip from the first '.'
      * @return char* the extension
      */
-    extern char* MPARC_get_extension(const char* fnp, int full_or_not);
+    char* MPARC_get_extension(const char* fnp, int full_or_not);
     #endif
 
 #if defined(__cplusplus) || defined(c_plusplus)

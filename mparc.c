@@ -1,4 +1,5 @@
 #ifndef _MXPSQL_MPARC_C
+/// @brief Header guard
 #define _MXPSQL_MPARC_C
 
 /**
@@ -85,52 +86,86 @@
 #define calloc(m,n) GC_MALLOC((m)*(n))
 #define free(p) GC_FREE(p)
 #define realloc(p,n) GC_REALLOC((p),(n))
+/// @brief Check yo mem leaks rn
 #define CHECK_LEAKS() GC_gcollect()
 #else
+/// @brief Check yo mem leaks rn
 #define CHECK_LEAKS()
 #endif
 
 /* defines */
 
+/// @brief Magic number for file format
 #define STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25 "MXPSQL's Portable Archive"
 
-// define for format version number and representation
+/* define for format version number and representation */
+/// @brief Version number magic
 #define STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER 1
+/// @brief False CRC32 Hash number magic
 #define STANKY_MPAR_FILE_FORMAT_VERSION_HASH_ADDED 1
 // #define STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION MXPSQL_MPARC_uint_repr_t
+/// @brief Our version representation
 #define STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION unsigned long long
 
-// special separators, only added here if necessary
+/* special separators, only added here if necessary */
+/// @brief Magic separator for checksum and entry
 #define MPARC_MAGIC_CHKSM_SEP '%'
 
 // debug stuff defines
+/// @brief Where to print to if you want send a message with fprintf debugging
 #define MPARC_DEBUG_CONF_PRINTF_FILE stderr
 
-// sorting mode
-// if set to 0, then the entries will be sorted by their checksum values
-// else if set to 1 sorted by their filename
-// else randomly sorted
-// default is 1
-// that description for mode 0 was actually false (sort of), normally the checksum will sort itself, but if it fails, then the json will sort it
+// sorting mode setups
 #ifndef MPARC_QSORT_MODE
+/** 
+ * Magic sorter mode
+ * 
+ * @details
+ * Sorting mode.
+ * 
+ * if set to 0, then the entries will be sorted by their checksum values,
+ * else if set to 1 sorted by their filename,
+ * else randomly sorted.
+ * 
+ * Default is 1.
+ * 
+ * That description for mode 0 was actually false (sort of), normally the checksum will sort itself, but if it fails, then the json will sort it
+ */
 #define MPARC_QSORT_MODE 1
 #endif
 
-// Fwrite and Fread usage threshold
-// how much bytes is needed to warant using fwrite or fread, else use fputc or fgetc
-// default is 8 kiloytes
-// think of as in bytes, not bits
+#ifndef MPARC_DIRECTF_MINIMUM
+/// @brief Magic threshold number
+/// @details
+///
+/// Fwrite and Fread usage threshold.
+/// How much bytes is needed to warant using fwrite or fread, else use fputc or fgetc.
+/// 
+/// Default is 8 kiloytes,
+/// think of as in bytes, not bits.
 #define MPARC_DIRECTF_MINIMUM (8000)
+#endif
 
 /* not defines */
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 /* Special type declaration */
+/**
+ * @brief crc_t CRC32 type
+ */
 typedef uint_fast32_t crc_t;
 
+/**
+ * @brief Map internal storage representation
+ */
 typedef struct MPARC_blob_store{
-		MXPSQL_MPARC_uint_repr_t binary_size;
-		unsigned char* binary_blob;
-		crc_t binary_crc;
+	/// @brief size of binary
+	MXPSQL_MPARC_uint_repr_t binary_size;
+	/// @brief blob of binary contents
+	unsigned char* binary_blob;
+	/// @brief CRC32 checksum of binary
+	crc_t binary_crc;
 } MPARC_blob_store;
 
 #ifndef MXPSQL_MPARC_NO_B64
@@ -201,6 +236,9 @@ typedef struct MPARC_blob_store{
 } */
 
 // not a problem
+/**
+ * @internal
+ */
 static unsigned char *b64Encode(unsigned char *psyudata, MXPSQL_MPARC_uint_repr_t inlen, MXPSQL_MPARC_uint_repr_t* outplen)
 {
 		static const char b64e[] = {
@@ -266,6 +304,9 @@ static unsigned char *b64Encode(unsigned char *psyudata, MXPSQL_MPARC_uint_repr_
 
 
 // now decoder has problems I see. Nope, no more.
+/**
+ * @internal
+ */
 static unsigned char *b64Decode(unsigned char *udata, MXPSQL_MPARC_uint_repr_t inlen, MXPSQL_MPARC_uint_repr_t* outplen)
 {
 		static const char b64d[] = {
@@ -468,6 +509,9 @@ static unsigned char *b64Decode(unsigned char *udata, MXPSQL_MPARC_uint_repr_t i
 // 	return out;
 // }
 
+/**
+ * @internal
+ */
 static const struct {
 		unsigned char* (*btoa) (unsigned char*, MXPSQL_MPARC_uint_repr_t, MXPSQL_MPARC_uint_repr_t*);
 		unsigned char* (*atob) (unsigned char*, MXPSQL_MPARC_uint_repr_t, MXPSQL_MPARC_uint_repr_t*);
@@ -565,7 +609,7 @@ static crc_t crc_update(crc_t crc, const void *data, MXPSQL_MPARC_uint_repr_t da
  * Calculate the final crc value.
  *
  * \param[in] crc  The current crc value.
- * \return     The final crc value.
+ * \return     The
  */
 static inline crc_t crc_finalize(crc_t crc)
 {
@@ -606,39 +650,65 @@ static inline crc_t crc_finalize(crc_t crc)
   THE SOFTWARE.
 */
 
+/**
+ * @brief JsonNode type
+ */
 typedef enum {
+	/// NULL
 	JSON_NULL,
+	/// Boolean
 	JSON_BOOL,
+	/// char*
 	JSON_STRING,
+	/// (-)0-9
 	JSON_NUMBER,
+	/// [true, false, 0, 21, 9, "ez"]
 	JSON_ARRAY,
+	/// {
+	/// 	"array": [true, false, 0, 21, 9, "ez"],
+	/// 	"null": null
+	/// }
 	JSON_OBJECT,
 } JsonTag;
 
+/**
+ * @brief Json Node representation in a struct
+ * 
+ */
 typedef struct JsonNode JsonNode;
 
+/**
+ * @brief Json Node representation in a struct
+ * 
+ */
 struct JsonNode
 {
-	/* only if parent is an object or array (NULL otherwise) */
+	/// only if parent is an object or array (NULL otherwise)
 	JsonNode *parent;
+	/// next or previous entry
 	JsonNode *prev, *next;
 	
-	/* only if parent is an object (NULL otherwise) */
-	char *key; /* Must be valid UTF-8. */
-	
+	/// only if parent is an object (NULL otherwise)
+	/// Must be valid UTF-8.
+	char *key; 
+
+	/// JSON Typing
 	JsonTag tag;
+
+	/// Storage value
 	union {
-		/* JSON_BOOL */
+		/// JSON_BOOL
 		bool boole;
 		
-		/* JSON_STRING */
-		char *string; /* Must be valid UTF-8. */
+		/// JSON_STRING
+		/// Must be valid UTF-8.
+		char *string; 
 		
-		/* JSON_NUMBER */
+		/// JSON_NUMBER
 		double number;
 		
-		/* JSON_ARRAY */
-		/* JSON_OBJECT */
+		/// JSON_ARRAY 
+		/// JSON_OBJECT
 		struct {
 			JsonNode *head, *tail;
 		} children;
@@ -646,6 +716,9 @@ struct JsonNode
 };
 	
 
+/**
+ * @brief Called on OOM condition and errors. Suppoused to abort, but that is dumb, so I let the users deal with it.
+ */
 #define out_of_memory() do {                    \
 		/* dumb */ \
 		/* fprintf(stderr, "Out of memory.\n"); */   \
@@ -668,10 +741,16 @@ static char *json_strdup(const char *str)
 
 /* String buffer */
 
+/**
+ * @brief JSON SB internal magic
+ */
 typedef struct
 {
+	/// current is now
 	char *cur;
+	/// end is front/back
 	char *end;
+	// start is back/front
 	char *start;
 } SB;
 
@@ -687,7 +766,7 @@ static void sb_init(SB *sb)
 	sb->end = sb->start + 16;
 }
 
-/* sb and need may be evaluated multiple times. */
+/// sb and need may be evaluated multiple times.
 #define sb_need(sb, need) do {                  \
 		if ((sb)->end - (sb)->cur < (need))     \
 			sb_grow(sb, need);                  \
@@ -721,6 +800,7 @@ static void sb_put(SB *sb, const char *bytes, int count)
 	sb->cur += count;
 }
 
+/// putc 4 json (PUTC4JSON)
 #define sb_putc(sb, c) do {         \
 		if ((sb)->cur >= (sb)->end) \
 			sb_grow(sb, 1);         \
@@ -745,7 +825,7 @@ static void sb_free(SB *sb)
 	if(sb && sb->start) free(sb->start);
 }
 
-/*
+/**
  * Unicode helper functions
  *
  * These are taken from the ccan/charset module and customized a bit.
@@ -753,13 +833,16 @@ static void sb_free(SB *sb)
  * and it keeps ccan/json from having a dependency.
  */
 
-/*
+/**
+ * @details
+ * 
+ * 
  * Type for Unicode codepoints.
  * We need our own because wchar_t might be 16 bits.
  */
 typedef uint32_t uchar_t;
 
-/*
+/**
  * Validate a single UTF-8 character starting at @s.
  * The string must be null-terminated.
  *
@@ -956,7 +1039,13 @@ static void to_surrogate_pair(uchar_t unicode, uint16_t *uc, uint16_t *lc)
 	*lc = (n & 0x3FF) | 0xDC00;
 }
 
+/**
+ * @brief What char is it? Is it a space?
+ */
 #define is_space(c) ((c) == '\t' || (c) == '\n' || (c) == '\r' || (c) == ' ')
+/**
+ * @brief What char is it? Is it a digit?
+ */
 #define is_digit(c) ((c) >= '0' && (c) <= '9')
 
 
@@ -1028,7 +1117,12 @@ static bool number_is_valid(const char *num);
  */
 static bool json_check(const JsonNode *node, char errmsg[256]);
 
-
+/**
+ * @brief For each a json node
+ * 
+ * @param i name
+ * @param object_or_array source
+ */
 #define json_foreach(i, object_or_array)            \
 	for ((i) = json_first_child(object_or_array);   \
 		 (i) != NULL;                               \
@@ -2007,6 +2101,7 @@ static int write_hex16(char *out, uint16_t val)
 
 static bool json_check(const JsonNode *node, char errmsg[256])
 {
+	/// @brief Json Houston, we have a problem here
 	#define problem(...) do { \
 			if (errmsg != NULL) \
 				snprintf(errmsg, 256, __VA_ARGS__); \
@@ -2106,6 +2201,7 @@ static bool json_check(const JsonNode *node, char errmsg[256])
  * SOFTWARE.
  */
 
+/// Originaly JSMN_API, but it will always be static, so we call it JSMN_STATIC
 #define JSMN_STATIC static
 
 
@@ -2118,34 +2214,47 @@ static bool json_check(const JsonNode *node, char errmsg[256])
  * 	o Other primitive: number, boolean (true/false) or null
  */
 typedef enum {
+	/// undefined behaviour objects
 	JSMN_UNDEFINED = 0,
+	/// an actual defined behaviour objects
 	JSMN_OBJECT = 1 << 0,
+	/// an array, not an object
 	JSMN_ARRAY = 1 << 1,
+	/// a string
 	JSMN_STRING = 1 << 2,
+	/// a primitive (bool, null, true, false, number)
 	JSMN_PRIMITIVE = 1 << 3
 } jsmntype_t;
 
+/**
+ * @brief Error state
+ */
 enum jsmnerr {
-	/* Not enough tokens were provided */
+	/// Not enough tokens were provided
 	JSMN_ERROR_NOMEM = -1,
-	/* Invalid character inside JSON string */
+	/// Invalid character inside JSON string
 	JSMN_ERROR_INVAL = -2,
-	/* The string is not a full JSON packet, more bytes expected */
+	/// The string is not a full JSON packet, more bytes expected
 	JSMN_ERROR_PART = -3
 };
 
-/**
+/** @details
  * JSON token description.
  * type		type (object, array, string etc.)
  * start	start position in JSON data string
  * end		end position in JSON data string
  */
 typedef struct jsmntok {
+	/// Type of item
 	jsmntype_t type;
+	/// Start position
 	int start;
+	/// End position
 	int end;
+	/// Size
 	int size;
 #ifdef JSMN_PARENT_LINKS
+	/// Where is parent?
 	int parent;
 #endif
 } jsmntok_t;
@@ -2155,9 +2264,12 @@ typedef struct jsmntok {
  * the string being parsed now and current position in that string.
  */
 typedef struct jsmn_parser {
-	unsigned int pos;     /* offset in the JSON string */
-	unsigned int toknext; /* next token to allocate */
-	int toksuper;         /* superior token node, e.g. parent object or array */
+	/// offset in the JSON string
+	unsigned int pos;     
+	/// next token to allocate
+	unsigned int toknext; 
+	/// superior token node, e.g. parent object or array
+	int toksuper;         
 } jsmn_parser;
 
 /**
@@ -2568,50 +2680,95 @@ JSMN_STATIC void jsmn_init(jsmn_parser *parser) {
  * SOFTWARE.
 */
 
+/**
+ * @brief Map struct
+ * 
+ */
 struct map_node_t;
+/**
+ * @brief Map struct typedef
+ * 
+ */
 typedef struct map_node_t map_node_t;
 
+/**
+ * @brief Map base
+ * 
+ */
 typedef struct {
+	/// node buckets
 	map_node_t **buckets;
+	/// bucket and node count
 	MXPSQL_MPARC_uint_repr_t nbuckets, nnodes;
 } map_base_t;
 
+/**
+ * @brief Map iterator
+ * 
+ */
 typedef struct {
+	/// bucket index
 	MXPSQL_MPARC_uint_repr_t bucketidx;
+	/// current node
 	map_node_t *node;
 } map_iter_t;
 
 
+/**
+ * @brief Make map type
+ * 
+ */
 #define map_t(T)\
 	struct { map_base_t base; T *ref; T tmp; }
 
-
+/**
+ * @brief Initialize map
+ * 
+ */
 #define map_init(m)\
 	memset(m, '\0', sizeof(*(m)))
 
 
-
+/**
+ * @brief Deinitialize map
+ * 
+ */
 #define map_deinit(m)\
 	map_deinit_(&(m)->base)
 
-
+/**
+ * @brief Get map value from key
+ * 
+ */
 #define map_get(m, key)\
 	( (m)->ref = map_get_(&(m)->base, key) )
 
-
+/**
+ * @brief Set map value with key
+ * 
+ */
 #define map_set(m, key, value)\
 	( (m)->tmp = (value),\
 		map_set_(&(m)->base, key, &(m)->tmp, sizeof((m)->tmp)) )
 
-
+/**
+ * @brief Map remove key
+ * 
+ */
 #define map_remove(m, key)\
 	map_remove_(&(m)->base, key)
 
-
+/**
+ * @brief Make map iterator
+ * 
+ */
 #define map_iter(m)\
 	map_iter_()
 
-
+/**
+ * @brief Next the map iterator
+ * 
+ */
 #define map_next(m, iter)\
 	map_next_(&(m)->base, iter)
 
@@ -2623,12 +2780,17 @@ static void map_remove_(map_base_t *m, const char *key);
 static map_iter_t map_iter_(void);
 static const char *map_next_(map_base_t *m, map_iter_t *iter);
 
-
+/// void map
 typedef map_t(void*) map_void_t;
+/// char map
 typedef map_t(char*) map_str_t;
+/// int map
 typedef map_t(int) map_int_t;
+/// char map
 typedef map_t(char) map_char_t;
+/// float map
 typedef map_t(float) map_float_t;
+/// double map
 typedef map_t(double) map_double_t;
 
 struct map_node_t {
@@ -3261,10 +3423,31 @@ static int voidstrcmp(const void* str1, const void* str2){
 }
 
 // future, may not be used
+/// @brief endian
 static int isLittleEndian(){
 	volatile uint32_t i=0x01234567;
 	// return 0 for big endian, 1 for little endian.
 	return (*((uint8_t*)(&i))) == 0x67;
+}
+
+static unsigned char* XORCipher(const unsigned char* bytes_src, size_t length, const int key){
+	((void)isLittleEndian);
+	unsigned char* bytes_out = MPARC_memdup(bytes_src, length);
+	for(size_t i = 0; i < length; i++){
+		unsigned char byte = bytes_out[i] ^ key;
+		bytes_out[i] = byte;
+	}
+	return bytes_out;
+}
+
+static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int key){
+	((void)XORCipher);
+	unsigned char* bytes_out = MPARC_memdup(bytes_src, length);
+	for(size_t i = 0; i < length; i++){
+		unsigned char byte = bytes_out[i] + (key);
+		bytes_out[i] = byte;
+	}
+	return bytes_out;
 }
 
 /* END OF SNIPPETS */
@@ -3275,13 +3458,24 @@ static int isLittleEndian(){
 
 		/* MY LINKED LIST IMPL OK, UNUSED OK, NOW DONT SPEAK WE DONT SPEAKE ABOUT llist OOK */
 
+		/**
+		 * @brief Hot garbage linked list node
+		 * 
+		 */
 		struct _llist_node {
-				char* val;
-				struct _llist_node* next;
+			/// value
+			char* val;
+			/// next node
+			struct _llist_node* next;
 		};
 
+		/**
+		 * @brief Hot garbage linked list
+		 * 
+		 */
 		typedef struct _llist {
-				struct _llist_node* top;
+			/// top node
+			struct _llist_node* top;
 		} _llist;
 		
 
@@ -3289,40 +3483,56 @@ static int isLittleEndian(){
 
 		typedef map_t(MPARC_blob_store) map_blob_t;
 
+		#endif
+
 		struct MXPSQL_MPARC_t {
 				/* separator markers */
-				char magic_byte_sep; // separate the 25 character long magic number from the rest of the archive
-				char meta_sep; // separate the version number from implementation specific metadata
-				char entry_sep_or_general_marker; // a new line, but usually used to separate entries
-				char comment_marker; // unused, but can be implemented, other implementations can use this as extension metadata
-				char begin_entry_marker; // indicate beginning of entries
-				char entry_elem2_sep_marker_or_magic_sep_marker; // separate checksum from entry contents
-				char end_entry_marker; // indicate end of entry
-				char end_file_marker; // indicate end of file
+				/// separate the 25 character long magic number from the rest of the archive
+				char magic_byte_sep; 
+				/// separate the version number from implementation specific metadata
+				char meta_sep; 
+				/// a new line, but usually used to separate entries
+				char entry_sep_or_general_marker; 
+				/// unused, but can be implemented, other implementations can use this as extension metadata
+				char comment_marker; 
+				/// indicate beginning of entries
+				char begin_entry_marker; 
+				/// separate checksum from entry contents
+				char entry_elem2_sep_marker_or_magic_sep_marker; 
+				/// indicate end of entry
+				char end_entry_marker; 
+				/// indicate end of file
+				char end_file_marker; 
 
 				/* metadata */
-				STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION writerVersion; // version that is used when creating archive
-				STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION loadedVersion; // version that indicates what version of the archive is loaded
+				/// version that is used when creating archive
+				STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION writerVersion; 
+				/// version that indicates what version of the archive is loaded
+				STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION loadedVersion; 
 
-				/* storage actually */
+				/// storage actually
 				map_blob_t globby;
 
-				/* Internal status for later usage */
+				/// Internal status for later usage 
 				MXPSQL_MPARC_err my_err;
 
 				
-				/* hidden */
+				/// hidden
 				va_list vlist;
 		};
 
+		/**
+		 * @brief Iterator
+		*/
 		struct MXPSQL_MPARC_iter_t {
+			/// current archive
 			MXPSQL_MPARC_t* archive;
+			/// storage iterator
 			map_iter_t itery;
 		};
 
 		int MPARC_strerror(MXPSQL_MPARC_err err, char** out){
-			// ((void)out);
-			((void)isLittleEndian);
+			((void)ROTCipher);
 			switch(err){
 				case MPARC_OK:
 				*out = MPARC_strdup("it fine, no error");

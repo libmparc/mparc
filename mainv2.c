@@ -15,6 +15,9 @@
 #define MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
 #include "mparc.h"
 
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #define OPTPARSE_IMPLEMENTATION
 #define OPTPARSE_API static
 
@@ -71,25 +74,69 @@
 #  define OPTPARSE_API
 #endif
 
+/// @brief Args parser state
 struct optparse {
+    /**
+     * @brief argv from main()
+     * 
+     */
     char **argv;
+    /**
+     * shift argv?
+    */
     int permute;
+    /**
+     * @brief current index
+     * 
+     */
     int optind;
+    /**
+     * @brief wrong
+     * 
+     */
     int optopt;
+    /**
+     * @brief argument value like "-a abc" gives abc
+     * 
+     */
     char *optarg;
+    /**
+     * @brief err
+     * 
+     */
     char errmsg[64];
+    /**
+     * @brief idk i never used this I did not even write this
+     * 
+     */
     int subopt;
 };
 
+/// @brief Gnu getopt extension magic typing
 enum optparse_argtype {
+    /// @brief No
     OPTPARSE_NONE,
+    /// @brief Required
     OPTPARSE_REQUIRED,
+    /// @brief Optional
     OPTPARSE_OPTIONAL
 };
 
+/// @brief  Gnu getopt extension magic
 struct optparse_long {
+    /**
+     * @brief long name for cmdline
+     * 
+     */
     const char *longname;
+    /**
+     * @brief short name like "-a"
+     * 
+     */
     int shortname;
+    /**
+     * arg type
+    */
     enum optparse_argtype argtype;
 };
 
@@ -422,10 +469,16 @@ optparse_long(struct optparse *options,
 #endif /* OPTPARSE_IMPLEMENTATION */
 #endif /* OPTPARSE_H */
 
+#endif
+
+/// Print out magic stuff
+/// @param key print this key with magic print
 void xhandler(const char* key){
     printf("x> %s\n", key);
 }
 
+/// Sudo make me a directory
+/// @param dir directory to make
 int mkdirer(char* dir){
     #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
     return !CreateDirectoryA(dir, NULL);
@@ -435,6 +488,10 @@ int mkdirer(char* dir){
 }
 
 
+/// REPL mode
+/// @param argc argc
+/// @param exe executable path
+/// @param argv argv
 int repl_main(int argc, char* exe, char** argv){
     printf("Read-Eval-Print-Loop interface mode.\n");
     ((void)argc);
@@ -450,6 +507,10 @@ int repl_main(int argc, char* exe, char** argv){
     return 0;
 }
 
+/// Command Line Interface mode
+/// @param argc argc
+/// @param exe executable path
+/// @param argv argv
 int cmdline_main(int argc, char* exe, char** argv){
     printf("Command line interface mode.\n");
     ((void)argc);
