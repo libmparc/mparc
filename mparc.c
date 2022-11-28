@@ -4479,7 +4479,7 @@ static int isLittleEndian(){
 						listout_structure[index] = NULL;
 				}
 
-				MPARC_i_sort(listout_structure);
+				qsort(listout_structure, lentracker, sizeof(*listout_structure), voidstrcmp);
 
 				if(listout != NULL){
 						*listout = listout_structure;

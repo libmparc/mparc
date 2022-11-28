@@ -265,7 +265,9 @@ extern "C"{
      * @param length the length of listout
      * @return MXPSQL_MPARC_err the status code if successfully done
      * 
-     * @note Free listout manually with 'free', not 'delete'
+     * @note Free listout manually with MPARC_list_array_free, not 'free' or 'delete'
+     * 
+     * @see MPARC_list_array
      */
     MXPSQL_MPARC_err MPARC_list_array(MXPSQL_MPARC_t* structure, char*** listout, MXPSQL_MPARC_uint_repr_t* length);
     /**
@@ -651,12 +653,77 @@ extern "C"{
 
     // Auxiliary function
     #ifdef MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
+    /**
+     * @brief Strtok Safe Edition
+     * 
+     * @param s string to be tokenized, must be mutable
+     * @param delim delimiter to be used while tokenizing
+     * @param save_ptr storage space for the rest of the 'she' string
+     * @return char* The token
+     */
     extern char* MPARC_strtok_r (char *s, const char *delim, char **save_ptr);
+    /**
+     * @brief Copy memory
+     * 
+     * @param src source memory bytes, interpreted as unsigned char*
+     * @param len length of src
+     * @return void* duplicated value, interpreted as unsigned char*
+     * 
+     * @note Use 'free' to deallocate instead of 'delete'
+     * 
+     * @see MPARC_memdup
+     */
     extern void* MPARC_memdup(const void* src, size_t len);
+    /**
+     * @brief Copy string with length limits
+     * 
+     * @param src source string
+     * @param ilen max length to copy
+     * @return char* duplicated string
+     * 
+     * @note Use 'free' to deallocate instead of 'delete'
+     * 
+     * @see MPARC_strndup
+     */
     extern char* MPARC_strndup(const char* src, size_t ilen);
+    /**
+     * @brief Copy string with no length limits
+     * 
+     * @param src source string
+     * @return char* duplicated string
+     * 
+     * @note Use 'free' to deallocate instead of 'delete'
+     * 
+     * @see MPARC_strdup
+     */
     extern char* MPARC_strdup(const char* src);
+    /**
+     * @brief Get the basename of the file paht
+     * 
+     * @param filename file path
+     * @return char* Base name of filename
+     * 
+     * @details
+     * 
+     * On unix, it is strrchr'd on '/' only.
+     * 
+     * On windows, it is not only strrchr'd on '/', it is also strchrr'd on '\\' (How you say the \ character on C)
+     */
     extern char* MPARC_basename (const char *filename);
+    /**
+     * @brief Get directory
+     * 
+     * @param path file path
+     * @return char* the directory path without the filename
+     */
     extern char* MPARC_dirname (char *path);
+    /**
+     * @brief Get the extension. Dodgy implementation
+     * 
+     * @param fnp file path with extension
+     * @param full_or_not if set to 0, strip from the last '.', else strip from the first '.'
+     * @return char* the extension
+     */
     extern char* MPARC_get_extension(const char* fnp, int full_or_not);
     #endif
 
