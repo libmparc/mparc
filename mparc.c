@@ -3485,6 +3485,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 		#endif
 
+		/// @brief Not the best place to find documentation for this struct, see mparc.h for better info. This however tells you about the members.
 		struct MXPSQL_MPARC_t {
 				/* separator markers */
 				/// separate the 25 character long magic number from the rest of the archive
@@ -4295,9 +4296,17 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			}
 
 			for(MXPSQL_MPARC_uint_repr_t i = 0; i < ecount && entries[i] != NULL; i++){
+				if(!entries[i]) break;
 				crc_t crc = crc_init();
 				crc_t tcrc = crc_init();
 				char* entry = entries[i];
+				if(entry[0] == structure->comment_marker || (strlen(entry)<=0 || entry[0] == '\0' || strcmp(entry, "") == 0)) { // check for comment or empty line
+					json_entries[i] = NULL;
+					if(entries[i+1] == NULL) {
+						break;
+					}
+					continue;
+				}
 				// printf("r%s\n", entry);
 				char* sptr = NULL;
 				char seps[2] = {structure->entry_elem2_sep_marker_or_magic_sep_marker, '\0'};
@@ -4336,6 +4345,8 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				bool crc3_parsed = false;
 
 				char* jse = json_entries[i];
+
+				if(jse == NULL) continue; // skip if NULL
 
 				if(false){ // disable jsmn for now due to eroneous results (problem with the token ordering)
 					static const MXPSQL_MPARC_uint_repr_t jtokens_count = 128; // we only need 4 but we don't expect more than 128, we put more just in case for other metadata
@@ -5377,7 +5388,10 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			return MPARC_peek_file_advance(structure, filename, bout, sout, NULL);
 		}
 
-		/*
+		/**
+		 * @brief How to construct and parse MPAR archives.
+		 * 
+		 * @details
 		 * 
 		 * SEE THIS TO SEE THE FILE FORMAT OF THE ARCHIVE
 		 * THIS PART IS IMPORTANT TO SEE HOW IT IS IMPLEMENTED AND THE FORMAT
@@ -5385,78 +5399,91 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		 * How is the file constructed (along with little parsing information to make your own parser):
 		 * 
 		 * 1. Build the header:
-		 * Format: MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE]
+		 * 		
+		 * 		Format: 
+		 * 			MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE]
 		 * 
-		 * The ';' character separates the Magic numbers (very long with 25 character I think) from the version number and json metadata
-		 * 
-		 * The '$' character separates the version and magic numbers from the metadata
-		 * 
-		 * The '>' character works to indicate the start of entries
-		 * The newline is an anomaly though, but just put it in there
-		 * 
-		 * JSON_WHATEV_METADATA can be implementation defined
-		 * This C implementation will ignore any extra metadata
-		 * 
-		 * Construction note:
-		 * Make sure to base64 your metadata entries to prevent issues with parsing.
-		 * 
-		 * Parsing tips:
-		 * Split ';' from the whole archive to get the magic number first
-		 * Then split '>' from to get the special info header
-		 * The split '$' from the special info header to get the version and extra metadata
+		 * 		The ';' character separates the Magic numbers (very long with 25 character I think) from the version number and json metadata
+		 * 		
+		 * 		The '$' character separates the version and magic numbers from the metadata
+		 * 		
+		 * 		The '>' character works to indicate the start of entries
+		 * 		The newline is an anomaly though, but just put it in there
+		 * 		
+		 * 		JSON_WHATEV_METADATA can be implementation defined
+		 * 		This C implementation will ignore any extra metadata
+		 * 		
+		 * 		Construction note:
+		 * 		Make sure to base64 your metadata entries to prevent issues with parsing.
+		 * 		
+		 * 		Parsing tips:
+		 * 		Split ';' from the whole archive to get the magic number first
+		 * 		Then split '>' from to get the special info header
+		 * 		The split '$' from the special info header to get the version and extra metadata
 		 * 
 		 * 
 		 * 2. Build the entries
-		 * Format: [CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]
+		 * 		
+		 * 		Format: 
+		 * 			[CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]
 		 * 
-		 * The '%' character is to separate the checksum of the JSON from the JSON itself
+		 * 		The '%' character is to separate the checksum of the JSON from the JSON itself
+		 * 		
+		 * 		You can add other metadata like date of creation, but there must be the entries "filename", "blob" and "crcsum" in the JSON
+		 * 		This C implementation will ignore any extra metadata.
+		 * 		
+		 * 		"filename" should contain the filename. (don't do any effects and magic on this field called "filename")
+		 * 		"blob" should contain the base64 of the binary or text file. (base64 to make it a text file and not binary)
+		 * 		"crcsum" should contain the CRC32 checksum of the content of "blob" after converting it back to it's original form. ("blob" but wihtout base64)
+		 * 		
+		 * 		Repeat this as required (how many entries are there you repeat)
+		 * 		
+		 * 		Construction note:
+		 * 		The anomaly mention aboved is because the newline is added before the main content
+		 * 		
+		 * 		Parsing note:
+		 * 			When parsing the entries, split from the begin '>' marker first, and then the end '@' marker.
+		 * 			Then split each by newlines.
+		 * 			Ignore if a line start with '#', a comment marker. Also ignore if a line is empty.
+		 * 			Then, foreach split '%' to get the crc and json.
+		 * 			Then compare the JSON to the crc.
+		 * 			Then parse the JSON as usual.
 		 * 
-		 * You can add other metadata like date of creation, but there must be the entries "filename", "blob" and "crcsum" in the JSON
-		 * This C implementation will ignore any extra metadata.
-		 * 
-		 * "filename" should contain the filename. (don't do any effects and magic on this field called "filename")
-		 * "blob" should contain the base64 of the binary or text file. (base64 to make it a text file and not binary)
-		 * "crcsum" should contain the CRC32 checksum of the content of "blob" after converting it back to it's original form. ("blob" but wihtout base64)
-		 * 
-		 * Repeat this as required (how many entries are there you repeat)
-		 * 
-		 * Construction note:
-		 * The anomaly mention aboved is because the newline is added before the main content
-		 * 
-		 * Parsing note:
-		 * When parsing the entries, split from the begin '>' marker first, and then the end '@' marker.
-		 * Then split each by newlines.
-		 * Then, foreach split '%' to get the crc and json.
-		 * Then compare the JSON to the crc.
-		 * Then parse the JSON as usual.
-		 * 
-		 * You could parse extra info in your implementation, but this C Based implementation will ignore extra ones. I repeat this line again.
+		 * 		You could parse extra info in your implementation, but this C Based implementation will ignore extra ones. I repeat this line again.
 		 * 
 		 * 
 		 * 3. Build the footer
-		 * Format: @~
+		 * 		
+		 * 		Format: 
+		 * 			@~
 		 * 
-		 * the '@' character is to signify end of entry
-		 * the '~' character is to signify end of file
+		 * 		the '@' character is to signify end of entry
+		 * 		the '~' character is to signify end of file
+		 * 		
+		 * 		Parsing note:
+		 * 		Make sure to not have anything beyond the footer, not even a newline.
 		 * 
-		 * Parsing note:
-		 * Make sure to not have anything beyond the footer, not even a newline.
 		 * 
 		 * Final note:
-		 * This file should not have binary characters.
+		 * 		This file should not have binary characters.
 		 * 
 		 * 		 
 		 * Follow this (with placeholder) and you get this:
-		 * MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE][CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]@~
+		 * 		
+		 * 	MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE][CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]@~
+		 * 
 		 * 
 		 * A real single entried one:
-		 * MXPSQL's Portable Archive;1${"WhatsThis": "MPARC Logo lmao-Hahahaha"}>
-		 * 134131812%{"filename":"./LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
+		 * 		
+		 * 	MXPSQL's Portable Archive;1${"WhatsThis": "MPARC Logo lmao-Hahahaha"}>  
+		 * 	134131812%{"filename":"./LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
 		 *
+		 * 
 		 * A real (much more real) multi entried one:
-		 * MXPSQL's Portable Archive;1${}>
-		 * 3601911152%{"filename":"LICENSE","blob":"U2VlIExJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgYW5kIGNob29zZSBvbmUgb2YgdGhlbS4KCkxJQ0VOU0UuTEdQTCBjb250YWlucyBMR1BMLTIuMS1vci1sYXRlciBsaWNlbnNlLgpMSUNFTlNFLk1JVCBjb250YWlucyBNSVQgbGljZW5zZS4KCkxJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgc2hvdWxkIGJlIGRpc3RyaWJ1dGVkIHRvZ2V0aGVyIHdpdGggeW91ciBjb3B5LCBpZiBub3QsIHNvbWV0aGluZyBpcyB3cm9uZy4=","crcsum":"404921597"}
-		 * 59879441%{"filename":"LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
+		 * 		
+		 * 	MXPSQL's Portable Archive;1${}>  
+		 * 	3601911152%{"filename":"LICENSE","blob":"U2VlIExJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgYW5kIGNob29zZSBvbmUgb2YgdGhlbS4KCkxJQ0VOU0UuTEdQTCBjb250YWlucyBMR1BMLTIuMS1vci1sYXRlciBsaWNlbnNlLgpMSUNFTlNFLk1JVCBjb250YWlucyBNSVQgbGljZW5zZS4KCkxJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgc2hvdWxkIGJlIGRpc3RyaWJ1dGVkIHRvZ2V0aGVyIHdpdGggeW91ciBjb3B5LCBpZiBub3QsIHNvbWV0aGluZyBpcyB3cm9uZy4=","crcsum":"404921597"}  
+		 * 	59879441%{"filename":"LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
 		*/
 		MXPSQL_MPARC_err MPARC_construct_str(MXPSQL_MPARC_t* structure, char** output){
 				static char* fmt = "%s%s%s";
