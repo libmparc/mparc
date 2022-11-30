@@ -517,7 +517,7 @@ extern "C"{
      * @param output the storage string
      * @return MXPSQL_MPARC_err the status code if successfully done
      * 
-     * @note manually free output string
+     * @note manually free output string with 'MPARC_free', not 'free' or 'delete' for forward compatibility.
      */
     MXPSQL_MPARC_err MPARC_construct_str(MXPSQL_MPARC_t* structure, char** output);
     /**
