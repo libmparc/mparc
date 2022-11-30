@@ -14,7 +14,7 @@ LIBA:=libmparc.a
 EXEC:=mparc.exe
 EXEC2:=mparc2.exe
 
-CC?=gcc
+CC:=gcc
 
 DEFAULT_GOAL:=all
 

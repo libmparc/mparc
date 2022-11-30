@@ -265,7 +265,7 @@ extern "C"{
      * @param length the length of listout
      * @return MXPSQL_MPARC_err the status code if successfully done
      * 
-     * @note Free listout manually with MPARC_list_array_free, not 'free' or 'delete'
+     * @note Free listout manually with MPARC_list_array_free, not 'free' or 'delete' for forward compatibility. Using 'MPARC_free' would get you memory leaks instead.
      * 
      * @see MPARC_list_array
      */
@@ -355,7 +355,7 @@ extern "C"{
      * extension - Get the file extension based from the first dot - [a string of the file extension, do not include the first dot in the parameter]
      * rextension - Get the file extension based from the last dot - [a string of the file extension, do not include the first dot in the parameter]
      * 
-     * The output parameter is always terminated with NULL. It itself and its content is also dynamically allocated, so you must deallocate it manually using 'free', not 'delete[]'.
+     * The output parameter is always terminated with NULL. It itself and its content is also dynamically allocated, so you must deallocate it manually using 'MPARC_free', not 'free' and 'delete[]' for forward compatibility.
      * 
      * Passing the wrong vaargs will lead to undefined behavior, I cannot defend you from against that unless you cooperate with me. C Standard Library says so to do undefined behaviour in vaargs implementation.
      */
@@ -633,6 +633,83 @@ extern "C"{
     MXPSQL_MPARC_err MPARC_parse_filename(MXPSQL_MPARC_t* structure, char* filename);
 
 
+    // Memory management utilities for easy refactoring
+    /**
+     * @brief My malloc, for easy plug and switch. Extensions should use this instead of malloc.
+     * 
+     * @param size size of bytes to allocate
+     * @return void* allocated memory pointer
+     * 
+     * @note
+     * 
+     * MPARC_malloc has its pitfalls. Don't fall for it.
+     * 
+     * Right now is using C's malloc, so it is at the mercy of that function as malloc has flaws.
+     * 
+     * Allocating a zero sized object with MPARC_Malloc, danger is from that it is implementation defined.
+     */
+    void* MPARC_malloc(MXPSQL_MPARC_uint_repr_t size);
+    /**
+     * @brief My calloc, for easy plug and switch. Extensions should use this instead of calloc.
+     * 
+     * @param arr_size size of array (if applicable, else put 1)
+     * @param el_size size of element
+     * @return void* allocated memory pointer
+     * 
+     * @note
+     * 
+     * MPARC_calloc has its pitfalls. Don't fall for it.
+     * 
+     * Right now is using C's calloc, so it is at the mercy of that function as calloc has flaws.
+     * 
+     * Allocating a zero sized object with MPARC_calloc, danger is from that it is implementation defined.
+     */
+    void* MPARC_calloc(MXPSQL_MPARC_uint_repr_t arr_size, size_t el_size);
+    /**
+     * @brief My realloc, for easy plug and switch. Extensions should use this instead of realloc.
+     * 
+     * @param oldmem old memory to change size
+     * @param newsize new size
+     * @return void* reallocated memory pointer
+     * 
+     * @note
+     * 
+     * MPARC_realloc has its pitfalls. Don't fall for it.
+     * 
+     * Right now is using C's realloc, so it is at the mercy of that function as realloc has flaws.
+     * 
+     * Common one:
+     * 
+     * In place realloc, danger is from when it errors out and now you created a memory leak.
+     * 
+     * Reusing old realloc pointers, danger is that it may have been invalidated.
+     * 
+     * Allocating a zero sized object with MPARC_realloc, danger is that it used to be implementation defined before C23, after C23 is now undefined behaviour.
+     * 
+     */
+    void* MPARC_realloc(void* oldmem, MXPSQL_MPARC_uint_repr_t newsize);
+    /**
+     * @brief My free, for easy plug and switch. Extensions should use this instead of free.
+     * 
+     * @param mem memory to free
+     * 
+     * @note
+     * 
+     * MPARC_free has its pitfalls. Don't fall for it.
+     * 
+     * Right now is using C's free, so it is at the mercy of that function as free has flaws.
+     * 
+     * Common one:
+     * 
+     * Double free, danger is that it is undefined behaviour to do so.
+     * 
+     * Free not allocated memory, danger is that it is also undefined behaviour to do so.
+     * 
+     * Not freeing memory if you are done with it, danger is that you played yourself with memory leaks.
+     */
+    void MPARC_free(void* mem);
+
+
     // Type internal utilities
     /**
      * @brief Get sizeof MXPSQL_MPARC_t
@@ -669,7 +746,7 @@ extern "C"{
      * @param len length of src
      * @return void* duplicated value, interpreted as unsigned char*
      * 
-     * @note Use 'free' to deallocate instead of 'delete'
+     * @note Use MPARC_free to deallocate instead of 'free' and 'delete' for forward compatibility.
      * 
      * @see MPARC_memdup
      */
@@ -681,7 +758,7 @@ extern "C"{
      * @param ilen max length to copy
      * @return char* duplicated string
      * 
-     * @note Use 'free' to deallocate instead of 'delete'
+     * @note Use 'MPARC_free' to deallocate instead of 'free' and 'delete' for forward compatibility.
      * 
      * @see MPARC_strndup
      */
@@ -692,7 +769,7 @@ extern "C"{
      * @param src source string
      * @return char* duplicated string
      * 
-     * @note Use 'free' to deallocate instead of 'delete'
+     * @note Use 'MPARC_free' to deallocate instead of 'free' and 'delete' for forward compatibility.
      * 
      * @see MPARC_strdup
      */

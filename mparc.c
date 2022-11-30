@@ -200,7 +200,7 @@ typedef struct MPARC_blob_store{
 
 	char* data = (char*) psdata;
 
-    char *out = calloc(outlen + 1, sizeof(char));
+    char *out = MPARC_calloc(outlen + 1, sizeof(char));
     if (out == NULL) return NULL;
     out[outlen] = '\0';
 	if(outplen) *outplen = outlen;
@@ -255,7 +255,7 @@ static unsigned char *b64Encode(unsigned char *psyudata, MXPSQL_MPARC_uint_repr_
 
 		char* data = (char*) psyudata; // ps from the old one, y on accident and u for unsigned
 
-		char *out = calloc(outlen + 1, sizeof(char));
+		char *out = MPARC_calloc(outlen + 1, sizeof(char));
 		CHECK_LEAKS();
 		if (out == NULL) return NULL;
 		out[outlen] = '\0';
@@ -335,7 +335,7 @@ static unsigned char *b64Decode(unsigned char *udata, MXPSQL_MPARC_uint_repr_t i
 		if (data[inlen - 1] == '=') outlen--;
 		if (data[inlen - 2] == '=') outlen--;
 
-		unsigned char *out = (unsigned char*) calloc(outlen, sizeof(unsigned char));
+		unsigned char *out = (unsigned char*) MPARC_calloc(outlen, sizeof(unsigned char));
 		CHECK_LEAKS();
 		if (out == NULL) return NULL;
 		*outplen = outlen;
@@ -397,7 +397,7 @@ static unsigned char *b64Decode(unsigned char *udata, MXPSQL_MPARC_uint_repr_t i
 // 	olen++; /* nul termination */
 // 	if (olen < len)
 // 		return NULL; /* integer overflow */
-// 	out = calloc(olen, sizeof(char));
+// 	out = MPARC_calloc(olen, sizeof(char));
 // 	if (out == NULL)
 // 		return NULL;
 // 
@@ -471,7 +471,7 @@ static unsigned char *b64Decode(unsigned char *udata, MXPSQL_MPARC_uint_repr_t i
 // 		return NULL;
 // 
 // 	olen = count / 4 * 3;
-// 	pos = out = calloc(olen, sizeof(char));
+// 	pos = out = MPARC_calloc(olen, sizeof(char));
 // 	if (out == NULL)
 // 		return NULL;
 // 
@@ -497,7 +497,7 @@ static unsigned char *b64Decode(unsigned char *udata, MXPSQL_MPARC_uint_repr_t i
 // 					pos -= 2;
 // 				else {
 // 					/* Invalid padding */
-// 					free(out);
+// 					MPARC_free(out);
 // 					return NULL;
 // 				}
 // 				break;
@@ -729,7 +729,7 @@ struct JsonNode
 /* Sadly, strdup is not portable. */
 static char *json_strdup(const char *str)
 {
-	char *ret = (char*) malloc((strlen(str) + 1)*sizeof(char));
+	char *ret = (char*) MPARC_malloc((strlen(str) + 1)*sizeof(char));
 	CHECK_LEAKS();
 	if (ret == NULL){
 		out_of_memory();
@@ -756,7 +756,7 @@ typedef struct
 
 static void sb_init(SB *sb)
 {
-	sb->start = (char*) malloc(17*sizeof(char));
+	sb->start = (char*) MPARC_malloc(17*sizeof(char));
 	CHECK_LEAKS();
 	if (sb->start == NULL){
 		out_of_memory();
@@ -782,7 +782,7 @@ static void sb_grow(SB *sb, int need)
 		alloc *= 2;
 	} while (alloc < length + need);
 	
-	void* newsb = realloc(sb->start, alloc + 1);
+	void* newsb = MPARC_realloc(sb->start, alloc + 1);
 	CHECK_LEAKS();
 	if (newsb == NULL){
 		out_of_memory();
@@ -822,7 +822,7 @@ static char *sb_finish(SB *sb)
 
 static void sb_free(SB *sb)
 {
-	if(sb && sb->start) free(sb->start);
+	if(sb && sb->start) MPARC_free(sb->start);
 }
 
 /**
@@ -1184,7 +1184,7 @@ static void json_delete(JsonNode *node)
 		
 		switch (node->tag) {
 			case JSON_STRING:
-				if(node->store.string) free(node->store.string);
+				if(node->store.string) MPARC_free(node->store.string);
 				break;
 			case JSON_ARRAY:
 			case JSON_OBJECT:
@@ -1199,7 +1199,7 @@ static void json_delete(JsonNode *node)
 			default:;
 		}
 		
-		if(node) free(node);
+		if(node) MPARC_free(node);
 		node=NULL;
 	}
 }
@@ -1259,7 +1259,7 @@ static JsonNode *json_first_child(const JsonNode *node)
 
 static JsonNode *mknode(JsonTag tag)
 {
-	JsonNode *ret = (JsonNode*) calloc(1, sizeof(JsonNode));
+	JsonNode *ret = (JsonNode*) MPARC_calloc(1, sizeof(JsonNode));
 	CHECK_LEAKS();
 	if (ret == NULL){
 		out_of_memory();
@@ -1400,7 +1400,7 @@ static void json_remove_from_parent(JsonNode *node)
 		else
 			parent->store.children.tail = node->prev;
 		
-		if(node->key) free(node->key);
+		if(node->key) MPARC_free(node->key);
 		
 		node->parent = NULL;
 		node->prev = node->next = NULL;
@@ -1572,7 +1572,7 @@ success:
 
 failure_free_key:
 	if (out)
-		if(key) free(key);
+		if(key) MPARC_free(key);
 failure:
 	json_delete(ret);
 	return false;
@@ -2815,7 +2815,7 @@ static map_node_t *map_newnode(const char *key, void *value, int vsize) {
 	map_node_t *node;
 	int ksize = strlen(key) + 1;
 	int voffset = ksize + ((sizeof(void*) - ksize) % sizeof(void*));
-	node = malloc(sizeof(*node) + voffset + vsize);
+	node = MPARC_malloc(sizeof(*node) + voffset + vsize);
 	CHECK_LEAKS();
 	if (!node) return NULL;
 	memcpy(node + 1, key, ksize);
@@ -2867,7 +2867,7 @@ static int map_resize(map_base_t *m, int nbuckets) {
 		}
 	}
 	/* Reset buckets */
-	buckets = realloc(m->buckets, sizeof(*m->buckets) * nbuckets);
+	buckets = MPARC_realloc(m->buckets, sizeof(*m->buckets) * nbuckets);
 	CHECK_LEAKS();
 	if (buckets != NULL) {
 		m->buckets = buckets;
@@ -2883,7 +2883,7 @@ static int map_resize(map_base_t *m, int nbuckets) {
 			node = next;
 		}
 	}
-	/* Return error code if realloc() failed */
+	/* Return error code if MPARC_realloc() failed */
 	return (buckets == NULL) ? -1 : 0;
 }
 
@@ -2932,11 +2932,11 @@ static void map_deinit_(map_base_t *m) {
 		node = m->buckets[i];
 		while (node) {
 			next = node->next;
-			if(node) free(node);
+			if(node) MPARC_free(node);
 			node = next;
 		}
 	}
-	if(m && m->buckets) free(m->buckets);
+	if(m && m->buckets) MPARC_free(m->buckets);
 	memset(m, '\0', sizeof(*(m)));
 }
 
@@ -2979,7 +2979,7 @@ static int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
 	m->nnodes++;
 	return 0;
 	fail:
-	if (node) free(node);
+	if (node) MPARC_free(node);
 	return -1;
 }
 
@@ -2990,7 +2990,7 @@ static void map_remove_(map_base_t *m, const char *key) {
 	if (next) {
 		node = *next;
 		*next = (*next)->next;
-		if(node) free(node);
+		if(node) MPARC_free(node);
 		m->nnodes--;
 	}
 }
@@ -3037,12 +3037,12 @@ llist *llist_create(void *new_data)
 {
 		struct node *new_node;
 
-		llist *new_list = (llist *)malloc(sizeof (llist));
+		llist *new_list = (llist *)MPARC_malloc(sizeof (llist));
 		CHECK_LEAKS();
 		if(new_list == NULL){
 				return NULL;
 		}
-		*new_list = (struct node *)malloc(sizeof (struct node));
+		*new_list = (struct node *)MPARC_malloc(sizeof (struct node));
 		CHECK_LEAKS();
 		if(new_list == NULL){
 				return NULL;
@@ -3061,11 +3061,11 @@ void llist_free(llist *list)
 
 		while (curr != NULL) {
 				next = curr->next;
-				free(curr);
+				MPARC_free(curr);
 				curr = next;
 		}
 
-		free(list);
+		MPARC_free(list);
 }
 
 // Returns 0 on failure
@@ -3087,7 +3087,7 @@ int llist_add_inorder(void *data, llist *list,
 				return 1;
 		}
 
-		new_node = (struct node *)malloc(sizeof (struct node));
+		new_node = (struct node *)MPARC_malloc(sizeof (struct node));
 		CHECK_LEAKS();
 		if(!new_node){
 			return 0;
@@ -3129,7 +3129,7 @@ int llist_push(llist *list, void *data)
 
 		// Head is not empty, add new node to front
 		else {
-				new_node = malloc(sizeof (struct node));
+				new_node = MPARC_malloc(sizeof (struct node));
 				CHECK_LEAKS();
 				if(new_node == NULL){
 						return 0;
@@ -3160,7 +3160,7 @@ void *llist_pop(llist *list)
 		popped_data = llist_peek(list);
 		*list = head->next;
 
-		free(head);
+		MPARC_free(head);
 
 		return popped_data;
 } */
@@ -3261,7 +3261,7 @@ void* MPARC_memdup(const void* src, size_t len){
 	unsigned char* ustr;
 	const unsigned char* usrc = src;
 
-	ustr = (unsigned char*) malloc(len);
+	ustr = (unsigned char*) MPARC_malloc(len);
 	CHECK_LEAKS();
 	if(!ustr) return NULL;
 
@@ -3600,7 +3600,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				return r;
 			}
 			fprintf(filepstream, "%s%s (%d)\n", emsg, s, err);
-			// free(s);
+			// MPARC_free(s);
 			return r;
 		}
 
@@ -3727,8 +3727,8 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 					me_my_errhandler:
 					{
-						if(str1d) free(str1d);
-						if(str2d) free(str2d);
+						if(str1d) MPARC_free(str1d);
+						if(str2d) MPARC_free(str2d);
 					}
 
 					break;
@@ -3795,11 +3795,11 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				if(sps < 0){
 						return NULL;
 				}
-				char* alloc = calloc(sps+1, sizeof(char));
+				char* alloc = MPARC_calloc(sps+1, sizeof(char));
 				CHECK_LEAKS();
 				if(alloc == NULL) return NULL;
 				if(snprintf(alloc, sps+1, fmt, structure->magic_byte_sep, structure->writerVersion, structure->meta_sep, s, structure->begin_entry_marker) < 0){
-						if(alloc) free(alloc);
+						if(alloc) MPARC_free(alloc);
 						return NULL;
 				}
 				else{
@@ -3819,7 +3819,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 					return NULL;
 				}
 
-				jsonry = calloc(jsonentries+1, sizeof(char*));
+				jsonry = MPARC_calloc(jsonentries+1, sizeof(char*));
 				CHECK_LEAKS();
 				jsonry[jsonentries]=NULL;
 
@@ -3873,7 +3873,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 									fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", bblob[i]);
 								}
 								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "\n");
-								free(bblob);
+								MPARC_free(bblob);
 							}
 						}
 						#endif
@@ -3899,11 +3899,11 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 							int size = snprintf(NULL, 0, fmter, crc3);
 							if(size < 0){
 								if(eout) *eout = MPARC_CONSTRUCT_FAIL;
-								if(jsonry) free(jsonry);
+								if(jsonry) MPARC_free(jsonry);
 								goto errhandler;
 							}
 							// +5 is hacky
-							globsum = calloc(size+5, sizeof(char));
+							globsum = MPARC_calloc(size+5, sizeof(char));
 							CHECK_LEAKS();
 							if(globsum == NULL){
 								if(eout) *eout = MPARC_OOM;
@@ -3921,7 +3921,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 								MPARC_list_iterator_destroy(&itery);
 								goto errhandler;
 							}
-							if(globsum) free(globsum);
+							if(globsum) MPARC_free(globsum);
 						}
 						json_append_member(objectweb, "filename", filename);
 						json_append_member(objectweb, "blob", glob64);
@@ -3948,7 +3948,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 								static char* fmt = "%"PRIuFAST32"%c%s";
 
 								int sp = snprintf(NULL, 0, fmt, crc, structure->entry_elem2_sep_marker_or_magic_sep_marker, stringy)+10; // silly hack workaround, somehow snprintf is kind of broken in this part
-								crcStringy = calloc((sp+1),sizeof(char));
+								crcStringy = MPARC_calloc((sp+1),sizeof(char));
 								CHECK_LEAKS();
 								if(crcStringy == NULL){
 									if(eout) *eout = MPARC_OOM;
@@ -3957,7 +3957,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 								}
 								if(snprintf(crcStringy, sp, fmt, crc, structure->entry_elem2_sep_marker_or_magic_sep_marker, stringy) < 0){
 									if(eout) *eout = MPARC_CONSTRUCT_FAIL;
-									if(crcStringy) free(crcStringy);
+									if(crcStringy) MPARC_free(crcStringy);
 									MPARC_list_iterator_destroy(&itery);
 									goto errhandler;
 								}
@@ -3979,7 +3979,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 							iacrurate_snprintf_len += strlen(jsonry[i])+10;
 						}
 
-						char* str = calloc(iacrurate_snprintf_len+1, sizeof(char));
+						char* str = MPARC_calloc(iacrurate_snprintf_len+1, sizeof(char));
 						CHECK_LEAKS();
 						if(str == NULL) {
 							if(eout) *eout = MPARC_OOM;
@@ -3988,32 +3988,32 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 						memset(str, '\0', iacrurate_snprintf_len+1);
 						for(MXPSQL_MPARC_uint_repr_t i2 = 0; i2 < jsonentries; i2++){
 							MXPSQL_MPARC_uint_repr_t strlcpy_r = 0;
-							char* outstr = calloc(iacrurate_snprintf_len+1, sizeof(char));
+							char* outstr = MPARC_calloc(iacrurate_snprintf_len+1, sizeof(char));
 							CHECK_LEAKS();
 							if(outstr == NULL){
 								if(eout) *eout = MPARC_OOM;
-								if(str) free(str);
+								if(str) MPARC_free(str);
 								goto errhandler;
 							}
 							strlcpy_r = strlcpy(outstr, str, iacrurate_snprintf_len);
 							if(strlcpy_r > iacrurate_snprintf_len){
 								if(eout) *eout = MPARC_CONSTRUCT_FAIL;
-								if(str) free(str);
-								if(outstr) free(outstr);
+								if(str) MPARC_free(str);
+								if(outstr) MPARC_free(outstr);
 								goto errhandler;
 							}
 							int len = snprintf(outstr, iacrurate_snprintf_len, "%s%c%s", str, structure->entry_sep_or_general_marker, jsonry[i2]);
 							if(len < 0 || ((MXPSQL_MPARC_uint_repr_t)len) > iacrurate_snprintf_len){
 								if(eout) *eout = MPARC_CONSTRUCT_FAIL;
-								if(str) free(str);
-								if(outstr) free(outstr);
+								if(str) MPARC_free(str);
+								if(outstr) MPARC_free(outstr);
 								goto errhandler;
 							}
 							strlcpy_r = strlcpy(str, outstr, iacrurate_snprintf_len);
 							if(strlcpy_r > iacrurate_snprintf_len){
 								if(eout) *eout = MPARC_CONSTRUCT_FAIL;
-								if(str) free(str);
-								if(outstr) free(outstr);
+								if(str) MPARC_free(str);
+								if(outstr) MPARC_free(outstr);
 								goto errhandler;
 							}
 						}
@@ -4032,9 +4032,9 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				commonexit:
 				{
 					for(MXPSQL_MPARC_uint_repr_t i = 0; i < jsonentries; i++){
-							if(jsonry[i]) free(jsonry[i]);
+							if(jsonry[i]) MPARC_free(jsonry[i]);
 					}
-					if(jsonry) free(jsonry);
+					if(jsonry) MPARC_free(jsonry);
 				}
 
 				return estring;
@@ -4048,13 +4048,13 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				if(charachorder_len < 0){
 						return NULL;
 				}
-				charachorder = calloc(charachorder_len+1, sizeof(char));
+				charachorder = MPARC_calloc(charachorder_len+1, sizeof(char));
 				CHECK_LEAKS();
 				if(charachorder == NULL){
 						return NULL;
 				}
 				if(snprintf(charachorder, charachorder_len+1, format, structure->end_entry_marker, structure->end_file_marker) < 0){
-						if(charachorder) free(charachorder);
+						if(charachorder) MPARC_free(charachorder);
 						return NULL;
 				}
 				return charachorder;
@@ -4266,10 +4266,10 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 							ecount += 1;
 							e = MPARC_strtok_r(NULL, septic, &sp3);
 						}
-						if(edup) free(edup);
+						if(edup) MPARC_free(edup);
 					}
-					entries = calloc(ecount+1, sizeof(char*));
-					json_entries = calloc(ecount+1, sizeof(char*));
+					entries = MPARC_calloc(ecount+1, sizeof(char*));
+					json_entries = MPARC_calloc(ecount+1, sizeof(char*));
 					CHECK_LEAKS();
 					if(json_entries == NULL){
 						err = MPARC_OOM;
@@ -4362,7 +4362,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 						{
 							char* start = &jse[jtoken.start];
 							char* end = &jse[jtoken.end];
-							char *substr = (char *)calloc(end - start + 1, sizeof(char));
+							char *substr = (char *)MPARC_calloc(end - start + 1, sizeof(char));
 							CHECK_LEAKS();
 							if(substr == NULL){
 								err = MPARC_OOM;
@@ -4371,7 +4371,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 							memcpy(substr, start, end - start);
 							tok1 = substr;
 						}
-						if(tok1) free(tok1);
+						if(tok1) MPARC_free(tok1);
 					}
 				}
 				else{
@@ -4481,8 +4481,8 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			errhandler:
 			structure->my_err = err;
 			for(MXPSQL_MPARC_uint_repr_t i = 0; i < ecount; i++){
-				if(entries[i] != NULL) free(entries[i]);
-				// if(json_entries[i] != NULL) free(json_entries[i]);
+				if(entries[i] != NULL) MPARC_free(entries[i]);
+				// if(json_entries[i] != NULL) MPARC_free(json_entries[i]);
 			}
 
 			return err;
@@ -4498,7 +4498,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		MXPSQL_MPARC_err MPARC_init(MXPSQL_MPARC_t** structure){
 				if(!(structure == NULL || *structure == NULL)) return MPARC_IVAL;
 
-				void* memalloc = calloc(1, sizeof(MXPSQL_MPARC_t));
+				void* memalloc = MPARC_calloc(1, sizeof(MXPSQL_MPARC_t));
 				CHECK_LEAKS();
 				if(memalloc == NULL) return MPARC_OOM;
 
@@ -4592,7 +4592,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 								(*structure)->my_err = err;
 								break;
 							}
-							free(blob);
+							MPARC_free(blob);
 						}
 
 						MPARC_list_iterator_destroy(&iterator);
@@ -4605,7 +4605,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 				map_deinit(&(*structure)->globby);
 
-				if(*structure) free(*structure);
+				if(*structure) MPARC_free(*structure);
 
 				*structure = NULL; // invalidation for security
 				
@@ -4645,7 +4645,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 						MXPSQL_MPARC_uint_repr_t index = 0;
 						const char* key2;
-						listout_structure = calloc(lentracker+1, sizeof(char*));
+						listout_structure = MPARC_calloc(lentracker+1, sizeof(char*));
 						CHECK_LEAKS();
 						if(!listout_structure) return MPARC_OOM;
 
@@ -4661,7 +4661,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 								listout_structure[index] = MPARC_strdup(bi.nam);
 
-								// free((char*)bi.nam);
+								// MPARC_free((char*)bi.nam);
 
 								index++;
 						} */
@@ -4671,12 +4671,12 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 							MXPSQL_MPARC_err err = MPARC_list_iterator_init(&structure, &iterator);
 							structure->my_err = err;
 							if(err != MPARC_OK){
-								if(listout_structure) free(listout_structure);
+								if(listout_structure) MPARC_free(listout_structure);
 								return err;
 							}
 						}
 						if(iterator == NULL) {
-							if(listout_structure) free(listout_structure);
+							if(listout_structure) MPARC_free(listout_structure);
 							return MPARC_IVAL;
 						}
 						while((MPARC_list_iterator_next(&iterator, &key2) == MPARC_OK)){
@@ -4692,7 +4692,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 								listout_structure[index] = MPARC_strdup(bi.nam);
 
-								// free((char*)bi.nam);
+								// MPARC_free((char*)bi.nam);
 
 								index++;
 						}
@@ -4708,11 +4708,11 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				else{
 					for(MXPSQL_MPARC_uint_repr_t i = 0; i < lentracker; i++){
 						if(listout_structure) {
-							if(listout_structure[i]) free(listout_structure[i]);
+							if(listout_structure[i]) MPARC_free(listout_structure[i]);
 						}
 					}
 
-					if(listout_structure) free(listout_structure);
+					if(listout_structure) MPARC_free(listout_structure);
 				}
 
 				structure->my_err = MPARC_OK;
@@ -4723,16 +4723,16 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			if(list == NULL || *list == NULL) return MPARC_IVAL;
 			char** l = *list;
 			for(MXPSQL_MPARC_uint_repr_t i = 0; l[i] != NULL; i++){
-				free(l[i]);
+				MPARC_free(l[i]);
 			}
-			free(l);
+			MPARC_free(l);
 			return MPARC_OK;
 		}
 
 		MXPSQL_MPARC_err MPARC_list_iterator_init(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_iter_t** iterator){
 			if(!(structure == NULL || *structure == NULL || iterator == NULL || *iterator == NULL)) return MPARC_IVAL;
 
-			void* memalloc = calloc(1, sizeof(MXPSQL_MPARC_iter_t));
+			void* memalloc = MPARC_calloc(1, sizeof(MXPSQL_MPARC_iter_t));
 			CHECK_LEAKS();
 			if(memalloc == NULL) return MPARC_OOM;
 
@@ -4767,7 +4767,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 		MXPSQL_MPARC_err MPARC_list_iterator_destroy(MXPSQL_MPARC_iter_t** iterator){
 			if(iterator == NULL || *iterator == NULL) return MPARC_IVAL;
-			if(*iterator) free(*iterator);
+			if(*iterator) MPARC_free(*iterator);
 			return MPARC_OK;
 		}
 
@@ -4926,7 +4926,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 						}
 					}
 
-					smacklist = calloc(hits+1, sizeof(char*));
+					smacklist = MPARC_calloc(hits+1, sizeof(char*));
 					CHECK_LEAKS();
 					if(!smacklist){
 						err = MPARC_OOM;
@@ -4966,7 +4966,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 						}
 					}
 
-					smacklist = calloc(hits+1, sizeof(char*));
+					smacklist = MPARC_calloc(hits+1, sizeof(char*));
 					CHECK_LEAKS();
 					if(smacklist){
 						err = MPARC_OOM;
@@ -5006,7 +5006,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 						}
 					}
 
-					smacklist = calloc(hits+1, sizeof(char*));
+					smacklist = MPARC_calloc(hits+1, sizeof(char*));
 					CHECK_LEAKS();
 					if(smacklist){
 						err = MPARC_OOM;
@@ -5045,7 +5045,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 						}
 					}
 
-					smacklist = calloc(hits+1, sizeof(char*));
+					smacklist = MPARC_calloc(hits+1, sizeof(char*));
 					CHECK_LEAKS();
 					if(smacklist){
 						err = MPARC_OOM;
@@ -5174,7 +5174,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 						return MPARC_FERROR;
 				}
 
-				binary = calloc(filesize+1, sizeof(unsigned char));
+				binary = MPARC_calloc(filesize+1, sizeof(unsigned char));
 				CHECK_LEAKS();
 				if(!binary){
 					structure->my_err = MPARC_OOM;
@@ -5183,7 +5183,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 				if(filesize >= MPARC_DIRECTF_MINIMUM){
 					if(fread(binary, sizeof(unsigned char), filesize, filestream) < filesize && ferror(filestream)){
-						if(binary) free(binary);
+						if(binary) MPARC_free(binary);
 							structure->my_err = MPARC_FERROR;
 						return MPARC_FERROR;
 					}
@@ -5196,7 +5196,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 					}
 
 					if(ferror(filestream)){
-						if(binary) free(binary);
+						if(binary) MPARC_free(binary);
 						structure->my_err = MPARC_FERROR;
 						return MPARC_FERROR;
 					}
@@ -5223,7 +5223,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				}
 				MXPSQL_MPARC_err err = MPARC_push_ufilestr(structure, filename, strd, filesize);
 				
-				if(binary) free(binary);
+				if(binary) MPARC_free(binary);
 				return err;
 		}
 
@@ -5496,15 +5496,15 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				}
 				char* mid = MPARC_i_construct_entries(structure, &err);
 				if(mid == NULL) {
-					if(top) free(top);
+					if(top) MPARC_free(top);
 					top = NULL;
 					structure->my_err = MPARC_CONSTRUCT_FAIL;
 					return MPARC_CONSTRUCT_FAIL;
 				}
 				char* bottom = MPARC_i_construct_ender(structure);
 				if(bottom == NULL) {
-					if(top) free(top);
-					if(mid) free(mid);
+					if(top) MPARC_free(top);
+					if(mid) MPARC_free(mid);
 					top = NULL;
 					mid = NULL;
 					structure->my_err = MPARC_CONSTRUCT_FAIL;
@@ -5515,21 +5515,21 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 					// fprintf(stdout, fmt, top, mid, bottom);
 					int sizy = snprintf(NULL, 0, fmt, top, mid, bottom);
 					if(sizy < 0){
-						if(top) free(top);
-						if(mid) free(mid);
-						if(bottom) free(bottom);
+						if(top) MPARC_free(top);
+						if(mid) MPARC_free(mid);
+						if(bottom) MPARC_free(bottom);
 						top = NULL;
 						mid = NULL;
 						bottom = NULL;
 						structure->my_err = MPARC_CONSTRUCT_FAIL;
 						return MPARC_CONSTRUCT_FAIL;
 					}
-					char* alloca_out = calloc(sizy+1, sizeof(char));
+					char* alloca_out = MPARC_calloc(sizy+1, sizeof(char));
 					CHECK_LEAKS();
 					if(alloca_out == NULL){
-						if(top) free(top);
-						if(mid) free(mid);
-						if(bottom) free(bottom);
+						if(top) MPARC_free(top);
+						if(mid) MPARC_free(mid);
+						if(bottom) MPARC_free(bottom);
 						top = NULL;
 						mid = NULL;
 						bottom = NULL;
@@ -5537,10 +5537,10 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 						return MPARC_OOM;
 					}
 					if(snprintf(alloca_out, sizy+1, fmt, top, mid, bottom) < 0){
-						if(top) free(top);
-						if(mid) free(mid);
-						if(bottom) free(bottom);
-						if(alloca_out) free(alloca_out);
+						if(top) MPARC_free(top);
+						if(mid) MPARC_free(mid);
+						if(bottom) MPARC_free(bottom);
+						if(alloca_out) MPARC_free(alloca_out);
 						top = NULL;
 						mid = NULL;
 						bottom = NULL;
@@ -5551,9 +5551,9 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 					*output = alloca_out;
 				}
 
-				if(top) free(top);
-				if(mid) free(mid);
-				if(bottom) free(bottom);
+				if(top) MPARC_free(top);
+				if(mid) MPARC_free(mid);
+				if(bottom) MPARC_free(bottom);
 				top = NULL;
 				mid = NULL;
 				bottom = NULL;
@@ -5580,13 +5580,13 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			char* archive = NULL;
 			MXPSQL_MPARC_err err = MPARC_construct_str(structure, &archive);
 			if(err != MPARC_OK){
-				if(archive) free(archive);
+				if(archive) MPARC_free(archive);
 				return err;
 			}
 			MXPSQL_MPARC_uint_repr_t count = strlen(archive);
 			if(count >= MPARC_DIRECTF_MINIMUM){
 				if(fwrite(archive, sizeof(char), count, fpstream) < count && ferror(fpstream)){
-					if(archive) free(archive);
+					if(archive) MPARC_free(archive);
 					structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
 				}
@@ -5594,7 +5594,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			else{
 				for(MXPSQL_MPARC_uint_repr_t i = 0; i < count; i++){
 					if(fputc(archive[i], fpstream) == EOF){
-						if(archive) free(archive);
+						if(archive) MPARC_free(archive);
 						err = MPARC_FERROR;
 						structure->my_err = err;
 						return err;
@@ -5602,7 +5602,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				}
 			}
 			fflush(fpstream);
-			if(archive) free(archive);
+			if(archive) MPARC_free(archive);
 			return err;
 		}
 
@@ -5627,24 +5627,24 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 						{
 							fname = MPARC_strdup(nkey);
 							if(!fname){
-								if(listy) free(listy);
+								if(listy) MPARC_free(listy);
 								structure->my_err = MPARC_OOM;
 								return MPARC_OOM;
 							}
 							MXPSQL_MPARC_uint_repr_t pathl = strlen(fname)+strlen(nkey)+1;
-							void* nfname = realloc(fname, pathl+1);
+							void* nfname = MPARC_realloc(fname, pathl+1);
 							CHECK_LEAKS();
 							if(nfname == NULL){
-								if(fname) free(fname);
-								if(listy) free(listy);
+								if(fname) MPARC_free(fname);
+								if(listy) MPARC_free(listy);
 								structure->my_err = MPARC_OOM;
 								return MPARC_OOM;
 							}
 							fname = (char*) nfname;
 							int splen = snprintf(fname, pathl, "%s/%s", destdir, nkey);
 							if(splen < 0 || ((MXPSQL_MPARC_uint_repr_t)splen) > pathl){
-								if(fname) free(fname);
-								if(listy) free(listy);
+								if(fname) MPARC_free(fname);
+								if(listy) MPARC_free(listy);
 								structure->my_err = MPARC_IVAL;
 								return MPARC_IVAL;
 							}
@@ -5657,13 +5657,13 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 								// this means "I request you to make me a directory and then call me when you are done so I can continue to do my own agenda which is to help you, basically I need your help for me to help you"
 								if(mk_dir){
 									if((*mk_dir)(dname) != 0){
-										if(fname) free(fname);
-										if(listy) free(listy);
+										if(fname) MPARC_free(fname);
+										if(listy) MPARC_free(listy);
 										structure->my_err = MPARC_FERROR;
 										return MPARC_FERROR;
 									}
-									if(fname) free(fname);
-									if(listy) free(listy);
+									if(fname) MPARC_free(fname);
+									if(listy) MPARC_free(listy);
 									// i--; // hacky
 									// continue;
 									goto rmkdir_goto_label_spot; // much better (don't object to this method of using goto and labels, the old one involes decrmenting the index variable and that is a hacky solution)
@@ -5671,8 +5671,8 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 								else{
 									if(dir2make != NULL) *dir2make = dname;
 								}
-								if(fname) free(fname);
-								if(listy) free(listy);
+								if(fname) MPARC_free(fname);
+								if(listy) MPARC_free(listy);
 								structure->my_err = MPARC_OPPART;
 								return MPARC_OPPART;
 							}
@@ -5680,8 +5680,8 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 							((void)mk_dir);
 							if(dir2make != NULL) *dir2make = dname;
 							#endif
-							if(fname) free(fname);
-							if(listy) free(listy);
+							if(fname) MPARC_free(fname);
+							if(listy) MPARC_free(listy);
 							structure->my_err = MPARC_IVAL;
 							return MPARC_IVAL;
 						}
@@ -5691,16 +5691,16 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 							crc_t crc3 = 0;
 							MXPSQL_MPARC_err err = MPARC_peek_file_advance(structure, (char*) nkey, &bout, &sout, &crc3);
 							if(err != MPARC_OK){
-								if(fname) free(fname);
-								if(listy) free(listy);
+								if(fname) MPARC_free(fname);
+								if(listy) MPARC_free(listy);
 								fclose(fps);
 								return err;
 							}
 							if(sout >= MPARC_DIRECTF_MINIMUM){
 								if(fwrite(bout, sizeof(unsigned char), sout, fps) < sout){
 									if(ferror(fps)){
-										if(fname) free(fname);
-										if(listy) free(listy);
+										if(fname) MPARC_free(fname);
+										if(listy) MPARC_free(listy);
 										fclose(fps);
 										structure->my_err = MPARC_FERROR;
 										return MPARC_FERROR;
@@ -5711,8 +5711,8 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 								// char abc = {'a', 'b', 'c', '\0'};
 								for(MXPSQL_MPARC_uint_repr_t i = 0; i < sout; i++){
 									if(fputc(bout[i], fps) == EOF){
-										if(fname) free(fname);
-										if(listy) free(listy);
+										if(fname) MPARC_free(fname);
+										if(listy) MPARC_free(listy);
 										fclose(fps);
 										structure->my_err = MPARC_FERROR;
 										return MPARC_FERROR;
@@ -5721,17 +5721,17 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 							}
 							fflush(fps);
 							if(fseek(fps, 0, SEEK_SET) != 0){
-								if(fname) free(fname);
-								if(listy) free(listy);
+								if(fname) MPARC_free(fname);
+								if(listy) MPARC_free(listy);
 								fclose(fps);
 								structure->my_err = MPARC_FERROR;
 								return MPARC_FERROR;
 							}
-							unsigned char* binary = calloc(sout+1, sizeof(unsigned char));
+							unsigned char* binary = MPARC_calloc(sout+1, sizeof(unsigned char));
 							CHECK_LEAKS();
 							if(binary == NULL){
-								if(fname) free(fname);
-								if(listy) free(listy);
+								if(fname) MPARC_free(fname);
+								if(listy) MPARC_free(listy);
 								fclose(fps);
 								structure->my_err = MPARC_OOM;
 								return MPARC_OOM;
@@ -5739,9 +5739,9 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 							if(sout >= MPARC_DIRECTF_MINIMUM){
 								if(fread(binary, sizeof(unsigned char), sout, fps) < sout){
 									if(ferror(fps)){
-										if(fname) free(fname);
-										if(binary) free(binary);
-										if(listy) free(listy);
+										if(fname) MPARC_free(fname);
+										if(binary) MPARC_free(binary);
+										if(listy) MPARC_free(listy);
 										fclose(fps);
 										structure->my_err = MPARC_FERROR;
 										return MPARC_FERROR;
@@ -5756,7 +5756,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 								}
 
 								if(ferror(fps)){
-									if(binary) free(binary);
+									if(binary) MPARC_free(binary);
 									structure->my_err = MPARC_FERROR;
 									return MPARC_FERROR;
 								}
@@ -5768,9 +5768,9 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 								crc = crc_update(crc, binary, sout);
 								crc = crc_finalize(crc);
 								if(crc != crc3){
-									if(fname) free(fname);
-									if(binary) free(binary);
-									if(listy) free(listy);
+									if(fname) MPARC_free(fname);
+									if(binary) MPARC_free(binary);
+									if(listy) MPARC_free(listy);
 									fclose(fps);
 									errno = EILSEQ;
 									structure->my_err = MPARC_CHKSUM;
@@ -5779,15 +5779,15 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 							}
 						}
 						if(fflush(fps) == EOF){
-							if(fname) free(fname);
-							if(listy) free(listy);
+							if(fname) MPARC_free(fname);
+							if(listy) MPARC_free(listy);
 							fclose(fps);
 							structure->my_err = MPARC_FERROR;
 							return MPARC_FERROR;
 						}
 					}
 
-					if(fname) free(fname);
+					if(fname) MPARC_free(fname);
 					fclose(fps);
 				}
 				if(listy) MPARC_list_array_free(&listy);
@@ -5824,10 +5824,10 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			structure->my_err = err;
 			for(MXPSQL_MPARC_uint_repr_t i = 0; flists[i] != NULL; i++){
 				if(flists[i] != NULL) {
-					free(flists[i]);
+					MPARC_free(flists[i]);
 				}
 			}
-			if(flists) free(flists);
+			if(flists) MPARC_free(flists);
 
 			return err;
 		}
@@ -5843,7 +5843,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 					goto endy;
 				}
 				err = MPARC_i_parse_header(structure, s3);
-				if(s3) free(s3);
+				if(s3) MPARC_free(s3);
 				if(err != MPARC_OK) {
 					goto endy;
 				}
@@ -5855,7 +5855,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 					goto endy;
 				}
 				err = MPARC_i_parse_entries(structure, s3, erronduplicate);
-				if(s3) free(s3);
+				if(s3) MPARC_free(s3);
 				if(err != MPARC_OK) {
 					goto endy;
 				}
@@ -5867,7 +5867,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 					goto endy;
 				}
 				err = MPARC_i_parse_ender(structure, s3);
-				if(s3) free(s3);
+				if(s3) MPARC_free(s3);
 				if(err != MPARC_OK) {
 					goto endy;
 				}
@@ -5904,7 +5904,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 					return MPARC_FERROR;
 			}
 
-			char* binary = calloc(filesize+1, sizeof(char)); // binary because files are binary, but not unsigned because it is ascii
+			char* binary = MPARC_calloc(filesize+1, sizeof(char)); // binary because files are binary, but not unsigned because it is ascii
 			CHECK_LEAKS();
 			if(binary == NULL){
 				structure->my_err = MPARC_FERROR;
@@ -5913,7 +5913,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 			if(filesize >= MPARC_DIRECTF_MINIMUM){
 				if(fread(binary, sizeof(unsigned char), filesize, fpstream) < filesize && ferror(fpstream)){
-					if(binary) free(binary);
+					if(binary) MPARC_free(binary);
 					structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
 				}
@@ -5926,7 +5926,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				}
 
 				if(ferror(fpstream)){
-					if(binary) free(binary);
+					if(binary) MPARC_free(binary);
 					structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
 				}
@@ -5944,6 +5944,24 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			MXPSQL_MPARC_err err = MPARC_parse_filestream(structure, filepointerstream);
 			fclose(filepointerstream);
 			return err;
+		}
+
+
+
+		void* MPARC_malloc(MXPSQL_MPARC_uint_repr_t size){
+			return malloc(size);
+		}
+
+		void* MPARC_calloc(MXPSQL_MPARC_uint_repr_t arr_size, size_t el_size){
+			return calloc(arr_size, el_size);
+		}
+
+		void* MPARC_realloc(void* oldmem, MXPSQL_MPARC_uint_repr_t newsize){
+			return realloc(oldmem, newsize);
+		}
+
+		void MPARC_free(void* mem){
+			free(mem);
 		}
 
 
