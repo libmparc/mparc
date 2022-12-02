@@ -3251,6 +3251,25 @@ char* MPARC_strtok_r (char *s, const char *delim, char **save_ptr)
 }
 
 /**
+ * @brief My strnlen
+ * 
+ * @param str string to check
+ * @param maxlen max length
+ * @return size_t length of str or maxlen
+ */
+size_t MPARC_strnlen(const char* str, size_t maxlen){
+	size_t i = 0;
+
+	for(i = 0; i < maxlen; i++,str++ ){
+		if(!*str){
+			break;
+		}
+	}
+
+	return i;
+}
+
+/**
  * @brief Our own strdup, but for binary arrays.
  * 
  * @param src Source array, interpreted as unsigned char*
@@ -3275,7 +3294,7 @@ void* MPARC_memdup(const void* src, size_t len){
 }
 
 char* MPARC_strndup(const char* src, size_t ilen){
-	size_t len = strnlen(src, ilen)+1;
+	size_t len = MPARC_strnlen(src, ilen)+1;
 
 	char* dupstr = MPARC_memdup(src, len*sizeof(char));
 

@@ -715,6 +715,14 @@ extern "C"{
     // Auxiliary function
     #ifdef MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
     /**
+     * @brief My strlen for portability
+     * 
+     * @param str string to check
+     * @param maxlen max length
+     * @return size_t actual str length or maxlen
+     */
+    size_t MPARC_strnlen(const char* str, size_t maxlen);
+    /**
      * @brief Strtok Safe Edition
      * 
      * @param s string to be tokenized, must be mutable
