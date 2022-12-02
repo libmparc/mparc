@@ -641,11 +641,8 @@ extern "C"{
      * @return void* allocated memory pointer
      * 
      * @note
-     * 
-     * MPARC_malloc has its pitfalls. Don't fall for it.
-     * 
-     * Right now is using C's malloc, so it is at the mercy of that function as malloc has flaws.
-     * 
+     * MPARC_malloc has its pitfalls. Don't fall for it.  
+     * Right now is using C's malloc, so it is at the mercy of that function as malloc has flaws.  
      * Allocating a zero sized object with MPARC_Malloc, danger is from that it is implementation defined.
      */
     void* MPARC_malloc(MXPSQL_MPARC_uint_repr_t size);
@@ -657,11 +654,8 @@ extern "C"{
      * @return void* allocated memory pointer
      * 
      * @note
-     * 
-     * MPARC_calloc has its pitfalls. Don't fall for it.
-     * 
-     * Right now is using C's calloc, so it is at the mercy of that function as calloc has flaws.
-     * 
+     * MPARC_calloc has its pitfalls. Don't fall for it.  
+     * Right now is using C's calloc, so it is at the mercy of that function as calloc has flaws.  
      * Allocating a zero sized object with MPARC_calloc, danger is from that it is implementation defined.
      */
     void* MPARC_calloc(MXPSQL_MPARC_uint_repr_t arr_size, size_t el_size);
@@ -674,16 +668,11 @@ extern "C"{
      * 
      * @note
      * 
-     * MPARC_realloc has its pitfalls. Don't fall for it.
-     * 
-     * Right now is using C's realloc, so it is at the mercy of that function as realloc has flaws.
-     * 
-     * Common one:
-     * 
-     * In place realloc, danger is from when it errors out and now you created a memory leak.
-     * 
-     * Reusing old realloc pointers, danger is that it may have been invalidated.
-     * 
+     * MPARC_realloc has its pitfalls. Don't fall for it.  
+     * Right now is using C's realloc, so it is at the mercy of that function as realloc has flaws.  
+     * Common one:  
+     * In place realloc, danger is from when it errors out and now you created a memory leak.  
+     * Reusing old realloc pointers, danger is that it may have been invalidated.  
      * Allocating a zero sized object with MPARC_realloc, danger is that it used to be implementation defined before C23, after C23 is now undefined behaviour.
      * 
      */
@@ -695,16 +684,11 @@ extern "C"{
      * 
      * @note
      * 
-     * MPARC_free has its pitfalls. Don't fall for it.
-     * 
-     * Right now is using C's free, so it is at the mercy of that function as free has flaws.
-     * 
-     * Common one:
-     * 
-     * Double free, danger is that it is undefined behaviour to do so.
-     * 
-     * Free not allocated memory, danger is that it is also undefined behaviour to do so.
-     * 
+     * MPARC_free has its pitfalls. Don't fall for it.  
+     * Right now is using C's free, so it is at the mercy of that function as free has flaws.  
+     * Common one:  
+     * Double free, danger is that it is undefined behaviour to do so.  
+     * Free not allocated memory, danger is that it is also undefined behaviour to do so.  
      * Not freeing memory if you are done with it, danger is that you played yourself with memory leaks.
      */
     void MPARC_free(void* mem);
