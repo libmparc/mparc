@@ -54,6 +54,7 @@
   * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#define MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
 #include "mparc.h"
 
 #include <stdio.h>
