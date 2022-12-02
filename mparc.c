@@ -4214,6 +4214,9 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 								}
 
 								structure->loadedVersion = lversion;
+								if(structure->loadedVersion <= 0) { // version 0 is invalid
+									return MPARC_NOTARCHIVE;
+								}
 							}
 						}
 					}
@@ -4387,24 +4390,25 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 					JsonNode* node = NULL;
 					json_foreach(node, nd){
 						if(node->tag == JSON_STRING){
-
-							if(strcmp(node->key, "filename") == 0){
-								filename = node->store.string;
-								filename_parsed = true;
-							}
-							else if(strcmp(node->key, "blob") == 0){
-								blob = node->store.string;
-								blob_parsed = true;
-							}
-							else if(strcmp(node->key, "crcsum") == 0){
-								{
-									char* nvalue = node->store.string;
-									if(sscanf(nvalue, "%"SCNuFAST32, &crc3) != 1){
-										errno = EILSEQ;
-										err = MPARC_CHKSUM;
-										goto errhandler;
+							if(structure->loadedVersion >= 1) { // Version 1 stuff
+								if(strcmp(node->key, "filename") == 0){
+									filename = node->store.string;
+									filename_parsed = true;
+								}
+								else if(strcmp(node->key, "blob") == 0){
+									blob = node->store.string;
+									blob_parsed = true;
+								}
+								else if(strcmp(node->key, "crcsum") == 0){
+									{
+										char* nvalue = node->store.string;
+										if(sscanf(nvalue, "%"SCNuFAST32, &crc3) != 1){
+											errno = EILSEQ;
+											err = MPARC_CHKSUM;
+											goto errhandler;
+										}
+										crc3_parsed = true;
 									}
-									crc3_parsed = true;
 								}
 							}
 
@@ -5444,7 +5448,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		 * 		Parsing note:
 		 * 			When parsing the entries, split from the begin '>' marker first, and then the end '@' marker.
 		 * 			Then split each by newlines.
-		 * 			Ignore if a line start with '#', a comment marker. Also ignore if a line is empty.
+		 * 			Ignore if a line start with '#' (EXACTLY WITH THAT CHARACTER, there must not even be any whitespace before it), a comment marker. Also ignore if a line is empty.
 		 * 			Then, foreach split '%' to get the crc and json.
 		 * 			Then compare the JSON to the crc.
 		 * 			Then parse the JSON as usual.
