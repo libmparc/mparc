@@ -24,7 +24,7 @@ all: cls tmparc.exe mparc.exe
 
 
 cls:
-	@cls || clear
+	-@cls || clear || true
 
 
 mparc.o: 
