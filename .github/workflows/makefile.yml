@@ -9,13 +9,13 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: [ ubuntu-latest, ubuntu-20.04 ]
 
     steps:
     - uses: actions/checkout@v3
 
     - name: Test
-      run: pwd && ls && make -f ./Makefile.dumb DMALLOC_PATH= LDLIBS= all
+      run: make -f ./[Mm]akefile.dumb DMALLOC_PATH= LDLIBS= all
       
     - name: Clean
-      run: pwd && ls && make -f ./Makefile.dumb clean
+      run: make -f ./[Mm]akefile.dumb clean
