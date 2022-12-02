@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Test
-      run: pwd && make -f ./Makefile.dumb DMALLOC_PATH= LDLIBS= all
+      run: pwd && ls && make -f ./Makefile.dumb DMALLOC_PATH= LDLIBS= all
       
     - name: Clean
-      run: pwd && make -f ./Makefile.dumb clean
+      run: pwd && ls && make -f ./Makefile.dumb clean
