@@ -10,14 +10,14 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  build:
+  Test:
 
     runs-on: [ ubuntu-latest, ubuntu-20.04 ]
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Test
+    - name: Build
       run: make -f ./[Mm]akefile.dumb DMALLOC_PATH= LDLIBS= all
       
     - name: Clean
