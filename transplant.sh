@@ -1,3 +1,4 @@
 #!/bin/sh
 
-mv ./docs/htmldocs .
+mv ./docs/htmldoc .
+mv ./htmldoc ./docs
