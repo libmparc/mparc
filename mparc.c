@@ -3534,7 +3534,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				/// storage actually
 				map_blob_t globby;
 
-				/// Internal error reporting status
+				/// Internal error reporting
 				MXPSQL_MPARC_err my_err;
 
 				
