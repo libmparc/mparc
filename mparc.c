@@ -3534,7 +3534,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				/// storage actually
 				map_blob_t globby;
 
-				/// Internal status for later usage 
+				/// Internal error reporting status
 				MXPSQL_MPARC_err my_err;
 
 				
@@ -3551,6 +3551,14 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			/// storage iterator
 			map_iter_t itery;
 		};
+
+		MXPSQL_MPARC_err MPARC_get_last_error(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_err* out){
+			if(!structure || !*structure || !out) return MPARC_IVAL;
+			MXPSQL_MPARC_err err = (*structure)->my_err;
+			*out = err;
+			if(err < MPARC_OK) return MPARC_IVAL;
+			else return MPARC_OK;
+		}
 
 		int MPARC_strerror(MXPSQL_MPARC_err err, char** out){
 			((void)ROTCipher);

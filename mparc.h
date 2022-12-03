@@ -5,7 +5,7 @@
 /**
   * @file mparc.h
   * @author MXPSQL
-  * @brief MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header With Implementation. Reentrant. Not thread and async safe, probably.
+  * @brief MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header With Implementation. Reentrant functions. Not thread and async safe, probably.
   * @version 0.1
   * @date 2022-09-26
   * 
@@ -71,6 +71,44 @@ extern "C"{
 #include <stdint.h>
 #include <stddef.h>
 #endif
+
+
+    // Types
+    /**
+     * @brief Ptr type of the archive, should be initialized to null on first use
+     * 
+     * @details
+     * 
+     * This should be initialized to NULL to prevent problems with uninitialized value.
+     * 
+     * Don't ever try to dereference this thing.
+     * 
+     * This can never be declared as a non pointer object.
+     * 
+     * Not atomic or thread safe (never aim to be that for C99 suport and portability, you do it yourself with platform threads (pthreads, winapi threads or C11 threads if you can)).
+     */
+    typedef struct MXPSQL_MPARC_t MXPSQL_MPARC_t;
+    /**
+     * @brief Ptr type of the iterator, should be initialized to null on first use
+     * 
+     * @details
+     * 
+     * This should be initialized to NULL to prevent problems with uninitialized value.
+     * 
+     * Don't ever try to dereference this thing.
+     * 
+     * This can never be declared as a non pointer object.
+     */
+    typedef struct MXPSQL_MPARC_iter_t MXPSQL_MPARC_iter_t;
+    /**
+     * @brief Typedef our uint representation to make it easy to refactor
+     * 
+     * @details
+     * 
+     * This is currently typedef'd to uint_fast64_t, but we can switch to unsigned long long or size_t
+     */
+    typedef uint_fast64_t MXPSQL_MPARC_uint_repr_t;
+
 
     // Error reporting
     /**
@@ -157,6 +195,14 @@ extern "C"{
         MPARC_FERROR=10
     } MXPSQL_MPARC_err;
     /**
+     * @brief Get last error from internally maintained state (If oen of your functions does not return MXPSQL_MPARC_err, how cruel of you to do that).
+     * 
+     * @param structure the target structure
+     * @param out Get your error state here
+     * @return MXPSQL_MPARC_err Level of error or status during lookup (not int though)
+     */
+    MXPSQL_MPARC_err MPARC_get_last_error(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_err* out);
+    /**
      * @brief Get error string from MXPSQL_MPARC_err
      * 
      * @param err error code
@@ -194,43 +240,6 @@ extern "C"{
      * @see MPARC_fperror
      */
     int MPARC_perror(MXPSQL_MPARC_err err);
-
-
-    // Types
-    /**
-     * @brief Ptr type of the archive, should be initialized to null on first use
-     * 
-     * @details
-     * 
-     * This should be initialized to NULL to prevent problems with uninitialized value.
-     * 
-     * Don't ever try to dereference this thing.
-     * 
-     * This can never be declared as a non pointer object.
-     * 
-     * Not atomic or thread safe (never aim to be that for C99 suport and portability, you do it yourself with platform threads (pthreads, winapi threads or C11 threads if you can)).
-     */
-    typedef struct MXPSQL_MPARC_t MXPSQL_MPARC_t;
-    /**
-     * @brief Ptr type of the iterator, should be initialized to null on first use
-     * 
-     * @details
-     * 
-     * This should be initialized to NULL to prevent problems with uninitialized value.
-     * 
-     * Don't ever try to dereference this thing.
-     * 
-     * This can never be declared as a non pointer object.
-     */
-    typedef struct MXPSQL_MPARC_iter_t MXPSQL_MPARC_iter_t;
-    /**
-     * @brief Typedef our uint representation to make it easy to refactor
-     * 
-     * @details
-     * 
-     * This is currently typedef'd to uint_fast64_t, but we can switch to unsigned long long or size_t
-     */
-    typedef uint_fast64_t MXPSQL_MPARC_uint_repr_t;
 
 
     // Main functions
