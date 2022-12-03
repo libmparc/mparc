@@ -1,0 +1,1648 @@
+.TH "mparc.h" 3 "Sat Dec 3 2022" "Version 0.1" "MPARC" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+mparc.h \- MPARC, A Dumb Archiver Format C Rewrite Of MPAR\&. C Header With Implementation\&. Never reeterant, thread and async safe, probably\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <stdarg\&.h>\fP
+.br
+\fC#include <stdint\&.h>\fP
+.br
+\fC#include <stddef\&.h>\fP
+.br
+
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef enum \fBMXPSQL_MPARC_err\fP \fBMXPSQL_MPARC_err\fP"
+.br
+.RI "Error states, these are self explanatory\&. But I give them brief anyways\&. "
+.ti -1c
+.RI "typedef struct \fBMXPSQL_MPARC_t\fP \fBMXPSQL_MPARC_t\fP"
+.br
+.RI "Ptr type of the archive, should be initialized to null on first use\&. "
+.ti -1c
+.RI "typedef struct \fBMXPSQL_MPARC_iter_t\fP \fBMXPSQL_MPARC_iter_t\fP"
+.br
+.RI "Ptr type of the iterator, should be initialized to null on first use\&. "
+.ti -1c
+.RI "typedef uint_fast64_t \fBMXPSQL_MPARC_uint_repr_t\fP"
+.br
+.RI "Typedef our uint representation to make it easy to refactor\&. "
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBMXPSQL_MPARC_err\fP { \fBMPARC_OK\fP = 0, \fBMPARC_IDK\fP = -1, \fBMPARC_INTERNAL\fP = -2, \fBMPARC_NULL\fP = -3, \fBMPARC_IVAL\fP = 1, \fBMPARC_KNOEXIST\fP =2, \fBMPARC_KEXISTS\fP =3, \fBMPARC_OOM\fP = 4, \fBMPARC_NOTARCHIVE\fP =5, \fBMPARC_ARCHIVETOOSHINY\fP =6, \fBMPARC_CHKSUM\fP =7, \fBMPARC_CONSTRUCT_FAIL\fP =8, \fBMPARC_OPPART\fP =9, \fBMPARC_FERROR\fP =10 }"
+.br
+.RI "Error states, these are self explanatory\&. But I give them brief anyways\&. "
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBMPARC_strerror\fP (\fBMXPSQL_MPARC_err\fP err, char **out)"
+.br
+.RI "Get error string from MXPSQL_MPARC_err\&. "
+.ti -1c
+.RI "int \fBMPARC_sfperror\fP (\fBMXPSQL_MPARC_err\fP err, FILE *filepstream, char *emsg)"
+.br
+.RI "Print the error message to your stream of choice with a message of your choice\&. "
+.ti -1c
+.RI "int \fBMPARC_fperror\fP (\fBMXPSQL_MPARC_err\fP err, FILE *fileptrstream)"
+.br
+.RI "Print the error message of your stream of choice\&. "
+.ti -1c
+.RI "int \fBMPARC_perror\fP (\fBMXPSQL_MPARC_err\fP err)"
+.br
+.RI "Print the error message to stderr\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_init\fP (\fBMXPSQL_MPARC_t\fP **structure)"
+.br
+.RI "Initialize sturcture\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_copy\fP (\fBMXPSQL_MPARC_t\fP **structure, \fBMXPSQL_MPARC_t\fP **targetdest)"
+.br
+.RI "Initialize structure by copying\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_destroy\fP (\fBMXPSQL_MPARC_t\fP **structure)"
+.br
+.RI "Tear down structure\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_list_array\fP (\fBMXPSQL_MPARC_t\fP *structure, char ***listout, \fBMXPSQL_MPARC_uint_repr_t\fP *length)"
+.br
+.RI "List out the current files included as an array\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_list_array_free\fP (char ***list)"
+.br
+.RI "Utility function that free the list that you created with MPARC_list_array\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_list_iterator_init\fP (\fBMXPSQL_MPARC_t\fP **structure, \fBMXPSQL_MPARC_iter_t\fP **iterator)"
+.br
+.RI "Initialize the iterator that list the current files included\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_list_iterator_next\fP (\fBMXPSQL_MPARC_iter_t\fP **iterator, const char **outnam)"
+.br
+.RI "Update the state of the iterator to point to the next one\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_list_iterator_destroy\fP (\fBMXPSQL_MPARC_iter_t\fP **iterator)"
+.br
+.RI "Destroy the iterator\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_list_foreach\fP (\fBMXPSQL_MPARC_t\fP *structure, int *cb_aborted, \fBMXPSQL_MPARC_err\fP(*callback)(\fBMXPSQL_MPARC_t\fP *, const char *))"
+.br
+.RI "Foreach, with call backs\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_exists\fP (\fBMXPSQL_MPARC_t\fP *structure, const char *filename)"
+.br
+.RI "Check if file entry exists\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_query\fP (\fBMXPSQL_MPARC_t\fP *structure, char ***output, char *command,\&.\&.\&.)"
+.br
+.RI "Query the structre for files that match a specific criteria\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_query_vlist\fP (\fBMXPSQL_MPARC_t\fP *structure, char ***output, char *command, va_list vlist)"
+.br
+.RI "A version of MPARC_query that accepts a va_list instead\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_push_ufilestr_advance\fP (\fBMXPSQL_MPARC_t\fP *structure, char *filename, int stripdir, int overwrite, unsigned char *ustringc, \fBMXPSQL_MPARC_uint_repr_t\fP sizy)"
+.br
+.RI "Push an unsigned string as a file\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_push_ufilestr\fP (\fBMXPSQL_MPARC_t\fP *structure, char *filename, unsigned char *ustringc, \fBMXPSQL_MPARC_uint_repr_t\fP sizy)"
+.br
+.RI "Simple version of MPARC_push_ufilestr_advance that does not strip the directory name\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_push_voidfile\fP (\fBMXPSQL_MPARC_t\fP *structure, char *filename, void *buffer_guffer, \fBMXPSQL_MPARC_uint_repr_t\fP sizy)"
+.br
+.RI "Push a void pointer as a file\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_push_filestr\fP (\fBMXPSQL_MPARC_t\fP *structure, char *filename, char *stringc, \fBMXPSQL_MPARC_uint_repr_t\fP sizey)"
+.br
+.RI "Push a string as a file\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_push_filename\fP (\fBMXPSQL_MPARC_t\fP *structure, char *filename)"
+.br
+.RI "Push a file read from the filesystem into the archive\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_push_filestream\fP (\fBMXPSQL_MPARC_t\fP *structure, FILE *filestream, char *filename)"
+.br
+.RI "Push an active filestream into the archive as a file\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_rename_file\fP (\fBMXPSQL_MPARC_t\fP *structure, int overwrite, char *oldname, char *newname)"
+.br
+.RI "Rename an entry\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_duplicate_file\fP (\fBMXPSQL_MPARC_t\fP *structure, int overwrite, char *srcfile, char *destfile)"
+.br
+.RI "Duplicate an entry\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_swap_file\fP (\fBMXPSQL_MPARC_t\fP *structure, char *file1, char *file2)"
+.br
+.RI "Swap 2 entries\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_pop_file\fP (\fBMXPSQL_MPARC_t\fP *structure, char *filename)"
+.br
+.RI "Pop a file off the archive\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_clear_file\fP (\fBMXPSQL_MPARC_t\fP *structure)"
+.br
+.RI "Wipe everything (I mean every single file) off the archive\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_peek_file\fP (\fBMXPSQL_MPARC_t\fP *structure, const char *filename, unsigned char **bout, \fBMXPSQL_MPARC_uint_repr_t\fP *sout)"
+.br
+.RI "Peek the contents of a file of the archive\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_construct_str\fP (\fBMXPSQL_MPARC_t\fP *structure, char **output)"
+.br
+.RI "Construct the archive into a string\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_construct_filename\fP (\fBMXPSQL_MPARC_t\fP *structure, char *filename)"
+.br
+.RI "Construct the archive into a file\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_construct_filestream\fP (\fBMXPSQL_MPARC_t\fP *structure, FILE *fpstream)"
+.br
+.RI "Construct the archive into a file stream\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_extract_advance\fP (\fBMXPSQL_MPARC_t\fP *structure, char *destdir, char **dir2make, void(*on_item)(const char *), int(*mk_dir)(char *))"
+.br
+.RI "Advanced extraction function\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_extract\fP (\fBMXPSQL_MPARC_t\fP *structure, char *destdir, char **dir2make)"
+.br
+.RI "Simple version of MPARC_extract_advance\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_readdir\fP (\fBMXPSQL_MPARC_t\fP *structure, char *srcdir, int recursive, int(*listdir)(char *, int, char **))"
+.br
+.RI "Read a directory into the structure\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_parse_str_advance\fP (\fBMXPSQL_MPARC_t\fP *structure, char *stringy, int erronduplicate)"
+.br
+.RI "Parse the archive into the structure with extra flags\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_parse_str\fP (\fBMXPSQL_MPARC_t\fP *structure, char *stringy)"
+.br
+.RI "Parse the archive into the structure, a simpler version of MPARC_parse_str_advance\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_parse_filestream\fP (\fBMXPSQL_MPARC_t\fP *structure, FILE *fpstream)"
+.br
+.RI "Parse the opened file stream archive into the structure\&. "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBMPARC_parse_filename\fP (\fBMXPSQL_MPARC_t\fP *structure, char *filename)"
+.br
+.RI "Parse the archive file from the filename into the structure\&. "
+.ti -1c
+.RI "void * \fBMPARC_malloc\fP (\fBMXPSQL_MPARC_uint_repr_t\fP size)"
+.br
+.RI "My malloc, for easy plug and switch\&. Extensions should use this instead of malloc\&. "
+.ti -1c
+.RI "void * \fBMPARC_calloc\fP (\fBMXPSQL_MPARC_uint_repr_t\fP arr_size, size_t el_size)"
+.br
+.RI "My calloc, for easy plug and switch\&. Extensions should use this instead of calloc\&. "
+.ti -1c
+.RI "void * \fBMPARC_realloc\fP (void *oldmem, \fBMXPSQL_MPARC_uint_repr_t\fP newsize)"
+.br
+.RI "My realloc, for easy plug and switch\&. Extensions should use this instead of realloc\&. "
+.ti -1c
+.RI "void \fBMPARC_free\fP (void *mem)"
+.br
+.RI "My free, for easy plug and switch\&. Extensions should use this instead of free\&. "
+.ti -1c
+.RI "size_t \fBMPARC_MXPSQL_MPARC_t_sizeof\fP ()"
+.br
+.RI "Get sizeof \fBMXPSQL_MPARC_t\fP\&. "
+.ti -1c
+.RI "size_t \fBMPARC_MXPSQL_MPARC_iter_t_sizeof\fP ()"
+.br
+.RI "Get sizeof \fBMXPSQL_MPARC_iter_t\fP\&. "
+.ti -1c
+.RI "size_t \fBMPARC_strnlen\fP (const char *str, size_t maxlen)"
+.br
+.RI "My strlen for portability\&. "
+.ti -1c
+.RI "char * \fBMPARC_strtok_r\fP (char *s, const char *delim, char **save_ptr)"
+.br
+.RI "Strtok Safe Edition\&. "
+.ti -1c
+.RI "void * \fBMPARC_memdup\fP (const void *src, size_t len)"
+.br
+.RI "Copy memory\&. "
+.ti -1c
+.RI "char * \fBMPARC_strndup\fP (const char *src, size_t ilen)"
+.br
+.RI "Copy string with length limits\&. "
+.ti -1c
+.RI "char * \fBMPARC_strdup\fP (const char *src)"
+.br
+.RI "Copy string with no length limits\&. "
+.ti -1c
+.RI "char * \fBMPARC_basename\fP (const char *filename)"
+.br
+.RI "Get the basename of the file paht\&. "
+.ti -1c
+.RI "char * \fBMPARC_dirname\fP (char *path)"
+.br
+.RI "Get directory\&. "
+.ti -1c
+.RI "char * \fBMPARC_get_extension\fP (const char *fnp, int full_or_not)"
+.br
+.RI "Get the extension\&. Dodgy implementation\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+MPARC, A Dumb Archiver Format C Rewrite Of MPAR\&. C Header With Implementation\&. Never reeterant, thread and async safe, probably\&. 
+
+MPARC, A Dumb Archiver Format C Rewrite Of MPAR\&. Test file\&.
+.PP
+\fBAuthor\fP
+.RS 4
+MXPSQL 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2022-09-26
+.RE
+.PP
+\fBCopyright\fP
+.RS 4
+.RE
+.PP
+Licensed To You Under Teh MIT License and the LGPL-2\&.1-Or-Later License
+.PP
+MIT License
+.PP
+Copyright (c) 2022 MXPSQL
+.PP
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+.PP
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software\&.
+.PP
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT\&. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE\&.
+.PP
+MPARC, A rewrite of MPAR IN C, a dumb archiver format Copyright (C) 2022 MXPSQL
+.PP
+This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2\&.1 of the License, or (at your option) any later version\&.
+.PP
+This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\&. See the GNU Lesser General Public License for more details\&.
+.PP
+You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc\&., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA 
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fBMXPSQL_MPARC_iter_t\fP \fBMXPSQL_MPARC_iter_t\fP"
+
+.PP
+Ptr type of the iterator, should be initialized to null on first use\&. This should be initialized to NULL to prevent problems with uninitialized value\&.
+.PP
+Don't ever try to dereference this thing\&.
+.PP
+This can never be declared as a non pointer object\&. 
+.SS "typedef struct \fBMXPSQL_MPARC_t\fP \fBMXPSQL_MPARC_t\fP"
+
+.PP
+Ptr type of the archive, should be initialized to null on first use\&. This should be initialized to NULL to prevent problems with uninitialized value\&.
+.PP
+Don't ever try to dereference this thing\&.
+.PP
+This can never be declared as a non pointer object\&.
+.PP
+Not atomic or thread safe (never aim to be that for C99 suport and portability, you do it yourself with platform threads (pthreads, winapi threads or C11 threads if you can))\&. 
+.SS "typedef uint_fast64_t \fBMXPSQL_MPARC_uint_repr_t\fP"
+
+.PP
+Typedef our uint representation to make it easy to refactor\&. This is currently typedef'd to uint_fast64_t, but we can switch to unsigned long long or size_t 
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBMXPSQL_MPARC_err\fP"
+
+.PP
+Error states, these are self explanatory\&. But I give them brief anyways\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIMPARC_OK \fP\fP
+Everything's fine\&. 
+.TP
+\fB\fIMPARC_IDK \fP\fP
+Generic error\&. 
+.TP
+\fB\fIMPARC_INTERNAL \fP\fP
+Internal problem, not used\&. 
+.TP
+\fB\fIMPARC_NULL \fP\fP
+NULL input\&. 
+.TP
+\fB\fIMPARC_IVAL \fP\fP
+Invalid value or generic but more specific errors than MPARC_IDK\&. 
+.TP
+\fB\fIMPARC_KNOEXIST \fP\fP
+Key does not exist\&. 
+.TP
+\fB\fIMPARC_KEXISTS \fP\fP
+Key exists\&. 
+.TP
+\fB\fIMPARC_OOM \fP\fP
+Out Of Memory! 
+.TP
+\fB\fIMPARC_NOTARCHIVE \fP\fP
+The archive you provided is actually not an archive determined by the 25 character long MAGIC NUMBER or some other factor, but most likely the magic number\&. 
+.TP
+\fB\fIMPARC_ARCHIVETOOSHINY \fP\fP
+The format version of the archive is too new to be digested\&. 
+.TP
+\fB\fIMPARC_CHKSUM \fP\fP
+CRC checksum check and comparison failed\&. 
+.TP
+\fB\fIMPARC_CONSTRUCT_FAIL \fP\fP
+Failure to construct archive\&. 
+.TP
+\fB\fIMPARC_OPPART \fP\fP
+Operation not complete\&. 
+.TP
+\fB\fIMPARC_FERROR \fP\fP
+FILE* seems to be having problems as ferror reports true or just that something is wrong with the archive itself\&. 
+.SH "Function Documentation"
+.PP 
+.SS "char * MPARC_basename (const char * filename)"
+
+.PP
+Get the basename of the file paht\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfilename\fP file path 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+char* Base name of filename
+.RE
+.PP
+On unix, it is strrchr'd on '/' only\&.
+.PP
+On windows, it is not only strrchr'd on '/', it is also strchrr'd on '\\' (How you say the \\ character on C) 
+.SS "void * MPARC_calloc (\fBMXPSQL_MPARC_uint_repr_t\fP arr_size, size_t el_size)"
+
+.PP
+My calloc, for easy plug and switch\&. Extensions should use this instead of calloc\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIarr_size\fP size of array (if applicable, else put 1) 
+.br
+\fIel_size\fP size of element 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+void* allocated memory pointer
+.RE
+.PP
+\fBNote\fP
+.RS 4
+MPARC_calloc has its pitfalls\&. Don't fall for it\&. 
+.br
+ Right now is using C's calloc, so it is at the mercy of that function as calloc has flaws\&. 
+.br
+ Allocating a zero sized object with MPARC_calloc, danger is from that it is implementation defined\&. 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_clear_file (\fBMXPSQL_MPARC_t\fP * structure)"
+
+.PP
+Wipe everything (I mean every single file) off the archive\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_construct_filename (\fBMXPSQL_MPARC_t\fP * structure, char * filename)"
+
+.PP
+Construct the archive into a file\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilename\fP the filename target 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_construct_filestream (\fBMXPSQL_MPARC_t\fP * structure, FILE * fpstream)"
+
+.PP
+Construct the archive into a file stream\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfpstream\fP the file stream, should be opened in 'rb' mode 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done
+.RE
+.PP
+\fBNote\fP
+.RS 4
+fpstream should be closed and opened manually 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_construct_str (\fBMXPSQL_MPARC_t\fP * structure, char ** output)"
+
+.PP
+Construct the archive into a string\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIoutput\fP the storage string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done
+.RE
+.PP
+\fBNote\fP
+.RS 4
+manually free output string with 'MPARC_free', not 'free' or 'delete' for forward compatibility\&.
+.RE
+.PP
+Construct the archive into a string\&.
+.PP
+SEE THIS TO SEE THE FILE FORMAT OF THE ARCHIVE THIS PART IS IMPORTANT TO SEE HOW IT IS IMPLEMENTED AND THE FORMAT
+.PP
+How is the file constructed (along with little parsing information to make your own parser):
+.PP
+.IP "1." 4
+Build the header: 
+.PP
+.nf
+ Format: 
+     MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE]
+
+ The ';' character separates the Magic numbers (very long with 25 character I think) from the version number and json metadata
+
+ The '$' character separates the version and magic numbers from the metadata
+
+ The '>' character works to indicate the start of entries
+ The newline is an anomaly though, but just put it in there
+
+ JSON_WHATEV_METADATA can be implementation defined
+ This C implementation will ignore any extra metadata
+
+ Construction note:
+ Make sure to base64 your metadata entries to prevent issues with parsing.
+
+ Parsing tips:
+ Split ';' from the whole archive to get the magic number first
+ Then split '>' from to get the special info header
+ The split '$' from the special info header to get the version and extra metadata
+
+.fi
+.PP
+
+.IP "2." 4
+Build the entries 
+.PP
+.nf
+ Format: 
+     [CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]
+
+ The '%' character is to separate the checksum of the JSON from the JSON itself
+
+ You can add other metadata like date of creation, but there must be the entries "filename", "blob" and "crcsum" in the JSON
+ This C implementation will ignore any extra metadata.
+
+ "filename" should contain the filename. (don't do any effects and magic on this field called "filename")
+ "blob" should contain the base64 of the binary or text file. (base64 to make it a text file and not binary)
+ "crcsum" should contain the CRC32 checksum of the content of "blob" after converting it back to it's original form. ("blob" but wihtout base64)
+
+ Repeat this as required (how many entries are there you repeat)
+
+ Construction note:
+ The anomaly mention aboved is because the newline is added before the main content
+
+ Parsing note:
+     When parsing the entries, split from the begin '>' marker first, and then the end '@' marker.
+     Then split each by newlines.
+     Ignore if a line start with '#' (EXACTLY WITH THAT CHARACTER, there must not even be any whitespace before it), a comment marker. Also ignore if a line is empty.
+     Then, foreach split '%' to get the crc and json.
+     Then compare the JSON to the crc.
+     Then parse the JSON as usual.
+
+ You could parse extra info in your implementation, but this C Based implementation will ignore extra ones. I repeat this line again.
+
+.fi
+.PP
+
+.IP "3." 4
+Build the footer 
+.PP
+.nf
+ Format: 
+     @~
+
+ the '@' character is to signify end of entry
+ the '~' character is to signify end of file
+
+ Parsing note:
+ Make sure to not have anything beyond the footer, not even a newline.
+
+.fi
+.PP
+
+.PP
+.PP
+Final note: This file should not have binary characters\&.
+.PP
+Follow this (with placeholder) and you get this: 
+.PP
+.nf
+MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE][CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]@~
+
+.fi
+.PP
+.PP
+A real single entried one: 
+.PP
+.nf
+MXPSQL's Portable Archive;1${"WhatsThis": "MPARC Logo lmao-Hahahaha"}>  
+134131812%{"filename":"./LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
+
+.fi
+.PP
+.PP
+A real (much more real) multi entried one: 
+.PP
+.nf
+MXPSQL's Portable Archive;1${}>  
+3601911152%{"filename":"LICENSE","blob":"U2VlIExJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgYW5kIGNob29zZSBvbmUgb2YgdGhlbS4KCkxJQ0VOU0UuTEdQTCBjb250YWlucyBMR1BMLTIuMS1vci1sYXRlciBsaWNlbnNlLgpMSUNFTlNFLk1JVCBjb250YWlucyBNSVQgbGljZW5zZS4KCkxJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgc2hvdWxkIGJlIGRpc3RyaWJ1dGVkIHRvZ2V0aGVyIHdpdGggeW91ciBjb3B5LCBpZiBub3QsIHNvbWV0aGluZyBpcyB3cm9uZy4=","crcsum":"404921597"}  
+59879441%{"filename":"LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
+
+.fi
+.PP
+ 
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_copy (\fBMXPSQL_MPARC_t\fP ** structure, \fBMXPSQL_MPARC_t\fP ** targetdest)"
+
+.PP
+Initialize structure by copying\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure for copying 
+.br
+\fItargetdest\fP the destination target structure to be overwritten 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_destroy (\fBMXPSQL_MPARC_t\fP ** structure)"
+
+.PP
+Tear down structure\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code 
+.RE
+.PP
+
+.SS "char * MPARC_dirname (char * path)"
+
+.PP
+Get directory\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP file path 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+char* the directory path without the filename 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_duplicate_file (\fBMXPSQL_MPARC_t\fP * structure, int overwrite, char * srcfile, char * destfile)"
+
+.PP
+Duplicate an entry\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIoverwrite\fP you want to overwrite? set to a non zero value\&. No overwrite? then set to 0 
+.br
+\fIsrcfile\fP the source file to duplicate from\&. 
+.br
+\fIdestfile\fP the destination file 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err Yes\&.
+.RE
+.PP
+Internally implemented with MPARC_push_ufilestr and MPARC_peek_file 
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_exists (\fBMXPSQL_MPARC_t\fP * structure, const char * filename)"
+
+.PP
+Check if file entry exists\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilename\fP the filename to check 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done or errors out 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_extract (\fBMXPSQL_MPARC_t\fP * structure, char * destdir, char ** dir2make)"
+
+.PP
+Simple version of MPARC_extract_advance\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIdestdir\fP the destination directory 
+.br
+\fIdir2make\fP NULL if there is no directory to make, not NULL if it needs you to make a directory 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err error status of extraction, some codes are special, see MPARC_extract_advance for more info
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_extract_advance\fP 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_extract_advance (\fBMXPSQL_MPARC_t\fP * structure, char * destdir, char ** dir2make, void(*)(const char *) on_item, int(*)(char *) mk_dir)"
+
+.PP
+Advanced extraction function\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIdestdir\fP the destination directory 
+.br
+\fIdir2make\fP NULL if there is no directory to make, not NULL if it needs you to make a directory 
+.br
+\fIon_item\fP invoked everytime a new item is iterated over 
+.br
+\fImk_dir\fP invoked when directory is needed to be created, return 0 on success, non-zero on error\&. Overrides dir2make\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err error status, some code are special, see details
+.RE
+.PP
+if the error code returns MPARC_OPPART, check dir2make to see if it needs you to make a new directory 
+.SS "int MPARC_fperror (\fBMXPSQL_MPARC_err\fP err, FILE * fileptrstream)"
+
+.PP
+Print the error message of your stream of choice\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIerr\fP error code 
+.br
+\fIfileptrstream\fP stream of your choice 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int Level of error
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_sfperror\fP 
+.RE
+.PP
+
+.SS "void MPARC_free (void * mem)"
+
+.PP
+My free, for easy plug and switch\&. Extensions should use this instead of free\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fImem\fP memory to free
+.RE
+.PP
+\fBNote\fP
+.RS 4
+.RE
+.PP
+MPARC_free has its pitfalls\&. Don't fall for it\&. 
+.br
+ Right now is using C's free, so it is at the mercy of that function as free has flaws\&. 
+.br
+ Common one: 
+.br
+ Double free, danger is that it is undefined behaviour to do so\&. 
+.br
+ Free not allocated memory, danger is that it is also undefined behaviour to do so\&. 
+.br
+ Not freeing memory if you are done with it, danger is that you played yourself with memory leaks\&. 
+.SS "char * MPARC_get_extension (const char * fnp, int full_or_not)"
+
+.PP
+Get the extension\&. Dodgy implementation\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfnp\fP file path with extension 
+.br
+\fIfull_or_not\fP if set to 0, strip from the last '\&.', else strip from the first '\&.' 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+char* the extension 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_init (\fBMXPSQL_MPARC_t\fP ** structure)"
+
+.PP
+Initialize sturcture\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_list_array (\fBMXPSQL_MPARC_t\fP * structure, char *** listout, \fBMXPSQL_MPARC_uint_repr_t\fP * length)"
+
+.PP
+List out the current files included as an array\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIlistout\fP the output list 
+.br
+\fIlength\fP the length of listout 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done
+.RE
+.PP
+\fBNote\fP
+.RS 4
+Free listout manually with MPARC_list_array_free, not 'free' or 'delete' for forward compatibility\&. Using 'MPARC_free' would get you memory leaks instead\&.
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_list_array\fP 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_list_array_free (char *** list)"
+
+.PP
+Utility function that free the list that you created with MPARC_list_array\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIlist\fP the list you got 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err successful?
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_list_array\fP 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_list_foreach (\fBMXPSQL_MPARC_t\fP * structure, int * cb_aborted, \fBMXPSQL_MPARC_err\fP(*)(\fBMXPSQL_MPARC_t\fP *, const char *) callback)"
+
+.PP
+Foreach, with call backs\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIcb_aborted\fP a flag that indicated if an error code resulted from abortion request or an internal error\&. Can be NULL\&. 
+.br
+\fIcallback\fP callback function that gets called on every iteration 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done\&. MPARC_OK if successfull, other error codes if aborted (dependent on callback)\&.
+.RE
+.PP
+For the callback function:
+.PP
+To continue an iteration, return MPARC_OK\&.
+.PP
+To abort the loop, return any other values in MXPSQL_MPARC_err other than MPARC_OK\&. cb_aborted is set to 1 and the value is returned from callback\&.
+.PP
+Other details:
+.PP
+If an internal error occurs, the error code corresponding to the error is returned, but cb_aborted is set to 0\&. 
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_list_iterator_destroy (\fBMXPSQL_MPARC_iter_t\fP ** iterator)"
+
+.PP
+Destroy the iterator\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIiterator\fP the target iterator 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_list_iterator_init (\fBMXPSQL_MPARC_t\fP ** structure, \fBMXPSQL_MPARC_iter_t\fP ** iterator)"
+
+.PP
+Initialize the iterator that list the current files included\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIiterator\fP the target iterator 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_list_iterator_next (\fBMXPSQL_MPARC_iter_t\fP ** iterator, const char ** outnam)"
+
+.PP
+Update the state of the iterator to point to the next one\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIiterator\fP the target iterator 
+.br
+\fIoutnam\fP output string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err
+.RE
+.PP
+If it returns KMPARC_NOEXIST, the iterator has reached the end 
+.SS "void * MPARC_malloc (\fBMXPSQL_MPARC_uint_repr_t\fP size)"
+
+.PP
+My malloc, for easy plug and switch\&. Extensions should use this instead of malloc\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsize\fP size of bytes to allocate 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+void* allocated memory pointer
+.RE
+.PP
+\fBNote\fP
+.RS 4
+MPARC_malloc has its pitfalls\&. Don't fall for it\&. 
+.br
+ Right now is using C's malloc, so it is at the mercy of that function as malloc has flaws\&. 
+.br
+ Allocating a zero sized object with MPARC_Malloc, danger is from that it is implementation defined\&. 
+.RE
+.PP
+
+.SS "void * MPARC_memdup (const void * src, size_t len)"
+
+.PP
+Copy memory\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsrc\fP source memory bytes, interpreted as unsigned char* 
+.br
+\fIlen\fP length of src 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+void* duplicated value, interpreted as unsigned char*
+.RE
+.PP
+\fBNote\fP
+.RS 4
+Use MPARC_free to deallocate instead of 'free' and 'delete' for forward compatibility\&.
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_memdup\fP 
+.RE
+.PP
+
+.SS "size_t MPARC_MXPSQL_MPARC_iter_t_sizeof ()"
+
+.PP
+Get sizeof \fBMXPSQL_MPARC_iter_t\fP\&. 
+.PP
+\fBReturns\fP
+.RS 4
+size_t sizeof(MXPSQL_MPARC_iter_t)
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMXPSQL_MPARC_iter_t\fP 
+.RE
+.PP
+
+.SS "size_t MPARC_MXPSQL_MPARC_t_sizeof ()"
+
+.PP
+Get sizeof \fBMXPSQL_MPARC_t\fP\&. 
+.PP
+\fBReturns\fP
+.RS 4
+size_t sizeof(MXPSQL_MPARC_t)
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMXPSQL_MPARC_t\fP 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_parse_filename (\fBMXPSQL_MPARC_t\fP * structure, char * filename)"
+
+.PP
+Parse the archive file from the filename into the structure\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilename\fP the filename to read from 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err Did it parse well or did not 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_parse_filestream (\fBMXPSQL_MPARC_t\fP * structure, FILE * fpstream)"
+
+.PP
+Parse the opened file stream archive into the structure\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfpstream\fP the stream to read from, should be opened in 'rb' mode 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err Did it parse well or did not 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_parse_str (\fBMXPSQL_MPARC_t\fP * structure, char * stringy)"
+
+.PP
+Parse the archive into the structure, a simpler version of MPARC_parse_str_advance\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIstringy\fP the string to be parsed to 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err Did it parse well or did not
+.RE
+.PP
+It is MPARC_parse_str_advance with the following options:
+.PP
+.IP "\(bu" 2
+Overwrite entries if duplicate found
+.PP
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_parse_str_advance\fP 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_parse_str_advance (\fBMXPSQL_MPARC_t\fP * structure, char * stringy, int erronduplicate)"
+
+.PP
+Parse the archive into the structure with extra flags\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIstringy\fP the string to be parsed to 
+.br
+\fIerronduplicate\fP error with returning MPARC_KEXISTS if the key exists 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err Did it parse well or did not 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_peek_file (\fBMXPSQL_MPARC_t\fP * structure, const char * filename, unsigned char ** bout, \fBMXPSQL_MPARC_uint_repr_t\fP * sout)"
+
+.PP
+Peek the contents of a file of the archive\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilename\fP the filename to peek the contents at 
+.br
+\fIbout\fP the output pointer to a variable that represent the binary content of the file 
+.br
+\fIsout\fP the output pointer to a variable that represent the size of bout 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done 
+.RE
+.PP
+
+.SS "int MPARC_perror (\fBMXPSQL_MPARC_err\fP err)"
+
+.PP
+Print the error message to stderr\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIerr\fP error code 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int Level of error
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_fperror\fP 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_pop_file (\fBMXPSQL_MPARC_t\fP * structure, char * filename)"
+
+.PP
+Pop a file off the archive\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilename\fP the filename to pop off 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_push_filename (\fBMXPSQL_MPARC_t\fP * structure, char * filename)"
+
+.PP
+Push a file read from the filesystem into the archive\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilename\fP the filename to read from 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_push_filestr (\fBMXPSQL_MPARC_t\fP * structure, char * filename, char * stringc, \fBMXPSQL_MPARC_uint_repr_t\fP sizey)"
+
+.PP
+Push a string as a file\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilename\fP the filename to assign 
+.br
+\fIstringc\fP the bytes of string 
+.br
+\fIsizey\fP the size of stringc 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_push_filestream (\fBMXPSQL_MPARC_t\fP * structure, FILE * filestream, char * filename)"
+
+.PP
+Push an active filestream into the archive as a file\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilestream\fP the active filestream to read from, should be opened in 'rb' mode 
+.br
+\fIfilename\fP the filename to assign 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done
+.RE
+.PP
+\fBNote\fP
+.RS 4
+filestream should be opened and closed manually 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_push_ufilestr (\fBMXPSQL_MPARC_t\fP * structure, char * filename, unsigned char * ustringc, \fBMXPSQL_MPARC_uint_repr_t\fP sizy)"
+
+.PP
+Simple version of MPARC_push_ufilestr_advance that does not strip the directory name\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilename\fP the filename to assign 
+.br
+\fIustringc\fP the bytes of string 
+.br
+\fIsizy\fP the size of ustringc 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_push_ufilestr_advance\fP 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_push_ufilestr_advance (\fBMXPSQL_MPARC_t\fP * structure, char * filename, int stripdir, int overwrite, unsigned char * ustringc, \fBMXPSQL_MPARC_uint_repr_t\fP sizy)"
+
+.PP
+Push an unsigned string as a file\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilename\fP the filename to assign 
+.br
+\fIstripdir\fP strip the directory from the filename, set to 0 to disable 
+.br
+\fIoverwrite\fP if set to anything other than a 0, overwrites the entry if it exists\&. if set to 0, prevents you from overwriting it if it exists\&. set to 0 to disable ability to overwrite (already explained) 
+.br
+\fIustringc\fP the bytes of string 
+.br
+\fIsizy\fP the size of ustringc 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done
+.RE
+.PP
+\fBNote\fP
+.RS 4
+Filename only works on forward slash if stripdir is set due to basename only supporting that operation\&. 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_push_voidfile (\fBMXPSQL_MPARC_t\fP * structure, char * filename, void * buffer_guffer, \fBMXPSQL_MPARC_uint_repr_t\fP sizy)"
+
+.PP
+Push a void pointer as a file\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIfilename\fP the filename to assign 
+.br
+\fIbuffer_guffer\fP the void pointer 
+.br
+\fIsizy\fP the size of buffer_guffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the status code if successfully done 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_query (\fBMXPSQL_MPARC_t\fP * structure, char *** output, char * command,  \&.\&.\&.)"
+
+.PP
+Query the structre for files that match a specific criteria\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIoutput\fP The files that match a specific criteria\&. 
+.br
+\fIcommand\fP The criteria to look for 
+.br
+\fI\&.\&.\&.\fP Vaargs that depend on the command arg 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err Success or a failure (MPARC_SUCCESS if yes, MPARC_KNOEXIST if the command is invalid, MPARC_IVAL if a problem occured)
+.RE
+.PP
+There are multiple commands available in this query function\&. This list is formated as the following: [command] - [description] - [required vaargs] Available commands (case sensitive): size_bigger - List all files that is bigger than the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc\&.\&.\&.)] size_equal - List all files that is equal to the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc\&.\&.\&.)] size_smaller - List all files that is small than the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc\&.\&.\&.)] extension - Get the file extension based from the first dot - [a string of the file extension, do not include the first dot in the parameter] rextension - Get the file extension based from the last dot - [a string of the file extension, do not include the first dot in the parameter]
+.PP
+The output parameter is always terminated with NULL\&. It itself and its content is also dynamically allocated, so you must deallocate it manually using 'MPARC_free', not 'free' and 'delete[]' for forward compatibility\&.
+.PP
+Passing the wrong vaargs will lead to undefined behavior, I cannot defend you from against that unless you cooperate with me\&. C Standard Library says so to do undefined behaviour in vaargs implementation\&. 
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_query_vlist (\fBMXPSQL_MPARC_t\fP * structure, char *** output, char * command, va_list vlist)"
+
+.PP
+A version of MPARC_query that accepts a va_list instead\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIoutput\fP The files that match a specific criteria 
+.br
+\fIcommand\fP The criteria to look for 
+.br
+\fIvlist\fP A list that is suppoused to be a vaargs that depend on the command arg 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err Success or a failure (MPARC_SUCCESS if yes, MPARC_KNOEXIST if the command is invalid, MPARC_IVAL if a problem occured)
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_query\fP
+.RE
+.PP
+\fBNote\fP
+.RS 4
+You are responsible for starting and ending vlist\&. Also look at MPARC_query for more bad things that could happen\&. 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_readdir (\fBMXPSQL_MPARC_t\fP * structure, char * srcdir, int recursive, int(*)(char *, int, char **) listdir)"
+
+.PP
+Read a directory into the structure\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIsrcdir\fP the source directory to read from 
+.br
+\fIrecursive\fP read from subdirectories if not set to 0 
+.br
+\fIlistdir\fP function to list a directory, shall not be NULL or else it returns an error\&. This is the function that handles listing the file and recursion\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err error status of reading
+.RE
+.PP
+.RS 4
+listdir Prototyping 
+.RE
+.PP
+the first parameter of the listdir function is the current directory that should be read from
+.PP
+the second parameter indicates if it should be recursive, set to 0 if not, don't if not
+.PP
+the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc'ed or Malloc'ed (pls Calloc it) as it relies on finding NULL and the array getting freed
+.PP
+the return value should always be 0 for success, other values indicate failure 
+.SS "void * MPARC_realloc (void * oldmem, \fBMXPSQL_MPARC_uint_repr_t\fP newsize)"
+
+.PP
+My realloc, for easy plug and switch\&. Extensions should use this instead of realloc\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIoldmem\fP old memory to change size 
+.br
+\fInewsize\fP new size 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+void* reallocated memory pointer
+.RE
+.PP
+\fBNote\fP
+.RS 4
+.RE
+.PP
+MPARC_realloc has its pitfalls\&. Don't fall for it\&. 
+.br
+ Right now is using C's realloc, so it is at the mercy of that function as realloc has flaws\&. 
+.br
+ Common one: 
+.br
+ In place realloc, danger is from when it errors out and now you created a memory leak\&. 
+.br
+ Reusing old realloc pointers, danger is that it may have been invalidated\&. 
+.br
+ Allocating a zero sized object with MPARC_realloc, danger is that it used to be implementation defined before C23, after C23 is now undefined behaviour\&. 
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_rename_file (\fBMXPSQL_MPARC_t\fP * structure, int overwrite, char * oldname, char * newname)"
+
+.PP
+Rename an entry\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure 
+.br
+\fIoverwrite\fP you want to overwrite? set to a non zero value\&. No overwrite? then set to 0 
+.br
+\fIoldname\fP the file you want to change name 
+.br
+\fInewname\fP the new name 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err the sttaus code if successfully done\&. MPARC_KNOEXIST if oldname is not there and more\&.\&.\&.
+.RE
+.PP
+Internally implemented with MPARC_push_ufilestr, MPARC_pop_file and MPARC_peek_file 
+.SS "int MPARC_sfperror (\fBMXPSQL_MPARC_err\fP err, FILE * filepstream, char * emsg)"
+
+.PP
+Print the error message to your stream of choice with a message of your choice\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIerr\fP error code 
+.br
+\fIfilepstream\fP stream of your choice 
+.br
+\fIemsg\fP message of your choice 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int Level of error
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_strerror\fP 
+.RE
+.PP
+
+.SS "char * MPARC_strdup (const char * src)"
+
+.PP
+Copy string with no length limits\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsrc\fP source string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+char* duplicated string
+.RE
+.PP
+\fBNote\fP
+.RS 4
+Use 'MPARC_free' to deallocate instead of 'free' and 'delete' for forward compatibility\&.
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_strdup\fP 
+.RE
+.PP
+
+.SS "int MPARC_strerror (\fBMXPSQL_MPARC_err\fP err, char ** out)"
+
+.PP
+Get error string from MXPSQL_MPARC_err\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIerr\fP error code 
+.br
+\fIout\fP output error string, can be NULL if an error occured 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int Level of error 
+.RE
+.PP
+
+.SS "char * MPARC_strndup (const char * src, size_t ilen)"
+
+.PP
+Copy string with length limits\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsrc\fP source string 
+.br
+\fIilen\fP max length to copy 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+char* duplicated string
+.RE
+.PP
+\fBNote\fP
+.RS 4
+Use 'MPARC_free' to deallocate instead of 'free' and 'delete' for forward compatibility\&.
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBMPARC_strndup\fP 
+.RE
+.PP
+
+.SS "size_t MPARC_strnlen (const char * str, size_t maxlen)"
+
+.PP
+My strlen for portability\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstr\fP string to check 
+.br
+\fImaxlen\fP max length 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size_t actual str length or maxlen 
+.RE
+.PP
+
+.SS "char * MPARC_strtok_r (char * s, const char * delim, char ** save_ptr)"
+
+.PP
+Strtok Safe Edition\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP string to be tokenized, must be mutable 
+.br
+\fIdelim\fP delimiter to be used while tokenizing 
+.br
+\fIsave_ptr\fP storage space for the rest of the 'she' string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+char* The token 
+.RE
+.PP
+
+.SS "\fBMXPSQL_MPARC_err\fP MPARC_swap_file (\fBMXPSQL_MPARC_t\fP * structure, char * file1, char * file2)"
+
+.PP
+Swap 2 entries\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIstructure\fP the target structure\&. 
+.br
+\fIfile1\fP the filename to swap with file2\&. 
+.br
+\fIfile2\fP the filename to swap with file1\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+MXPSQL_MPARC_err Lazy\&.
+.RE
+.PP
+Internally implemnted with MPARC_push_ufilestr and MPARC_peek_file 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for MPARC from the source code\&.

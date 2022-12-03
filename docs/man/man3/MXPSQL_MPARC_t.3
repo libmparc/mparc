@@ -1,0 +1,72 @@
+.TH "MXPSQL_MPARC_t" 3 "Sat Dec 3 2022" "Version 0.1" "MPARC" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+MXPSQL_MPARC_t \- Not the best place to find documentation for this struct, see \fBmparc\&.h\fP for better info\&. This however tells you about the members\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "char \fBmagic_byte_sep\fP"
+.br
+.RI "separate the 25 character long magic number from the rest of the archive "
+.ti -1c
+.RI "char \fBmeta_sep\fP"
+.br
+.RI "separate the version number from implementation specific metadata "
+.ti -1c
+.RI "char \fBentry_sep_or_general_marker\fP"
+.br
+.RI "a new line, but usually used to separate entries "
+.ti -1c
+.RI "char \fBcomment_marker\fP"
+.br
+.RI "unused, but can be implemented, other implementations can use this as extension metadata "
+.ti -1c
+.RI "char \fBbegin_entry_marker\fP"
+.br
+.RI "indicate beginning of entries "
+.ti -1c
+.RI "char \fBentry_elem2_sep_marker_or_magic_sep_marker\fP"
+.br
+.RI "separate checksum from entry contents "
+.ti -1c
+.RI "char \fBend_entry_marker\fP"
+.br
+.RI "indicate end of entry "
+.ti -1c
+.RI "char \fBend_file_marker\fP"
+.br
+.RI "indicate end of file "
+.ti -1c
+.RI "\fBSTANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION\fP \fBwriterVersion\fP"
+.br
+.RI "version that is used when creating archive "
+.ti -1c
+.RI "\fBSTANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION\fP \fBloadedVersion\fP"
+.br
+.RI "version that indicates what version of the archive is loaded "
+.ti -1c
+.RI "map_blob_t \fBglobby\fP"
+.br
+.RI "storage actually "
+.ti -1c
+.RI "\fBMXPSQL_MPARC_err\fP \fBmy_err\fP"
+.br
+.RI "Internal status for later usage\&. "
+.ti -1c
+.RI "va_list \fBvlist\fP"
+.br
+.RI "hidden "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Not the best place to find documentation for this struct, see \fBmparc\&.h\fP for better info\&. This however tells you about the members\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for MPARC from the source code\&.

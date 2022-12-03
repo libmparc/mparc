@@ -1,0 +1,198 @@
+<toc label="MPARC" topic="index.htm">
+  <topic label="Enough of the boring stuff" href="index.htm#autotoc_md1">
+    <topic label="Why should I use this library and archive format" href="index.htm#autotoc_md2"/>
+    <topic label="Why shouldn&apos;t I use this library and archive format" href="index.htm#autotoc_md3"/>
+    <topic label="Teach me how to build it" href="index.htm#autotoc_md4"/>
+    <topic label="How can I implement this format in my own method?" href="index.htm#autotoc_md5"/>
+    <topic label="How can I make bindings to my own language?" href="index.htm#autotoc_md6"/>
+  </topic>
+  <topic label="Data Structures" href="annotated.htm">
+    <topic label="Data Structures" href="annotated.htm">
+      <topic label="MXPSQL_MPARC_iter_t" href="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm">
+        <topic label="archive" href="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm#a0b5107e8ae5f147b2946780382581147"/>
+        <topic label="itery" href="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm#a2c7547f40a3c8da79c60e4046cdafe34"/>
+      </topic>
+      <topic label="MXPSQL_MPARC_t" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm">
+        <topic label="begin_entry_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ac7d3e82c0c06765de567a88484a1834f"/>
+        <topic label="comment_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aad362e739896a54a50dad4e64a892033"/>
+        <topic label="end_entry_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a26c1872123c25b246032c16600642720"/>
+        <topic label="end_file_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a511526e119a82600076f09fba5ff5931"/>
+        <topic label="entry_elem2_sep_marker_or_magic_sep_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#abf07d17f73f5b9e78d3516899bbb9d96"/>
+        <topic label="entry_sep_or_general_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6409b7665569ed0cff4cb5f0a34c40a8"/>
+        <topic label="globby" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#acb278656734207f1f8d2cc3a8e2174a6"/>
+        <topic label="loadedVersion" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a13e393e435810504764365ac88253a66"/>
+        <topic label="magic_byte_sep" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a1aaeaaaecc899e3003cc87acb0b673f7"/>
+        <topic label="meta_sep" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a9feb8e13bc3ba1aeb2ad15519ae47848"/>
+        <topic label="my_err" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa0b92957bff728a7ad943ae7ccfdb33d"/>
+        <topic label="vlist" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a986b6427a9a2601d2b48e3a65a842e21"/>
+        <topic label="writerVersion" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6dc1d2da99ae25490088f0f36ffc4286"/>
+      </topic>
+    </topic>
+    <topic label="Data Structure Index" href="classes.htm"/>
+    <topic label="Data Fields" href="functions.htm">
+      <topic label="All" href="functions.htm"/>
+      <topic label="Variables" href="functions_vars.htm"/>
+    </topic>
+  </topic>
+  <topic label="Files" href="files.htm">
+    <topic label="File List" href="files.htm">
+      <topic label="mparc.c" href="d9/dd9/mparc_8c.htm">
+        <topic label="MXPSQL_MPARC_t" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm">
+          <topic label="begin_entry_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ac7d3e82c0c06765de567a88484a1834f"/>
+          <topic label="comment_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aad362e739896a54a50dad4e64a892033"/>
+          <topic label="end_entry_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a26c1872123c25b246032c16600642720"/>
+          <topic label="end_file_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a511526e119a82600076f09fba5ff5931"/>
+          <topic label="entry_elem2_sep_marker_or_magic_sep_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#abf07d17f73f5b9e78d3516899bbb9d96"/>
+          <topic label="entry_sep_or_general_marker" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6409b7665569ed0cff4cb5f0a34c40a8"/>
+          <topic label="globby" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#acb278656734207f1f8d2cc3a8e2174a6"/>
+          <topic label="loadedVersion" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a13e393e435810504764365ac88253a66"/>
+          <topic label="magic_byte_sep" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a1aaeaaaecc899e3003cc87acb0b673f7"/>
+          <topic label="meta_sep" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a9feb8e13bc3ba1aeb2ad15519ae47848"/>
+          <topic label="my_err" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa0b92957bff728a7ad943ae7ccfdb33d"/>
+          <topic label="vlist" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a986b6427a9a2601d2b48e3a65a842e21"/>
+          <topic label="writerVersion" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6dc1d2da99ae25490088f0f36ffc4286"/>
+        </topic>
+        <topic label="MXPSQL_MPARC_iter_t" href="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm">
+          <topic label="archive" href="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm#a0b5107e8ae5f147b2946780382581147"/>
+          <topic label="itery" href="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm#a2c7547f40a3c8da79c60e4046cdafe34"/>
+        </topic>
+        <topic label="_MXPSQL_MPARC_C" href="d9/dd9/mparc_8c.htm#ad57dcf6ba7f1516ed844dec4459b117b"/>
+        <topic label="CHECK_LEAKS" href="d9/dd9/mparc_8c.htm#acc4a9135522b8f1f4b98f7b97667ed94"/>
+        <topic label="MPARC_DEBUG_CONF_PRINTF_FILE" href="d9/dd9/mparc_8c.htm#aa13a99948b24fb873e9f89e173acbdcb"/>
+        <topic label="MPARC_DIRECTF_MINIMUM" href="d9/dd9/mparc_8c.htm#a2ad7e18ba758ac0fc4c67b4d963dd119"/>
+        <topic label="MPARC_MAGIC_CHKSM_SEP" href="d9/dd9/mparc_8c.htm#a248acd793693666ff78a087923887dfa"/>
+        <topic label="MPARC_QSORT_MODE" href="d9/dd9/mparc_8c.htm#a9b1621e1582ea29e5168ef97ac544868"/>
+        <topic label="STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25" href="d9/dd9/mparc_8c.htm#a5a4364cfb3e1d0c4e1ee461bfef7875c"/>
+        <topic label="STANKY_MPAR_FILE_FORMAT_VERSION_HASH_ADDED" href="d9/dd9/mparc_8c.htm#a0b151a2d2316733527caa1a301f04a2e"/>
+        <topic label="STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER" href="d9/dd9/mparc_8c.htm#ac81508c80aafaf02a004a59dbff7dcc5"/>
+        <topic label="STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION" href="d9/dd9/mparc_8c.htm#a326f77dcf18011fb94858f1a047eea10"/>
+        <topic label="MPARC_calloc" href="d9/dd9/mparc_8c.htm#ab23a5170998401c4b3852fe54d4374a3"/>
+        <topic label="MPARC_clear_file" href="d9/dd9/mparc_8c.htm#aa1dfba39ba919efbeb4013e791d918ef"/>
+        <topic label="MPARC_construct_filename" href="d9/dd9/mparc_8c.htm#a94c4c474b5f2f5e9f77bc67510f604da"/>
+        <topic label="MPARC_construct_filestream" href="d9/dd9/mparc_8c.htm#aa125160bff8db1ddf1b8bb0aba864b74"/>
+        <topic label="MPARC_construct_str" href="d9/dd9/mparc_8c.htm#a5b17c807bb2fa6e05ac4130112ce6643"/>
+        <topic label="MPARC_copy" href="d9/dd9/mparc_8c.htm#a6da21dcbf030cec0307ad7bfd3ea4f48"/>
+        <topic label="MPARC_destroy" href="d9/dd9/mparc_8c.htm#a5a278819906e49b1155ee23cd2f3ad33"/>
+        <topic label="MPARC_duplicate_file" href="d9/dd9/mparc_8c.htm#a40c04532243f85a4946b1ea1a7bc7aa8"/>
+        <topic label="MPARC_exists" href="d9/dd9/mparc_8c.htm#ae8ef340b41eb2b0e988fd6a2dd76c5cc"/>
+        <topic label="MPARC_extract" href="d9/dd9/mparc_8c.htm#a95a13effaf0c90322b07d3df688338df"/>
+        <topic label="MPARC_extract_advance" href="d9/dd9/mparc_8c.htm#ae4700ba79f9bb8d8f93b71d88c442239"/>
+        <topic label="MPARC_fperror" href="d9/dd9/mparc_8c.htm#a0d77b86222a2630f482dc038b149e553"/>
+        <topic label="MPARC_free" href="d9/dd9/mparc_8c.htm#a95d02449201605a28ce5143bc19b1abc"/>
+        <topic label="MPARC_init" href="d9/dd9/mparc_8c.htm#a1fe7a9487c96376771cec41e72f1fbf7"/>
+        <topic label="MPARC_list_array" href="d9/dd9/mparc_8c.htm#a70b485272c72704901ab0e2c54d40820"/>
+        <topic label="MPARC_list_array_free" href="d9/dd9/mparc_8c.htm#abc033ce1084b6c7e42ebfa2415ccd160"/>
+        <topic label="MPARC_list_foreach" href="d9/dd9/mparc_8c.htm#abdd468971dbef0efc6ff7b12a80ed11b"/>
+        <topic label="MPARC_list_iterator_destroy" href="d9/dd9/mparc_8c.htm#af69cf2c23d9a3d0f4a175c7c1dc8af2e"/>
+        <topic label="MPARC_list_iterator_init" href="d9/dd9/mparc_8c.htm#a984c02b5c1b6a21cfbe863364f78208b"/>
+        <topic label="MPARC_list_iterator_next" href="d9/dd9/mparc_8c.htm#a0e2b9d912b91cac836a472009257f732"/>
+        <topic label="MPARC_malloc" href="d9/dd9/mparc_8c.htm#a397599ed1504ab0b9ad7a5c945c359ba"/>
+        <topic label="MPARC_MXPSQL_MPARC_iter_t_sizeof" href="d9/dd9/mparc_8c.htm#a2666d0b1108a0727558b73f2e5ad53d1"/>
+        <topic label="MPARC_MXPSQL_MPARC_t_sizeof" href="d9/dd9/mparc_8c.htm#aab06ea978e0ab92f8b5086607fa9e4f4"/>
+        <topic label="MPARC_parse_filename" href="d9/dd9/mparc_8c.htm#a3f22125e32bc318875eec834e9b4e236"/>
+        <topic label="MPARC_parse_filestream" href="d9/dd9/mparc_8c.htm#a10a53d66991368ae2ae051f485d8a728"/>
+        <topic label="MPARC_parse_str" href="d9/dd9/mparc_8c.htm#a19c08df623586464196d7ad99cd4b68b"/>
+        <topic label="MPARC_parse_str_advance" href="d9/dd9/mparc_8c.htm#ade1b6f2a2707157cc8c2634333ab95a2"/>
+        <topic label="MPARC_peek_file" href="d9/dd9/mparc_8c.htm#a677f04c3376fd501c2d8aaa19f147984"/>
+        <topic label="MPARC_perror" href="d9/dd9/mparc_8c.htm#ae5d11cf031a7370f20dd6861746208df"/>
+        <topic label="MPARC_pop_file" href="d9/dd9/mparc_8c.htm#a296a715e69d3ce375c7aceb6805fbcb7"/>
+        <topic label="MPARC_push_filename" href="d9/dd9/mparc_8c.htm#aea2c9efbe8291d48958898cad51a7b90"/>
+        <topic label="MPARC_push_filestr" href="d9/dd9/mparc_8c.htm#a307fe25e74de760a3e0f2b6890d87d3b"/>
+        <topic label="MPARC_push_filestream" href="d9/dd9/mparc_8c.htm#a630de32615c1c54087252d29422c2a90"/>
+        <topic label="MPARC_push_ufilestr" href="d9/dd9/mparc_8c.htm#ae1e4e3bf0fb1ec74bb36780e79e33085"/>
+        <topic label="MPARC_push_ufilestr_advance" href="d9/dd9/mparc_8c.htm#acc3b6d0d8a816228efe2cc8658e0ea07"/>
+        <topic label="MPARC_push_voidfile" href="d9/dd9/mparc_8c.htm#a85a5eb85566b526ae8d1b1ea534af451"/>
+        <topic label="MPARC_query" href="d9/dd9/mparc_8c.htm#af9be2a1eddb8ee3683bbcbc1799c86af"/>
+        <topic label="MPARC_query_vlist" href="d9/dd9/mparc_8c.htm#a553da556faf3295b6a1930105ab7ccd4"/>
+        <topic label="MPARC_readdir" href="d9/dd9/mparc_8c.htm#a0031c4afce4930f91d63017bddae08e7"/>
+        <topic label="MPARC_realloc" href="d9/dd9/mparc_8c.htm#a1bbdf1d27c7dbf8c222535770fb5323f"/>
+        <topic label="MPARC_rename_file" href="d9/dd9/mparc_8c.htm#a6c36bdd202ca9213a5e55c51533c3f8c"/>
+        <topic label="MPARC_sfperror" href="d9/dd9/mparc_8c.htm#acccb962b77cce1fe50cb5fde3bf50051"/>
+        <topic label="MPARC_strerror" href="d9/dd9/mparc_8c.htm#a499191b4f97ceb2791a4861cd493b9d4"/>
+        <topic label="MPARC_swap_file" href="d9/dd9/mparc_8c.htm#a6e9c04393cc1fb0621076a3894bbd596"/>
+      </topic>
+      <topic label="mparc.h" href="d6/d08/mparc_8h.htm">
+        <topic label="MXPSQL_MPARC_err" href="d6/d08/mparc_8h.htm#a0b43069d31ce01c4447ed5207aec2b55"/>
+        <topic label="MXPSQL_MPARC_iter_t" href="d6/d08/mparc_8h.htm#a07c83537b86c7bd755c69f0dc234d291"/>
+        <topic label="MXPSQL_MPARC_t" href="d6/d08/mparc_8h.htm#af86786ca7b4ba1464c419b034cd238d3"/>
+        <topic label="MXPSQL_MPARC_uint_repr_t" href="d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb"/>
+        <topic label="MXPSQL_MPARC_err" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100c">
+          <topic label="MPARC_OK" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca53d49c284005c01c8d5264038cbbcf2f"/>
+          <topic label="MPARC_IDK" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca46e0176fd1005f9135ee03aa01bd7e5e"/>
+          <topic label="MPARC_INTERNAL" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100cafe2b876879ed2597966705c23237b93b"/>
+          <topic label="MPARC_NULL" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385"/>
+          <topic label="MPARC_IVAL" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100cac45bcdf666c138541d02f21d9fa499cf"/>
+          <topic label="MPARC_KNOEXIST" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca08d01838a3e0e8e9f612887427522302"/>
+          <topic label="MPARC_KEXISTS" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100caa08f4bd6a058077df51796db882b8a1a"/>
+          <topic label="MPARC_OOM" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100cadfdaf1581ab1118463f7c7483fdf6264"/>
+          <topic label="MPARC_NOTARCHIVE" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca"/>
+          <topic label="MPARC_ARCHIVETOOSHINY" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324"/>
+          <topic label="MPARC_CHKSUM" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e"/>
+          <topic label="MPARC_CONSTRUCT_FAIL" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4"/>
+          <topic label="MPARC_OPPART" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f"/>
+          <topic label="MPARC_FERROR" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa"/>
+        </topic>
+        <topic label="MPARC_basename" href="d6/d08/mparc_8h.htm#a3a202a71270a2d8faf571af197e42e6e"/>
+        <topic label="MPARC_calloc" href="d6/d08/mparc_8h.htm#ab23a5170998401c4b3852fe54d4374a3"/>
+        <topic label="MPARC_clear_file" href="d6/d08/mparc_8h.htm#aa1dfba39ba919efbeb4013e791d918ef"/>
+        <topic label="MPARC_construct_filename" href="d6/d08/mparc_8h.htm#a94c4c474b5f2f5e9f77bc67510f604da"/>
+        <topic label="MPARC_construct_filestream" href="d6/d08/mparc_8h.htm#aa125160bff8db1ddf1b8bb0aba864b74"/>
+        <topic label="MPARC_construct_str" href="d6/d08/mparc_8h.htm#a5b17c807bb2fa6e05ac4130112ce6643"/>
+        <topic label="MPARC_copy" href="d6/d08/mparc_8h.htm#a6da21dcbf030cec0307ad7bfd3ea4f48"/>
+        <topic label="MPARC_destroy" href="d6/d08/mparc_8h.htm#a5a278819906e49b1155ee23cd2f3ad33"/>
+        <topic label="MPARC_dirname" href="d6/d08/mparc_8h.htm#ac62666bee60ef27ce66c4fb3361a467f"/>
+        <topic label="MPARC_duplicate_file" href="d6/d08/mparc_8h.htm#a40c04532243f85a4946b1ea1a7bc7aa8"/>
+        <topic label="MPARC_exists" href="d6/d08/mparc_8h.htm#ae8ef340b41eb2b0e988fd6a2dd76c5cc"/>
+        <topic label="MPARC_extract" href="d6/d08/mparc_8h.htm#a95a13effaf0c90322b07d3df688338df"/>
+        <topic label="MPARC_extract_advance" href="d6/d08/mparc_8h.htm#ae4700ba79f9bb8d8f93b71d88c442239"/>
+        <topic label="MPARC_fperror" href="d6/d08/mparc_8h.htm#a0d77b86222a2630f482dc038b149e553"/>
+        <topic label="MPARC_free" href="d6/d08/mparc_8h.htm#a95d02449201605a28ce5143bc19b1abc"/>
+        <topic label="MPARC_get_extension" href="d6/d08/mparc_8h.htm#a1d9ab18fe1541bbb781847327dc66475"/>
+        <topic label="MPARC_init" href="d6/d08/mparc_8h.htm#a1fe7a9487c96376771cec41e72f1fbf7"/>
+        <topic label="MPARC_list_array" href="d6/d08/mparc_8h.htm#a70b485272c72704901ab0e2c54d40820"/>
+        <topic label="MPARC_list_array_free" href="d6/d08/mparc_8h.htm#abc033ce1084b6c7e42ebfa2415ccd160"/>
+        <topic label="MPARC_list_foreach" href="d6/d08/mparc_8h.htm#abdd468971dbef0efc6ff7b12a80ed11b"/>
+        <topic label="MPARC_list_iterator_destroy" href="d6/d08/mparc_8h.htm#af69cf2c23d9a3d0f4a175c7c1dc8af2e"/>
+        <topic label="MPARC_list_iterator_init" href="d6/d08/mparc_8h.htm#a984c02b5c1b6a21cfbe863364f78208b"/>
+        <topic label="MPARC_list_iterator_next" href="d6/d08/mparc_8h.htm#a0e2b9d912b91cac836a472009257f732"/>
+        <topic label="MPARC_malloc" href="d6/d08/mparc_8h.htm#a397599ed1504ab0b9ad7a5c945c359ba"/>
+        <topic label="MPARC_memdup" href="d6/d08/mparc_8h.htm#ad0e52e267c7096327e368e249c1f51fd"/>
+        <topic label="MPARC_MXPSQL_MPARC_iter_t_sizeof" href="d6/d08/mparc_8h.htm#a2666d0b1108a0727558b73f2e5ad53d1"/>
+        <topic label="MPARC_MXPSQL_MPARC_t_sizeof" href="d6/d08/mparc_8h.htm#aab06ea978e0ab92f8b5086607fa9e4f4"/>
+        <topic label="MPARC_parse_filename" href="d6/d08/mparc_8h.htm#a3f22125e32bc318875eec834e9b4e236"/>
+        <topic label="MPARC_parse_filestream" href="d6/d08/mparc_8h.htm#a10a53d66991368ae2ae051f485d8a728"/>
+        <topic label="MPARC_parse_str" href="d6/d08/mparc_8h.htm#a19c08df623586464196d7ad99cd4b68b"/>
+        <topic label="MPARC_parse_str_advance" href="d6/d08/mparc_8h.htm#aa9f7070ca13873d607746faf7f12486f"/>
+        <topic label="MPARC_peek_file" href="d6/d08/mparc_8h.htm#a677f04c3376fd501c2d8aaa19f147984"/>
+        <topic label="MPARC_perror" href="d6/d08/mparc_8h.htm#ae5d11cf031a7370f20dd6861746208df"/>
+        <topic label="MPARC_pop_file" href="d6/d08/mparc_8h.htm#a296a715e69d3ce375c7aceb6805fbcb7"/>
+        <topic label="MPARC_push_filename" href="d6/d08/mparc_8h.htm#aea2c9efbe8291d48958898cad51a7b90"/>
+        <topic label="MPARC_push_filestr" href="d6/d08/mparc_8h.htm#a307fe25e74de760a3e0f2b6890d87d3b"/>
+        <topic label="MPARC_push_filestream" href="d6/d08/mparc_8h.htm#a630de32615c1c54087252d29422c2a90"/>
+        <topic label="MPARC_push_ufilestr" href="d6/d08/mparc_8h.htm#ae1e4e3bf0fb1ec74bb36780e79e33085"/>
+        <topic label="MPARC_push_ufilestr_advance" href="d6/d08/mparc_8h.htm#acc3b6d0d8a816228efe2cc8658e0ea07"/>
+        <topic label="MPARC_push_voidfile" href="d6/d08/mparc_8h.htm#a2b9e7a9a86d0fc0fc1d6d746cf1fe80d"/>
+        <topic label="MPARC_query" href="d6/d08/mparc_8h.htm#af9be2a1eddb8ee3683bbcbc1799c86af"/>
+        <topic label="MPARC_query_vlist" href="d6/d08/mparc_8h.htm#a553da556faf3295b6a1930105ab7ccd4"/>
+        <topic label="MPARC_readdir" href="d6/d08/mparc_8h.htm#a0031c4afce4930f91d63017bddae08e7"/>
+        <topic label="MPARC_realloc" href="d6/d08/mparc_8h.htm#a1bbdf1d27c7dbf8c222535770fb5323f"/>
+        <topic label="MPARC_rename_file" href="d6/d08/mparc_8h.htm#a6c36bdd202ca9213a5e55c51533c3f8c"/>
+        <topic label="MPARC_sfperror" href="d6/d08/mparc_8h.htm#acccb962b77cce1fe50cb5fde3bf50051"/>
+        <topic label="MPARC_strdup" href="d6/d08/mparc_8h.htm#a1594c0be7e62d1541f058feb7cbfa262"/>
+        <topic label="MPARC_strerror" href="d6/d08/mparc_8h.htm#a499191b4f97ceb2791a4861cd493b9d4"/>
+        <topic label="MPARC_strndup" href="d6/d08/mparc_8h.htm#a9c4e26f8545ca1670f968821602f9dc2"/>
+        <topic label="MPARC_strnlen" href="d6/d08/mparc_8h.htm#ab66f0b019f568c262b41520c209159ea"/>
+        <topic label="MPARC_strtok_r" href="d6/d08/mparc_8h.htm#a13e565e42b5f37b7307260afbc958312"/>
+        <topic label="MPARC_swap_file" href="d6/d08/mparc_8h.htm#a6e9c04393cc1fb0621076a3894bbd596"/>
+      </topic>
+    </topic>
+    <topic label="Globals" href="globals.htm">
+      <topic label="All" href="globals.htm"/>
+      <topic label="Functions" href="globals_func.htm"/>
+      <topic label="Typedefs" href="globals_type.htm"/>
+      <topic label="Enumerations" href="globals_enum.htm"/>
+      <topic label="Enumerator" href="globals_eval.htm"/>
+      <topic label="Macros" href="globals_defs.htm"/>
+    </topic>
+  </topic>
+</toc>

@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_annotated" xml:lang="en-US">
+<title>Data Structures</title>
+Here are the data structures with brief descriptions:<link linkend="_struct_m_x_p_s_q_l___m_p_a_r_c__iter__t">MXPSQL_MPARC_iter_t</link>
+<para>Iterator </para>
+<link linkend="_struct_m_x_p_s_q_l___m_p_a_r_c__t">MXPSQL_MPARC_t</link>
+<para>Not the best place to find documentation for this struct, see <link linkend="_mparc_8h">mparc.h</link> for better info. This however tells you about the members </para>
+</section>

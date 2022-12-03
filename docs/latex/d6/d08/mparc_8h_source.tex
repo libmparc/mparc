@@ -1,0 +1,139 @@
+\hypertarget{mparc_8h_source}{}\doxysection{mparc.\+h}
+\mbox{\hyperlink{mparc_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#ifndef \_MXPSQL\_MPARC\_H}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#define \_MXPSQL\_MPARC\_H}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{57 \textcolor{preprocessor}{\#if (!(defined(\_\_STDC\_\_) \&\& \_\_STDC\_\_))}}
+\DoxyCodeLine{58 \textcolor{preprocessor}{\#error "{}C must be ANSI C, not K\&R C or non ANSI C compliant C"{}}}
+\DoxyCodeLine{59 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{60 }
+\DoxyCodeLine{61 }
+\DoxyCodeLine{62 \textcolor{preprocessor}{\#if defined(\_\_cplusplus) || defined(c\_plusplus)}}
+\DoxyCodeLine{63 \textcolor{preprocessor}{\#include <cstdio>}}
+\DoxyCodeLine{64 \textcolor{preprocessor}{\#include <cstdarg>}}
+\DoxyCodeLine{65 \textcolor{preprocessor}{\#include <cstdint>}}
+\DoxyCodeLine{66 \textcolor{preprocessor}{\#include <cstddef>}}
+\DoxyCodeLine{67 \textcolor{keyword}{extern} \textcolor{stringliteral}{"{}C"{}}\{}
+\DoxyCodeLine{68 \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{69 \textcolor{preprocessor}{\#include <stdio.h>}}
+\DoxyCodeLine{70 \textcolor{preprocessor}{\#include <stdarg.h>}}
+\DoxyCodeLine{71 \textcolor{preprocessor}{\#include <stdint.h>}}
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#include <stddef.h>}}
+\DoxyCodeLine{73 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75     \textcolor{comment}{// Error reporting}}
+\DoxyCodeLine{80 \textcolor{comment}{}    \textcolor{keyword}{typedef} \textcolor{keyword}{enum} \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \{}
+\DoxyCodeLine{85         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca53d49c284005c01c8d5264038cbbcf2f}{MPARC\_OK}} = 0,}
+\DoxyCodeLine{86 }
+\DoxyCodeLine{91         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca46e0176fd1005f9135ee03aa01bd7e5e}{MPARC\_IDK}} = -\/1,}
+\DoxyCodeLine{96         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cafe2b876879ed2597966705c23237b93b}{MPARC\_INTERNAL}} = -\/2,}
+\DoxyCodeLine{101         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385}{MPARC\_NULL}} = -\/3,}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{107         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cac45bcdf666c138541d02f21d9fa499cf}{MPARC\_IVAL}} = 1,}
+\DoxyCodeLine{108 }
+\DoxyCodeLine{113         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca08d01838a3e0e8e9f612887427522302}{MPARC\_KNOEXIST}}=2,}
+\DoxyCodeLine{118         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100caa08f4bd6a058077df51796db882b8a1a}{MPARC\_KEXISTS}}=3,}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{124         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cadfdaf1581ab1118463f7c7483fdf6264}{MPARC\_OOM}} = 4,}
+\DoxyCodeLine{125 }
+\DoxyCodeLine{130         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca}{MPARC\_NOTARCHIVE}}=5,}
+\DoxyCodeLine{135         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324}{MPARC\_ARCHIVETOOSHINY}}=6,}
+\DoxyCodeLine{140         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e}{MPARC\_CHKSUM}}=7,}
+\DoxyCodeLine{141 }
+\DoxyCodeLine{145         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4}{MPARC\_CONSTRUCT\_FAIL}}=8,}
+\DoxyCodeLine{146 }
+\DoxyCodeLine{151         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f}{MPARC\_OPPART}}=9,}
+\DoxyCodeLine{152 }
+\DoxyCodeLine{157         \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa}{MPARC\_FERROR}}=10}
+\DoxyCodeLine{158     \} \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}};}
+\DoxyCodeLine{166     \textcolor{keywordtype}{int} \mbox{\hyperlink{mparc_8h_a499191b4f97ceb2791a4861cd493b9d4}{MPARC\_strerror}}(\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} err, \textcolor{keywordtype}{char}** out);}
+\DoxyCodeLine{177     \textcolor{keywordtype}{int} \mbox{\hyperlink{mparc_8h_acccb962b77cce1fe50cb5fde3bf50051}{MPARC\_sfperror}}(\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} err, FILE* filepstream, \textcolor{keywordtype}{char}* emsg);}
+\DoxyCodeLine{187     \textcolor{keywordtype}{int} \mbox{\hyperlink{mparc_8h_a0d77b86222a2630f482dc038b149e553}{MPARC\_fperror}}(\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} err, FILE* fileptrstream);}
+\DoxyCodeLine{196     \textcolor{keywordtype}{int} \mbox{\hyperlink{mparc_8h_ae5d11cf031a7370f20dd6861746208df}{MPARC\_perror}}(\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} err);}
+\DoxyCodeLine{197 }
+\DoxyCodeLine{198 }
+\DoxyCodeLine{199     \textcolor{comment}{// Types}}
+\DoxyCodeLine{213 \textcolor{comment}{}    \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}} \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}};}
+\DoxyCodeLine{225     \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\_MPARC\_iter\_t}} \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\_MPARC\_iter\_t}};}
+\DoxyCodeLine{233     \textcolor{keyword}{typedef} uint\_fast64\_t \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\_MPARC\_uint\_repr\_t}};}
+\DoxyCodeLine{234 }
+\DoxyCodeLine{235 }
+\DoxyCodeLine{236     \textcolor{comment}{// Main functions}}
+\DoxyCodeLine{243 \textcolor{comment}{}    \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a1fe7a9487c96376771cec41e72f1fbf7}{MPARC\_init}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}** structure);}
+\DoxyCodeLine{251     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a6da21dcbf030cec0307ad7bfd3ea4f48}{MPARC\_copy}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}** structure, \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}** targetdest);}
+\DoxyCodeLine{258     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a5a278819906e49b1155ee23cd2f3ad33}{MPARC\_destroy}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}** structure);}
+\DoxyCodeLine{259 }
+\DoxyCodeLine{272     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a70b485272c72704901ab0e2c54d40820}{MPARC\_list\_array}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}*** listout, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\_MPARC\_uint\_repr\_t}}* length);}
+\DoxyCodeLine{281     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_abc033ce1084b6c7e42ebfa2415ccd160}{MPARC\_list\_array\_free}}(\textcolor{keywordtype}{char}*** list);}
+\DoxyCodeLine{289     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a984c02b5c1b6a21cfbe863364f78208b}{MPARC\_list\_iterator\_init}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}** structure, \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\_MPARC\_iter\_t}}** iterator);}
+\DoxyCodeLine{301     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a0e2b9d912b91cac836a472009257f732}{MPARC\_list\_iterator\_next}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\_MPARC\_iter\_t}}** iterator, \textcolor{keyword}{const} \textcolor{keywordtype}{char}** outnam);}
+\DoxyCodeLine{308     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_af69cf2c23d9a3d0f4a175c7c1dc8af2e}{MPARC\_list\_iterator\_destroy}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\_MPARC\_iter\_t}}** iterator);}
+\DoxyCodeLine{329     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_abdd468971dbef0efc6ff7b12a80ed11b}{MPARC\_list\_foreach}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{int}* cb\_aborted, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} (*callback)(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}*, \textcolor{keyword}{const} \textcolor{keywordtype}{char}*));}
+\DoxyCodeLine{337     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_ae8ef340b41eb2b0e988fd6a2dd76c5cc}{MPARC\_exists}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* filename);}
+\DoxyCodeLine{362     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_af9be2a1eddb8ee3683bbcbc1799c86af}{MPARC\_query}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}*** output, \textcolor{keywordtype}{char}* command, ...);}
+\DoxyCodeLine{376     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a553da556faf3295b6a1930105ab7ccd4}{MPARC\_query\_vlist}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}*** output, \textcolor{keywordtype}{char}* command, va\_list vlist);}
+\DoxyCodeLine{377     }
+\DoxyCodeLine{391     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_acc3b6d0d8a816228efe2cc8658e0ea07}{MPARC\_push\_ufilestr\_advance}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* filename, \textcolor{keywordtype}{int} stripdir, \textcolor{keywordtype}{int} overwrite, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* ustringc, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\_MPARC\_uint\_repr\_t}} sizy);}
+\DoxyCodeLine{403     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_ae1e4e3bf0fb1ec74bb36780e79e33085}{MPARC\_push\_ufilestr}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* filename, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* ustringc, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\_MPARC\_uint\_repr\_t}} sizy);}
+\DoxyCodeLine{413     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a2b9e7a9a86d0fc0fc1d6d746cf1fe80d}{MPARC\_push\_voidfile}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* filename, \textcolor{keywordtype}{void}* buffer\_guffer, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\_MPARC\_uint\_repr\_t}} sizy);}
+\DoxyCodeLine{423     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a307fe25e74de760a3e0f2b6890d87d3b}{MPARC\_push\_filestr}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* filename, \textcolor{keywordtype}{char}* stringc, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\_MPARC\_uint\_repr\_t}} sizey);}
+\DoxyCodeLine{431     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_aea2c9efbe8291d48958898cad51a7b90}{MPARC\_push\_filename}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* filename);}
+\DoxyCodeLine{442     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a630de32615c1c54087252d29422c2a90}{MPARC\_push\_filestream}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, FILE* filestream, \textcolor{keywordtype}{char}* filename);}
+\DoxyCodeLine{443 }
+\DoxyCodeLine{457     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a6c36bdd202ca9213a5e55c51533c3f8c}{MPARC\_rename\_file}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{int} overwrite, \textcolor{keywordtype}{char}* oldname, \textcolor{keywordtype}{char}* newname);}
+\DoxyCodeLine{471     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a40c04532243f85a4946b1ea1a7bc7aa8}{MPARC\_duplicate\_file}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{int} overwrite, \textcolor{keywordtype}{char}* srcfile, \textcolor{keywordtype}{char}* destfile);}
+\DoxyCodeLine{484     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a6e9c04393cc1fb0621076a3894bbd596}{MPARC\_swap\_file}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* file1, \textcolor{keywordtype}{char}* file2);}
+\DoxyCodeLine{485 }
+\DoxyCodeLine{493     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a296a715e69d3ce375c7aceb6805fbcb7}{MPARC\_pop\_file}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* filename);}
+\DoxyCodeLine{500     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_aa1dfba39ba919efbeb4013e791d918ef}{MPARC\_clear\_file}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure);}
+\DoxyCodeLine{501 }
+\DoxyCodeLine{511     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a677f04c3376fd501c2d8aaa19f147984}{MPARC\_peek\_file}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keyword}{const} \textcolor{keywordtype}{char}* filename, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}** bout, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\_MPARC\_uint\_repr\_t}}* sout);}
+\DoxyCodeLine{512 }
+\DoxyCodeLine{522     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a5b17c807bb2fa6e05ac4130112ce6643}{MPARC\_construct\_str}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}** output);}
+\DoxyCodeLine{530     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a94c4c474b5f2f5e9f77bc67510f604da}{MPARC\_construct\_filename}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* filename);}
+\DoxyCodeLine{540     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_aa125160bff8db1ddf1b8bb0aba864b74}{MPARC\_construct\_filestream}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, FILE* fpstream);}
+\DoxyCodeLine{541 }
+\DoxyCodeLine{542 }
+\DoxyCodeLine{557     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_ae4700ba79f9bb8d8f93b71d88c442239}{MPARC\_extract\_advance}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* destdir, \textcolor{keywordtype}{char}** dir2make, \textcolor{keywordtype}{void} (*on\_item)(\textcolor{keyword}{const} \textcolor{keywordtype}{char}*), \textcolor{keywordtype}{int} (*mk\_dir)(\textcolor{keywordtype}{char}*));}
+\DoxyCodeLine{568     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a95a13effaf0c90322b07d3df688338df}{MPARC\_extract}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* destdir, \textcolor{keywordtype}{char}** dir2make);}
+\DoxyCodeLine{569 }
+\DoxyCodeLine{591     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a0031c4afce4930f91d63017bddae08e7}{MPARC\_readdir}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* srcdir, \textcolor{keywordtype}{int} recursive, \textcolor{keywordtype}{int} (*listdir)(\textcolor{keywordtype}{char}*, \textcolor{keywordtype}{int}, \textcolor{keywordtype}{char}**));}
+\DoxyCodeLine{592 }
+\DoxyCodeLine{601     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_aa9f7070ca13873d607746faf7f12486f}{MPARC\_parse\_str\_advance}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* stringy, \textcolor{keywordtype}{int} erronduplicate);}
+\DoxyCodeLine{617     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a19c08df623586464196d7ad99cd4b68b}{MPARC\_parse\_str}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* stringy);}
+\DoxyCodeLine{625     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a10a53d66991368ae2ae051f485d8a728}{MPARC\_parse\_filestream}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, FILE* fpstream);}
+\DoxyCodeLine{633     \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\_MPARC\_err}} \mbox{\hyperlink{mparc_8h_a3f22125e32bc318875eec834e9b4e236}{MPARC\_parse\_filename}}(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\_MPARC\_t}}* structure, \textcolor{keywordtype}{char}* filename);}
+\DoxyCodeLine{634 }
+\DoxyCodeLine{635 }
+\DoxyCodeLine{636     \textcolor{comment}{// Memory management utilities for easy refactoring}}
+\DoxyCodeLine{648 \textcolor{comment}{}    \textcolor{keywordtype}{void}* \mbox{\hyperlink{mparc_8h_a397599ed1504ab0b9ad7a5c945c359ba}{MPARC\_malloc}}(\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\_MPARC\_uint\_repr\_t}} size);}
+\DoxyCodeLine{661     \textcolor{keywordtype}{void}* \mbox{\hyperlink{mparc_8h_ab23a5170998401c4b3852fe54d4374a3}{MPARC\_calloc}}(\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\_MPARC\_uint\_repr\_t}} arr\_size, \textcolor{keywordtype}{size\_t} el\_size);}
+\DoxyCodeLine{679     \textcolor{keywordtype}{void}* \mbox{\hyperlink{mparc_8h_a1bbdf1d27c7dbf8c222535770fb5323f}{MPARC\_realloc}}(\textcolor{keywordtype}{void}* oldmem, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\_MPARC\_uint\_repr\_t}} newsize);}
+\DoxyCodeLine{694     \textcolor{keywordtype}{void} \mbox{\hyperlink{mparc_8h_a95d02449201605a28ce5143bc19b1abc}{MPARC\_free}}(\textcolor{keywordtype}{void}* mem);}
+\DoxyCodeLine{695 }
+\DoxyCodeLine{696 }
+\DoxyCodeLine{697     \textcolor{comment}{// Type internal utilities}}
+\DoxyCodeLine{705 \textcolor{comment}{}    \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{mparc_8h_aab06ea978e0ab92f8b5086607fa9e4f4}{MPARC\_MXPSQL\_MPARC\_t\_sizeof}}();}
+\DoxyCodeLine{713     \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{mparc_8h_a2666d0b1108a0727558b73f2e5ad53d1}{MPARC\_MXPSQL\_MPARC\_iter\_t\_sizeof}}();}
+\DoxyCodeLine{714 }
+\DoxyCodeLine{715     \textcolor{comment}{// Auxiliary function}}
+\DoxyCodeLine{716 \textcolor{preprocessor}{    \#ifdef MPARC\_WANT\_EXTERN\_AUX\_UTIL\_FUNCTIONS}}
+\DoxyCodeLine{724     \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{mparc_8h_ab66f0b019f568c262b41520c209159ea}{MPARC\_strnlen}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* str, \textcolor{keywordtype}{size\_t} maxlen);}
+\DoxyCodeLine{733     \textcolor{keywordtype}{char}* \mbox{\hyperlink{mparc_8h_a13e565e42b5f37b7307260afbc958312}{MPARC\_strtok\_r}} (\textcolor{keywordtype}{char} *s, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *delim, \textcolor{keywordtype}{char} **save\_ptr);}
+\DoxyCodeLine{745     \textcolor{keywordtype}{void}* \mbox{\hyperlink{mparc_8h_ad0e52e267c7096327e368e249c1f51fd}{MPARC\_memdup}}(\textcolor{keyword}{const} \textcolor{keywordtype}{void}* src, \textcolor{keywordtype}{size\_t} len);}
+\DoxyCodeLine{757     \textcolor{keywordtype}{char}* \mbox{\hyperlink{mparc_8h_a9c4e26f8545ca1670f968821602f9dc2}{MPARC\_strndup}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* src, \textcolor{keywordtype}{size\_t} ilen);}
+\DoxyCodeLine{768     \textcolor{keywordtype}{char}* \mbox{\hyperlink{mparc_8h_a1594c0be7e62d1541f058feb7cbfa262}{MPARC\_strdup}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* src);}
+\DoxyCodeLine{781     \textcolor{keywordtype}{char}* \mbox{\hyperlink{mparc_8h_a3a202a71270a2d8faf571af197e42e6e}{MPARC\_basename}} (\textcolor{keyword}{const} \textcolor{keywordtype}{char} *filename);}
+\DoxyCodeLine{788     \textcolor{keywordtype}{char}* \mbox{\hyperlink{mparc_8h_ac62666bee60ef27ce66c4fb3361a467f}{MPARC\_dirname}} (\textcolor{keywordtype}{char} *path);}
+\DoxyCodeLine{796     \textcolor{keywordtype}{char}* \mbox{\hyperlink{mparc_8h_a1d9ab18fe1541bbb781847327dc66475}{MPARC\_get\_extension}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* fnp, \textcolor{keywordtype}{int} full\_or\_not);}
+\DoxyCodeLine{797 \textcolor{preprocessor}{    \#endif}}
+\DoxyCodeLine{798 }
+\DoxyCodeLine{799 \textcolor{preprocessor}{\#if defined(\_\_cplusplus) || defined(c\_plusplus)}}
+\DoxyCodeLine{800 \}}
+\DoxyCodeLine{801 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{802 }
+\DoxyCodeLine{803 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// end of header}}
+
+\end{DoxyCode}

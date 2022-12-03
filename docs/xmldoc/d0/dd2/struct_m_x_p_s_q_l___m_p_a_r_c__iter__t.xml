@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kind="struct" language="C++" prot="public">
+    <compoundname>MXPSQL_MPARC_iter_t</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t_1a0b5107e8ae5f147b2946780382581147" prot="public" static="no" mutable="no">
+        <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+        <definition>MXPSQL_MPARC_t* MXPSQL_MPARC_iter_t::archive</definition>
+        <argsstring></argsstring>
+        <name>archive</name>
+        <briefdescription>
+<para>current archive </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.c" line="3550" column="16" bodyfile="mparc.c" bodystart="3550" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t_1a2c7547f40a3c8da79c60e4046cdafe34" prot="public" static="no" mutable="no">
+        <type>map_iter_t</type>
+        <definition>map_iter_t MXPSQL_MPARC_iter_t::itery</definition>
+        <argsstring></argsstring>
+        <name>itery</name>
+        <briefdescription>
+<para>storage iterator </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.c" line="3552" column="12" bodyfile="mparc.c" bodystart="3552" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Iterator. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>MXPSQL_MPARC_iter_t</label>
+        <link refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>archive</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>MXPSQL_MPARC_t</label>
+        <link refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t"/>
+      </node>
+    </collaborationgraph>
+    <location file="mparc.c" line="3548" column="1" bodyfile="mparc.c" bodystart="3548" bodyend="3553"/>
+    <listofallmembers>
+      <member refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t_1a0b5107e8ae5f147b2946780382581147" prot="public" virt="non-virtual"><scope>MXPSQL_MPARC_iter_t</scope><name>archive</name></member>
+      <member refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t_1a2c7547f40a3c8da79c60e4046cdafe34" prot="public" virt="non-virtual"><scope>MXPSQL_MPARC_iter_t</scope><name>itery</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

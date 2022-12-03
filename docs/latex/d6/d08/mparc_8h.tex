@@ -1,0 +1,1584 @@
+\hypertarget{mparc_8h}{}\doxysection{mparc.\+h File Reference}
+\label{mparc_8h}\index{mparc.h@{mparc.h}}
+
+
+MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header With Implementation. Never reeterant, thread and async safe, probably.  
+
+
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdarg.\+h$>$}\newline
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+{\ttfamily \#include $<$stddef.\+h$>$}\newline
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{mparc_8h_a0b43069d31ce01c4447ed5207aec2b55}\label{mparc_8h_a0b43069d31ce01c4447ed5207aec2b55}} 
+typedef enum \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} {\bfseries MXPSQL\+\_\+\+MPARC\+\_\+err}
+\begin{DoxyCompactList}\small\item\em Error states, these are self explanatory. But I give them brief anyways. \end{DoxyCompactList}\item 
+typedef struct \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} \mbox{\hyperlink{mparc_8h_af86786ca7b4ba1464c419b034cd238d3}{MXPSQL\+\_\+\+MPARC\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em Ptr type of the archive, should be initialized to null on first use. \end{DoxyCompactList}\item 
+typedef struct \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}} \mbox{\hyperlink{mparc_8h_a07c83537b86c7bd755c69f0dc234d291}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em Ptr type of the iterator, should be initialized to null on first use. \end{DoxyCompactList}\item 
+typedef uint\+\_\+fast64\+\_\+t \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em Typedef our uint representation to make it easy to refactor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \{ \newline
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca53d49c284005c01c8d5264038cbbcf2f}{MPARC\+\_\+\+OK}} = 0
+, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca46e0176fd1005f9135ee03aa01bd7e5e}{MPARC\+\_\+\+IDK}} = -\/1
+, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cafe2b876879ed2597966705c23237b93b}{MPARC\+\_\+\+INTERNAL}} = -\/2
+, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385}{MPARC\+\_\+\+NULL}} = -\/3
+, \newline
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cac45bcdf666c138541d02f21d9fa499cf}{MPARC\+\_\+\+IVAL}} = 1
+, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca08d01838a3e0e8e9f612887427522302}{MPARC\+\_\+\+KNOEXIST}} =2
+, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100caa08f4bd6a058077df51796db882b8a1a}{MPARC\+\_\+\+KEXISTS}} =3
+, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cadfdaf1581ab1118463f7c7483fdf6264}{MPARC\+\_\+\+OOM}} = 4
+, \newline
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca}{MPARC\+\_\+\+NOTARCHIVE}} =5
+, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324}{MPARC\+\_\+\+ARCHIVETOOSHINY}} =6
+, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e}{MPARC\+\_\+\+CHKSUM}} =7
+, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4}{MPARC\+\_\+\+CONSTRUCT\+\_\+\+FAIL}} =8
+, \newline
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f}{MPARC\+\_\+\+OPPART}} =9
+, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa}{MPARC\+\_\+\+FERROR}} =10
+ \}
+\begin{DoxyCompactList}\small\item\em Error states, these are self explanatory. But I give them brief anyways. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{mparc_8h_a499191b4f97ceb2791a4861cd493b9d4}{MPARC\+\_\+strerror}} (\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} err, char $\ast$$\ast$out)
+\begin{DoxyCompactList}\small\item\em Get error string from MXPSQL\+\_\+\+MPARC\+\_\+err. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{mparc_8h_acccb962b77cce1fe50cb5fde3bf50051}{MPARC\+\_\+sfperror}} (\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} err, FILE $\ast$filepstream, char $\ast$emsg)
+\begin{DoxyCompactList}\small\item\em Print the error message to your stream of choice with a message of your choice. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{mparc_8h_a0d77b86222a2630f482dc038b149e553}{MPARC\+\_\+fperror}} (\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} err, FILE $\ast$fileptrstream)
+\begin{DoxyCompactList}\small\item\em Print the error message of your stream of choice. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{mparc_8h_ae5d11cf031a7370f20dd6861746208df}{MPARC\+\_\+perror}} (\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} err)
+\begin{DoxyCompactList}\small\item\em Print the error message to stderr. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a1fe7a9487c96376771cec41e72f1fbf7}{MPARC\+\_\+init}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$$\ast$structure)
+\begin{DoxyCompactList}\small\item\em Initialize sturcture. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a6da21dcbf030cec0307ad7bfd3ea4f48}{MPARC\+\_\+copy}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$$\ast$structure, \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$$\ast$targetdest)
+\begin{DoxyCompactList}\small\item\em Initialize structure by copying. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a5a278819906e49b1155ee23cd2f3ad33}{MPARC\+\_\+destroy}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$$\ast$structure)
+\begin{DoxyCompactList}\small\item\em Tear down structure. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a70b485272c72704901ab0e2c54d40820}{MPARC\+\_\+list\+\_\+array}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$$\ast$$\ast$listout, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} $\ast$length)
+\begin{DoxyCompactList}\small\item\em List out the current files included as an array. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_abc033ce1084b6c7e42ebfa2415ccd160}{MPARC\+\_\+list\+\_\+array\+\_\+free}} (char $\ast$$\ast$$\ast$list)
+\begin{DoxyCompactList}\small\item\em Utility function that free the list that you created with MPARC\+\_\+list\+\_\+array. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a984c02b5c1b6a21cfbe863364f78208b}{MPARC\+\_\+list\+\_\+iterator\+\_\+init}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$$\ast$structure, \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}} $\ast$$\ast$iterator)
+\begin{DoxyCompactList}\small\item\em Initialize the iterator that list the current files included. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a0e2b9d912b91cac836a472009257f732}{MPARC\+\_\+list\+\_\+iterator\+\_\+next}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}} $\ast$$\ast$iterator, const char $\ast$$\ast$outnam)
+\begin{DoxyCompactList}\small\item\em Update the state of the iterator to point to the next one. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_af69cf2c23d9a3d0f4a175c7c1dc8af2e}{MPARC\+\_\+list\+\_\+iterator\+\_\+destroy}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}} $\ast$$\ast$iterator)
+\begin{DoxyCompactList}\small\item\em Destroy the iterator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_abdd468971dbef0efc6ff7b12a80ed11b}{MPARC\+\_\+list\+\_\+foreach}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, int $\ast$cb\+\_\+aborted, \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}}($\ast$callback)(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$, const char $\ast$))
+\begin{DoxyCompactList}\small\item\em Foreach, with call backs. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_ae8ef340b41eb2b0e988fd6a2dd76c5cc}{MPARC\+\_\+exists}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, const char $\ast$filename)
+\begin{DoxyCompactList}\small\item\em Check if file entry exists. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_af9be2a1eddb8ee3683bbcbc1799c86af}{MPARC\+\_\+query}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$$\ast$$\ast$output, char $\ast$command,...)
+\begin{DoxyCompactList}\small\item\em Query the structre for files that match a specific criteria. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a553da556faf3295b6a1930105ab7ccd4}{MPARC\+\_\+query\+\_\+vlist}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$$\ast$$\ast$output, char $\ast$command, va\+\_\+list vlist)
+\begin{DoxyCompactList}\small\item\em A version of MPARC\+\_\+query that accepts a va\+\_\+list instead. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_acc3b6d0d8a816228efe2cc8658e0ea07}{MPARC\+\_\+push\+\_\+ufilestr\+\_\+advance}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$filename, int stripdir, int overwrite, unsigned char $\ast$ustringc, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} sizy)
+\begin{DoxyCompactList}\small\item\em Push an unsigned string as a file. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_ae1e4e3bf0fb1ec74bb36780e79e33085}{MPARC\+\_\+push\+\_\+ufilestr}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$filename, unsigned char $\ast$ustringc, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} sizy)
+\begin{DoxyCompactList}\small\item\em Simple version of MPARC\+\_\+push\+\_\+ufilestr\+\_\+advance that does not strip the directory name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a2b9e7a9a86d0fc0fc1d6d746cf1fe80d}{MPARC\+\_\+push\+\_\+voidfile}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$filename, void $\ast$buffer\+\_\+guffer, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} sizy)
+\begin{DoxyCompactList}\small\item\em Push a void pointer as a file. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a307fe25e74de760a3e0f2b6890d87d3b}{MPARC\+\_\+push\+\_\+filestr}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$filename, char $\ast$stringc, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} sizey)
+\begin{DoxyCompactList}\small\item\em Push a string as a file. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_aea2c9efbe8291d48958898cad51a7b90}{MPARC\+\_\+push\+\_\+filename}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$filename)
+\begin{DoxyCompactList}\small\item\em Push a file read from the filesystem into the archive. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a630de32615c1c54087252d29422c2a90}{MPARC\+\_\+push\+\_\+filestream}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, FILE $\ast$filestream, char $\ast$filename)
+\begin{DoxyCompactList}\small\item\em Push an active filestream into the archive as a file. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a6c36bdd202ca9213a5e55c51533c3f8c}{MPARC\+\_\+rename\+\_\+file}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, int overwrite, char $\ast$oldname, char $\ast$newname)
+\begin{DoxyCompactList}\small\item\em Rename an entry. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a40c04532243f85a4946b1ea1a7bc7aa8}{MPARC\+\_\+duplicate\+\_\+file}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, int overwrite, char $\ast$srcfile, char $\ast$destfile)
+\begin{DoxyCompactList}\small\item\em Duplicate an entry. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a6e9c04393cc1fb0621076a3894bbd596}{MPARC\+\_\+swap\+\_\+file}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$file1, char $\ast$file2)
+\begin{DoxyCompactList}\small\item\em Swap 2 entries. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a296a715e69d3ce375c7aceb6805fbcb7}{MPARC\+\_\+pop\+\_\+file}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$filename)
+\begin{DoxyCompactList}\small\item\em Pop a file off the archive. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_aa1dfba39ba919efbeb4013e791d918ef}{MPARC\+\_\+clear\+\_\+file}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure)
+\begin{DoxyCompactList}\small\item\em Wipe everything (I mean every single file) off the archive. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a677f04c3376fd501c2d8aaa19f147984}{MPARC\+\_\+peek\+\_\+file}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, const char $\ast$filename, unsigned char $\ast$$\ast$bout, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} $\ast$sout)
+\begin{DoxyCompactList}\small\item\em Peek the contents of a file of the archive. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a5b17c807bb2fa6e05ac4130112ce6643}{MPARC\+\_\+construct\+\_\+str}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$$\ast$output)
+\begin{DoxyCompactList}\small\item\em Construct the archive into a string. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a94c4c474b5f2f5e9f77bc67510f604da}{MPARC\+\_\+construct\+\_\+filename}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$filename)
+\begin{DoxyCompactList}\small\item\em Construct the archive into a file. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_aa125160bff8db1ddf1b8bb0aba864b74}{MPARC\+\_\+construct\+\_\+filestream}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, FILE $\ast$fpstream)
+\begin{DoxyCompactList}\small\item\em Construct the archive into a file stream. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_ae4700ba79f9bb8d8f93b71d88c442239}{MPARC\+\_\+extract\+\_\+advance}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$destdir, char $\ast$$\ast$dir2make, void($\ast$on\+\_\+item)(const char $\ast$), int($\ast$mk\+\_\+dir)(char $\ast$))
+\begin{DoxyCompactList}\small\item\em Advanced extraction function. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a95a13effaf0c90322b07d3df688338df}{MPARC\+\_\+extract}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$destdir, char $\ast$$\ast$dir2make)
+\begin{DoxyCompactList}\small\item\em Simple version of MPARC\+\_\+extract\+\_\+advance. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a0031c4afce4930f91d63017bddae08e7}{MPARC\+\_\+readdir}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$srcdir, int recursive, int($\ast$listdir)(char $\ast$, int, char $\ast$$\ast$))
+\begin{DoxyCompactList}\small\item\em Read a directory into the structure. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_aa9f7070ca13873d607746faf7f12486f}{MPARC\+\_\+parse\+\_\+str\+\_\+advance}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$stringy, int erronduplicate)
+\begin{DoxyCompactList}\small\item\em Parse the archive into the structure with extra flags. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a19c08df623586464196d7ad99cd4b68b}{MPARC\+\_\+parse\+\_\+str}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$stringy)
+\begin{DoxyCompactList}\small\item\em Parse the archive into the structure, a simpler version of MPARC\+\_\+parse\+\_\+str\+\_\+advance. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a10a53d66991368ae2ae051f485d8a728}{MPARC\+\_\+parse\+\_\+filestream}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, FILE $\ast$fpstream)
+\begin{DoxyCompactList}\small\item\em Parse the opened file stream archive into the structure. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} \mbox{\hyperlink{mparc_8h_a3f22125e32bc318875eec834e9b4e236}{MPARC\+\_\+parse\+\_\+filename}} (\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$structure, char $\ast$filename)
+\begin{DoxyCompactList}\small\item\em Parse the archive file from the filename into the structure. \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{mparc_8h_a397599ed1504ab0b9ad7a5c945c359ba}{MPARC\+\_\+malloc}} (\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} size)
+\begin{DoxyCompactList}\small\item\em My malloc, for easy plug and switch. Extensions should use this instead of malloc. \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{mparc_8h_ab23a5170998401c4b3852fe54d4374a3}{MPARC\+\_\+calloc}} (\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} arr\+\_\+size, size\+\_\+t el\+\_\+size)
+\begin{DoxyCompactList}\small\item\em My calloc, for easy plug and switch. Extensions should use this instead of calloc. \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{mparc_8h_a1bbdf1d27c7dbf8c222535770fb5323f}{MPARC\+\_\+realloc}} (void $\ast$oldmem, \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} newsize)
+\begin{DoxyCompactList}\small\item\em My realloc, for easy plug and switch. Extensions should use this instead of realloc. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{mparc_8h_a95d02449201605a28ce5143bc19b1abc}{MPARC\+\_\+free}} (void $\ast$mem)
+\begin{DoxyCompactList}\small\item\em My free, for easy plug and switch. Extensions should use this instead of free. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{mparc_8h_aab06ea978e0ab92f8b5086607fa9e4f4}{MPARC\+\_\+\+MXPSQL\+\_\+\+MPARC\+\_\+t\+\_\+sizeof}} ()
+\begin{DoxyCompactList}\small\item\em Get sizeof \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}}. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{mparc_8h_a2666d0b1108a0727558b73f2e5ad53d1}{MPARC\+\_\+\+MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t\+\_\+sizeof}} ()
+\begin{DoxyCompactList}\small\item\em Get sizeof \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}}. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{mparc_8h_ab66f0b019f568c262b41520c209159ea}{MPARC\+\_\+strnlen}} (const char $\ast$str, size\+\_\+t maxlen)
+\begin{DoxyCompactList}\small\item\em My strlen for portability. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{mparc_8h_a13e565e42b5f37b7307260afbc958312}{MPARC\+\_\+strtok\+\_\+r}} (char $\ast$s, const char $\ast$delim, char $\ast$$\ast$save\+\_\+ptr)
+\begin{DoxyCompactList}\small\item\em Strtok Safe Edition. \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{mparc_8h_ad0e52e267c7096327e368e249c1f51fd}{MPARC\+\_\+memdup}} (const void $\ast$src, size\+\_\+t len)
+\begin{DoxyCompactList}\small\item\em Copy memory. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{mparc_8h_a9c4e26f8545ca1670f968821602f9dc2}{MPARC\+\_\+strndup}} (const char $\ast$src, size\+\_\+t ilen)
+\begin{DoxyCompactList}\small\item\em Copy string with length limits. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{mparc_8h_a1594c0be7e62d1541f058feb7cbfa262}{MPARC\+\_\+strdup}} (const char $\ast$src)
+\begin{DoxyCompactList}\small\item\em Copy string with no length limits. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{mparc_8h_a3a202a71270a2d8faf571af197e42e6e}{MPARC\+\_\+basename}} (const char $\ast$filename)
+\begin{DoxyCompactList}\small\item\em Get the basename of the file paht. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{mparc_8h_ac62666bee60ef27ce66c4fb3361a467f}{MPARC\+\_\+dirname}} (char $\ast$path)
+\begin{DoxyCompactList}\small\item\em Get directory. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{mparc_8h_a1d9ab18fe1541bbb781847327dc66475}{MPARC\+\_\+get\+\_\+extension}} (const char $\ast$fnp, int full\+\_\+or\+\_\+not)
+\begin{DoxyCompactList}\small\item\em Get the extension. Dodgy implementation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header With Implementation. Never reeterant, thread and async safe, probably. 
+
+MPARC, A Dumb Archiver Format C Rewrite Of MPAR. Test file.
+
+\begin{DoxyAuthor}{Author}
+MXPSQL 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+0.\+1 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2022-\/09-\/26
+\end{DoxyDate}
+\begin{DoxyCopyright}{Copyright}
+
+\end{DoxyCopyright}
+Licensed To You Under Teh MIT License and the LGPL-\/2.\+1-\/Or-\/\+Later License
+
+MIT License
+
+Copyright (c) 2022 MXPSQL
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \char`\"{}\+Software\char`\"{}), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions\+:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED \char`\"{}\+AS IS\char`\"{}, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+MPARC, A rewrite of MPAR IN C, a dumb archiver format Copyright (C) 2022 MXPSQL
+
+This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.\+1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-\/1301 USA 
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{mparc_8h_a07c83537b86c7bd755c69f0dc234d291}\label{mparc_8h_a07c83537b86c7bd755c69f0dc234d291}} 
+\index{mparc.h@{mparc.h}!MXPSQL\_MPARC\_iter\_t@{MXPSQL\_MPARC\_iter\_t}}
+\index{MXPSQL\_MPARC\_iter\_t@{MXPSQL\_MPARC\_iter\_t}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MXPSQL\_MPARC\_iter\_t}{MXPSQL\_MPARC\_iter\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}} \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}}}
+
+
+
+Ptr type of the iterator, should be initialized to null on first use. 
+
+This should be initialized to NULL to prevent problems with uninitialized value.
+
+Don\textquotesingle{}t ever try to dereference this thing.
+
+This can never be declared as a non pointer object. \mbox{\Hypertarget{mparc_8h_af86786ca7b4ba1464c419b034cd238d3}\label{mparc_8h_af86786ca7b4ba1464c419b034cd238d3}} 
+\index{mparc.h@{mparc.h}!MXPSQL\_MPARC\_t@{MXPSQL\_MPARC\_t}}
+\index{MXPSQL\_MPARC\_t@{MXPSQL\_MPARC\_t}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MXPSQL\_MPARC\_t}{MXPSQL\_MPARC\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}}}
+
+
+
+Ptr type of the archive, should be initialized to null on first use. 
+
+This should be initialized to NULL to prevent problems with uninitialized value.
+
+Don\textquotesingle{}t ever try to dereference this thing.
+
+This can never be declared as a non pointer object.
+
+Not atomic or thread safe (never aim to be that for C99 suport and portability, you do it yourself with platform threads (pthreads, winapi threads or C11 threads if you can)). \mbox{\Hypertarget{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}\label{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}} 
+\index{mparc.h@{mparc.h}!MXPSQL\_MPARC\_uint\_repr\_t@{MXPSQL\_MPARC\_uint\_repr\_t}}
+\index{MXPSQL\_MPARC\_uint\_repr\_t@{MXPSQL\_MPARC\_uint\_repr\_t}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MXPSQL\_MPARC\_uint\_repr\_t}{MXPSQL\_MPARC\_uint\_repr\_t}}
+{\footnotesize\ttfamily typedef uint\+\_\+fast64\+\_\+t \mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}}}
+
+
+
+Typedef our uint representation to make it easy to refactor. 
+
+This is currently typedef\textquotesingle{}d to uint\+\_\+fast64\+\_\+t, but we can switch to unsigned long long or size\+\_\+t 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}} 
+\index{mparc.h@{mparc.h}!MXPSQL\_MPARC\_err@{MXPSQL\_MPARC\_err}}
+\index{MXPSQL\_MPARC\_err@{MXPSQL\_MPARC\_err}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MXPSQL\_MPARC\_err}{MXPSQL\_MPARC\_err}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}}}
+
+
+
+Error states, these are self explanatory. But I give them brief anyways. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_OK@{MPARC\_OK}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_OK@{MPARC\_OK}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca53d49c284005c01c8d5264038cbbcf2f}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca53d49c284005c01c8d5264038cbbcf2f}} 
+MPARC\+\_\+\+OK&Everything\textquotesingle{}s fine. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_IDK@{MPARC\_IDK}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_IDK@{MPARC\_IDK}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca46e0176fd1005f9135ee03aa01bd7e5e}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca46e0176fd1005f9135ee03aa01bd7e5e}} 
+MPARC\+\_\+\+IDK&Generic error. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_INTERNAL@{MPARC\_INTERNAL}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_INTERNAL@{MPARC\_INTERNAL}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cafe2b876879ed2597966705c23237b93b}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cafe2b876879ed2597966705c23237b93b}} 
+MPARC\+\_\+\+INTERNAL&Internal problem, not used. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_NULL@{MPARC\_NULL}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_NULL@{MPARC\_NULL}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385}} 
+MPARC\+\_\+\+NULL&NULL input. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_IVAL@{MPARC\_IVAL}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_IVAL@{MPARC\_IVAL}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cac45bcdf666c138541d02f21d9fa499cf}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cac45bcdf666c138541d02f21d9fa499cf}} 
+MPARC\+\_\+\+IVAL&Invalid value or generic but more specific errors than MPARC\+\_\+\+IDK. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_KNOEXIST@{MPARC\_KNOEXIST}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_KNOEXIST@{MPARC\_KNOEXIST}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca08d01838a3e0e8e9f612887427522302}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca08d01838a3e0e8e9f612887427522302}} 
+MPARC\+\_\+\+KNOEXIST&Key does not exist. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_KEXISTS@{MPARC\_KEXISTS}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_KEXISTS@{MPARC\_KEXISTS}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100caa08f4bd6a058077df51796db882b8a1a}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100caa08f4bd6a058077df51796db882b8a1a}} 
+MPARC\+\_\+\+KEXISTS&Key exists. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_OOM@{MPARC\_OOM}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_OOM@{MPARC\_OOM}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cadfdaf1581ab1118463f7c7483fdf6264}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100cadfdaf1581ab1118463f7c7483fdf6264}} 
+MPARC\+\_\+\+OOM&Out Of Memory! \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_NOTARCHIVE@{MPARC\_NOTARCHIVE}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_NOTARCHIVE@{MPARC\_NOTARCHIVE}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca}} 
+MPARC\+\_\+\+NOTARCHIVE&The archive you provided is actually not an archive determined by the 25 character long MAGIC NUMBER or some other factor, but most likely the magic number. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_ARCHIVETOOSHINY@{MPARC\_ARCHIVETOOSHINY}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_ARCHIVETOOSHINY@{MPARC\_ARCHIVETOOSHINY}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324}} 
+MPARC\+\_\+\+ARCHIVETOOSHINY&The format version of the archive is too new to be digested. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_CHKSUM@{MPARC\_CHKSUM}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_CHKSUM@{MPARC\_CHKSUM}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e}} 
+MPARC\+\_\+\+CHKSUM&CRC checksum check and comparison failed. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_CONSTRUCT\_FAIL@{MPARC\_CONSTRUCT\_FAIL}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_CONSTRUCT\_FAIL@{MPARC\_CONSTRUCT\_FAIL}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4}} 
+MPARC\+\_\+\+CONSTRUCT\+\_\+\+FAIL&Failure to construct archive. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_OPPART@{MPARC\_OPPART}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_OPPART@{MPARC\_OPPART}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f}} 
+MPARC\+\_\+\+OPPART&Operation not complete. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MPARC\_FERROR@{MPARC\_FERROR}!mparc.h@{mparc.h}}\index{mparc.h@{mparc.h}!MPARC\_FERROR@{MPARC\_FERROR}}}\mbox{\Hypertarget{mparc_8h_ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa}\label{mparc_8h_ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa}} 
+MPARC\+\_\+\+FERROR&FILE$\ast$ seems to be having problems as ferror reports true or just that something is wrong with the archive itself. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{mparc_8h_a3a202a71270a2d8faf571af197e42e6e}\label{mparc_8h_a3a202a71270a2d8faf571af197e42e6e}} 
+\index{mparc.h@{mparc.h}!MPARC\_basename@{MPARC\_basename}}
+\index{MPARC\_basename@{MPARC\_basename}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_basename()}{MPARC\_basename()}}
+{\footnotesize\ttfamily char $\ast$ MPARC\+\_\+basename (\begin{DoxyParamCaption}\item[{const char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+
+
+Get the basename of the file paht. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & file path \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char$\ast$ Base name of filename
+\end{DoxyReturn}
+On unix, it is strrchr\textquotesingle{}d on \textquotesingle{}/\textquotesingle{} only.
+
+On windows, it is not only strrchr\textquotesingle{}d on \textquotesingle{}/\textquotesingle{}, it is also strchrr\textquotesingle{}d on \textquotesingle{}\textbackslash{}\textquotesingle{} (How you say the \textbackslash{} character on C) \mbox{\Hypertarget{mparc_8h_ab23a5170998401c4b3852fe54d4374a3}\label{mparc_8h_ab23a5170998401c4b3852fe54d4374a3}} 
+\index{mparc.h@{mparc.h}!MPARC\_calloc@{MPARC\_calloc}}
+\index{MPARC\_calloc@{MPARC\_calloc}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_calloc()}{MPARC\_calloc()}}
+{\footnotesize\ttfamily void $\ast$ MPARC\+\_\+calloc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}}}]{arr\+\_\+size,  }\item[{size\+\_\+t}]{el\+\_\+size }\end{DoxyParamCaption})}
+
+
+
+My calloc, for easy plug and switch. Extensions should use this instead of calloc. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em arr\+\_\+size} & size of array (if applicable, else put 1) \\
+\hline
+{\em el\+\_\+size} & size of element \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void$\ast$ allocated memory pointer
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+MPARC\+\_\+calloc has its pitfalls. Don\textquotesingle{}t fall for it. ~\newline
+ Right now is using C\textquotesingle{}s calloc, so it is at the mercy of that function as calloc has flaws. ~\newline
+ Allocating a zero sized object with MPARC\+\_\+calloc, danger is from that it is implementation defined. 
+\end{DoxyNote}
+\mbox{\Hypertarget{mparc_8h_aa1dfba39ba919efbeb4013e791d918ef}\label{mparc_8h_aa1dfba39ba919efbeb4013e791d918ef}} 
+\index{mparc.h@{mparc.h}!MPARC\_clear\_file@{MPARC\_clear\_file}}
+\index{MPARC\_clear\_file@{MPARC\_clear\_file}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_clear\_file()}{MPARC\_clear\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+clear\+\_\+file (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure }\end{DoxyParamCaption})}
+
+
+
+Wipe everything (I mean every single file) off the archive. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a94c4c474b5f2f5e9f77bc67510f604da}\label{mparc_8h_a94c4c474b5f2f5e9f77bc67510f604da}} 
+\index{mparc.h@{mparc.h}!MPARC\_construct\_filename@{MPARC\_construct\_filename}}
+\index{MPARC\_construct\_filename@{MPARC\_construct\_filename}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_construct\_filename()}{MPARC\_construct\_filename()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+construct\+\_\+filename (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+
+
+Construct the archive into a file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filename} & the filename target \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_aa125160bff8db1ddf1b8bb0aba864b74}\label{mparc_8h_aa125160bff8db1ddf1b8bb0aba864b74}} 
+\index{mparc.h@{mparc.h}!MPARC\_construct\_filestream@{MPARC\_construct\_filestream}}
+\index{MPARC\_construct\_filestream@{MPARC\_construct\_filestream}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_construct\_filestream()}{MPARC\_construct\_filestream()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+construct\+\_\+filestream (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{FILE $\ast$}]{fpstream }\end{DoxyParamCaption})}
+
+
+
+Construct the archive into a file stream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em fpstream} & the file stream, should be opened in \char`\"{}rb\char`\"{} mode \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+fpstream should be closed and opened manually 
+\end{DoxyNote}
+\mbox{\Hypertarget{mparc_8h_a5b17c807bb2fa6e05ac4130112ce6643}\label{mparc_8h_a5b17c807bb2fa6e05ac4130112ce6643}} 
+\index{mparc.h@{mparc.h}!MPARC\_construct\_str@{MPARC\_construct\_str}}
+\index{MPARC\_construct\_str@{MPARC\_construct\_str}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_construct\_str()}{MPARC\_construct\_str()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+construct\+\_\+str (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$$\ast$}]{output }\end{DoxyParamCaption})}
+
+
+
+Construct the archive into a string. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em output} & the storage string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+manually free output string with \textquotesingle{}MPARC\+\_\+free\textquotesingle{}, not \textquotesingle{}free\textquotesingle{} or \textquotesingle{}delete\textquotesingle{} for forward compatibility.
+\end{DoxyNote}
+Construct the archive into a string.
+
+SEE THIS TO SEE THE FILE FORMAT OF THE ARCHIVE THIS PART IS IMPORTANT TO SEE HOW IT IS IMPLEMENTED AND THE FORMAT
+
+How is the file constructed (along with little parsing information to make your own parser)\+:
+
+
+\begin{DoxyEnumerate}
+\item Build the header\+: \begin{DoxyVerb} Format: 
+     MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE]
+
+ The ';' character separates the Magic numbers (very long with 25 character I think) from the version number and json metadata
+
+ The '$' character separates the version and magic numbers from the metadata
+
+ The '>' character works to indicate the start of entries
+ The newline is an anomaly though, but just put it in there
+
+ JSON_WHATEV_METADATA can be implementation defined
+ This C implementation will ignore any extra metadata
+
+ Construction note:
+ Make sure to base64 your metadata entries to prevent issues with parsing.
+
+ Parsing tips:
+ Split ';' from the whole archive to get the magic number first
+ Then split '>' from to get the special info header
+ The split '$' from the special info header to get the version and extra metadata
+\end{DoxyVerb}
+
+\item Build the entries \begin{DoxyVerb} Format: 
+     [CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]
+
+ The '%' character is to separate the checksum of the JSON from the JSON itself
+
+ You can add other metadata like date of creation, but there must be the entries "filename", "blob" and "crcsum" in the JSON
+ This C implementation will ignore any extra metadata.
+
+ "filename" should contain the filename. (don't do any effects and magic on this field called "filename")
+ "blob" should contain the base64 of the binary or text file. (base64 to make it a text file and not binary)
+ "crcsum" should contain the CRC32 checksum of the content of "blob" after converting it back to it's original form. ("blob" but wihtout base64)
+
+ Repeat this as required (how many entries are there you repeat)
+
+ Construction note:
+ The anomaly mention aboved is because the newline is added before the main content
+
+ Parsing note:
+     When parsing the entries, split from the begin '>' marker first, and then the end '@' marker.
+     Then split each by newlines.
+     Ignore if a line start with '#' (EXACTLY WITH THAT CHARACTER, there must not even be any whitespace before it), a comment marker. Also ignore if a line is empty.
+     Then, foreach split '%' to get the crc and json.
+     Then compare the JSON to the crc.
+     Then parse the JSON as usual.
+
+ You could parse extra info in your implementation, but this C Based implementation will ignore extra ones. I repeat this line again.
+\end{DoxyVerb}
+
+\item Build the footer \begin{DoxyVerb} Format: 
+     @~
+
+ the '@' character is to signify end of entry
+ the '~' character is to signify end of file
+
+ Parsing note:
+ Make sure to not have anything beyond the footer, not even a newline.
+\end{DoxyVerb}
+
+\end{DoxyEnumerate}
+
+Final note\+: This file should not have binary characters.
+
+Follow this (with placeholder) and you get this\+: \begin{DoxyVerb}MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}>[NEWLINE][CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]@~
+\end{DoxyVerb}
+
+
+A real single entried one\+: \begin{DoxyVerb}MXPSQL's Portable Archive;1${"WhatsThis": "MPARC Logo lmao-Hahahaha"}>  
+134131812%{"filename":"./LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
+\end{DoxyVerb}
+
+
+A real (much more real) multi entried one\+: \begin{DoxyVerb}MXPSQL's Portable Archive;1${}>  
+3601911152%{"filename":"LICENSE","blob":"U2VlIExJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgYW5kIGNob29zZSBvbmUgb2YgdGhlbS4KCkxJQ0VOU0UuTEdQTCBjb250YWlucyBMR1BMLTIuMS1vci1sYXRlciBsaWNlbnNlLgpMSUNFTlNFLk1JVCBjb250YWlucyBNSVQgbGljZW5zZS4KCkxJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgc2hvdWxkIGJlIGRpc3RyaWJ1dGVkIHRvZ2V0aGVyIHdpdGggeW91ciBjb3B5LCBpZiBub3QsIHNvbWV0aGluZyBpcyB3cm9uZy4=","crcsum":"404921597"}  
+59879441%{"filename":"LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
+\end{DoxyVerb}
+ \mbox{\Hypertarget{mparc_8h_a6da21dcbf030cec0307ad7bfd3ea4f48}\label{mparc_8h_a6da21dcbf030cec0307ad7bfd3ea4f48}} 
+\index{mparc.h@{mparc.h}!MPARC\_copy@{MPARC\_copy}}
+\index{MPARC\_copy@{MPARC\_copy}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_copy()}{MPARC\_copy()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+copy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$$\ast$}]{structure,  }\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$$\ast$}]{targetdest }\end{DoxyParamCaption})}
+
+
+
+Initialize structure by copying. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure for copying \\
+\hline
+{\em targetdest} & the destination target structure to be overwritten \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a5a278819906e49b1155ee23cd2f3ad33}\label{mparc_8h_a5a278819906e49b1155ee23cd2f3ad33}} 
+\index{mparc.h@{mparc.h}!MPARC\_destroy@{MPARC\_destroy}}
+\index{MPARC\_destroy@{MPARC\_destroy}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_destroy()}{MPARC\_destroy()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$$\ast$}]{structure }\end{DoxyParamCaption})}
+
+
+
+Tear down structure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_ac62666bee60ef27ce66c4fb3361a467f}\label{mparc_8h_ac62666bee60ef27ce66c4fb3361a467f}} 
+\index{mparc.h@{mparc.h}!MPARC\_dirname@{MPARC\_dirname}}
+\index{MPARC\_dirname@{MPARC\_dirname}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_dirname()}{MPARC\_dirname()}}
+{\footnotesize\ttfamily char $\ast$ MPARC\+\_\+dirname (\begin{DoxyParamCaption}\item[{char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+Get directory. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & file path \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char$\ast$ the directory path without the filename 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a40c04532243f85a4946b1ea1a7bc7aa8}\label{mparc_8h_a40c04532243f85a4946b1ea1a7bc7aa8}} 
+\index{mparc.h@{mparc.h}!MPARC\_duplicate\_file@{MPARC\_duplicate\_file}}
+\index{MPARC\_duplicate\_file@{MPARC\_duplicate\_file}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_duplicate\_file()}{MPARC\_duplicate\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+duplicate\+\_\+file (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{int}]{overwrite,  }\item[{char $\ast$}]{srcfile,  }\item[{char $\ast$}]{destfile }\end{DoxyParamCaption})}
+
+
+
+Duplicate an entry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em overwrite} & you want to overwrite? set to a non zero value. No overwrite? then set to 0 \\
+\hline
+{\em srcfile} & the source file to duplicate from. \\
+\hline
+{\em destfile} & the destination file \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err Yes.
+\end{DoxyReturn}
+Internally implemented with MPARC\+\_\+push\+\_\+ufilestr and MPARC\+\_\+peek\+\_\+file \mbox{\Hypertarget{mparc_8h_ae8ef340b41eb2b0e988fd6a2dd76c5cc}\label{mparc_8h_ae8ef340b41eb2b0e988fd6a2dd76c5cc}} 
+\index{mparc.h@{mparc.h}!MPARC\_exists@{MPARC\_exists}}
+\index{MPARC\_exists@{MPARC\_exists}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_exists()}{MPARC\_exists()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+exists (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{const char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+
+
+Check if file entry exists. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filename} & the filename to check \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done or errors out 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a95a13effaf0c90322b07d3df688338df}\label{mparc_8h_a95a13effaf0c90322b07d3df688338df}} 
+\index{mparc.h@{mparc.h}!MPARC\_extract@{MPARC\_extract}}
+\index{MPARC\_extract@{MPARC\_extract}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_extract()}{MPARC\_extract()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+extract (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{destdir,  }\item[{char $\ast$$\ast$}]{dir2make }\end{DoxyParamCaption})}
+
+
+
+Simple version of MPARC\+\_\+extract\+\_\+advance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em destdir} & the destination directory \\
+\hline
+{\em dir2make} & NULL if there is no directory to make, not NULL if it needs you to make a directory \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err error status of extraction, some codes are special, see MPARC\+\_\+extract\+\_\+advance for more info
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_ae4700ba79f9bb8d8f93b71d88c442239}{MPARC\+\_\+extract\+\_\+advance}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_ae4700ba79f9bb8d8f93b71d88c442239}\label{mparc_8h_ae4700ba79f9bb8d8f93b71d88c442239}} 
+\index{mparc.h@{mparc.h}!MPARC\_extract\_advance@{MPARC\_extract\_advance}}
+\index{MPARC\_extract\_advance@{MPARC\_extract\_advance}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_extract\_advance()}{MPARC\_extract\_advance()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+extract\+\_\+advance (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{destdir,  }\item[{char $\ast$$\ast$}]{dir2make,  }\item[{void($\ast$)(const char $\ast$)}]{on\+\_\+item,  }\item[{int($\ast$)(char $\ast$)}]{mk\+\_\+dir }\end{DoxyParamCaption})}
+
+
+
+Advanced extraction function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em destdir} & the destination directory \\
+\hline
+{\em dir2make} & NULL if there is no directory to make, not NULL if it needs you to make a directory \\
+\hline
+{\em on\+\_\+item} & invoked everytime a new item is iterated over \\
+\hline
+{\em mk\+\_\+dir} & invoked when directory is needed to be created, return 0 on success, non-\/zero on error. Overrides dir2make. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err error status, some code are special, see details
+\end{DoxyReturn}
+if the error code returns MPARC\+\_\+\+OPPART, check dir2make to see if it needs you to make a new directory \mbox{\Hypertarget{mparc_8h_a0d77b86222a2630f482dc038b149e553}\label{mparc_8h_a0d77b86222a2630f482dc038b149e553}} 
+\index{mparc.h@{mparc.h}!MPARC\_fperror@{MPARC\_fperror}}
+\index{MPARC\_fperror@{MPARC\_fperror}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_fperror()}{MPARC\_fperror()}}
+{\footnotesize\ttfamily int MPARC\+\_\+fperror (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}}}]{err,  }\item[{FILE $\ast$}]{fileptrstream }\end{DoxyParamCaption})}
+
+
+
+Print the error message of your stream of choice. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em err} & error code \\
+\hline
+{\em fileptrstream} & stream of your choice \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Level of error
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_acccb962b77cce1fe50cb5fde3bf50051}{MPARC\+\_\+sfperror}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_a95d02449201605a28ce5143bc19b1abc}\label{mparc_8h_a95d02449201605a28ce5143bc19b1abc}} 
+\index{mparc.h@{mparc.h}!MPARC\_free@{MPARC\_free}}
+\index{MPARC\_free@{MPARC\_free}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_free()}{MPARC\_free()}}
+{\footnotesize\ttfamily void MPARC\+\_\+free (\begin{DoxyParamCaption}\item[{void $\ast$}]{mem }\end{DoxyParamCaption})}
+
+
+
+My free, for easy plug and switch. Extensions should use this instead of free. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mem} & memory to free\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+
+\end{DoxyNote}
+MPARC\+\_\+free has its pitfalls. Don\textquotesingle{}t fall for it. ~\newline
+ Right now is using C\textquotesingle{}s free, so it is at the mercy of that function as free has flaws. ~\newline
+ Common one\+: ~\newline
+ Double free, danger is that it is undefined behaviour to do so. ~\newline
+ Free not allocated memory, danger is that it is also undefined behaviour to do so. ~\newline
+ Not freeing memory if you are done with it, danger is that you played yourself with memory leaks. \mbox{\Hypertarget{mparc_8h_a1d9ab18fe1541bbb781847327dc66475}\label{mparc_8h_a1d9ab18fe1541bbb781847327dc66475}} 
+\index{mparc.h@{mparc.h}!MPARC\_get\_extension@{MPARC\_get\_extension}}
+\index{MPARC\_get\_extension@{MPARC\_get\_extension}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_get\_extension()}{MPARC\_get\_extension()}}
+{\footnotesize\ttfamily char $\ast$ MPARC\+\_\+get\+\_\+extension (\begin{DoxyParamCaption}\item[{const char $\ast$}]{fnp,  }\item[{int}]{full\+\_\+or\+\_\+not }\end{DoxyParamCaption})}
+
+
+
+Get the extension. Dodgy implementation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fnp} & file path with extension \\
+\hline
+{\em full\+\_\+or\+\_\+not} & if set to 0, strip from the last \textquotesingle{}.\textquotesingle{}, else strip from the first \textquotesingle{}.\textquotesingle{} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char$\ast$ the extension 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a1fe7a9487c96376771cec41e72f1fbf7}\label{mparc_8h_a1fe7a9487c96376771cec41e72f1fbf7}} 
+\index{mparc.h@{mparc.h}!MPARC\_init@{MPARC\_init}}
+\index{MPARC\_init@{MPARC\_init}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_init()}{MPARC\_init()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$$\ast$}]{structure }\end{DoxyParamCaption})}
+
+
+
+Initialize sturcture. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a70b485272c72704901ab0e2c54d40820}\label{mparc_8h_a70b485272c72704901ab0e2c54d40820}} 
+\index{mparc.h@{mparc.h}!MPARC\_list\_array@{MPARC\_list\_array}}
+\index{MPARC\_list\_array@{MPARC\_list\_array}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_list\_array()}{MPARC\_list\_array()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+list\+\_\+array (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$$\ast$$\ast$}]{listout,  }\item[{\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} $\ast$}]{length }\end{DoxyParamCaption})}
+
+
+
+List out the current files included as an array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em listout} & the output list \\
+\hline
+{\em length} & the length of listout \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Free listout manually with MPARC\+\_\+list\+\_\+array\+\_\+free, not \textquotesingle{}free\textquotesingle{} or \textquotesingle{}delete\textquotesingle{} for forward compatibility. Using \textquotesingle{}MPARC\+\_\+free\textquotesingle{} would get you memory leaks instead.
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_a70b485272c72704901ab0e2c54d40820}{MPARC\+\_\+list\+\_\+array}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_abc033ce1084b6c7e42ebfa2415ccd160}\label{mparc_8h_abc033ce1084b6c7e42ebfa2415ccd160}} 
+\index{mparc.h@{mparc.h}!MPARC\_list\_array\_free@{MPARC\_list\_array\_free}}
+\index{MPARC\_list\_array\_free@{MPARC\_list\_array\_free}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_list\_array\_free()}{MPARC\_list\_array\_free()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+list\+\_\+array\+\_\+free (\begin{DoxyParamCaption}\item[{char $\ast$$\ast$$\ast$}]{list }\end{DoxyParamCaption})}
+
+
+
+Utility function that free the list that you created with MPARC\+\_\+list\+\_\+array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & the list you got \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err successful?
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_a70b485272c72704901ab0e2c54d40820}{MPARC\+\_\+list\+\_\+array}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_abdd468971dbef0efc6ff7b12a80ed11b}\label{mparc_8h_abdd468971dbef0efc6ff7b12a80ed11b}} 
+\index{mparc.h@{mparc.h}!MPARC\_list\_foreach@{MPARC\_list\_foreach}}
+\index{MPARC\_list\_foreach@{MPARC\_list\_foreach}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_list\_foreach()}{MPARC\_list\_foreach()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+list\+\_\+foreach (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{int $\ast$}]{cb\+\_\+aborted,  }\item[{\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}}($\ast$)(\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$, const char $\ast$)}]{callback }\end{DoxyParamCaption})}
+
+
+
+Foreach, with call backs. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em cb\+\_\+aborted} & a flag that indicated if an error code resulted from abortion request or an internal error. Can be NULL. \\
+\hline
+{\em callback} & callback function that gets called on every iteration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done. MPARC\+\_\+\+OK if successfull, other error codes if aborted (dependent on callback).
+\end{DoxyReturn}
+For the callback function\+:
+
+To continue an iteration, return MPARC\+\_\+\+OK.
+
+To abort the loop, return any other values in MXPSQL\+\_\+\+MPARC\+\_\+err other than MPARC\+\_\+\+OK. cb\+\_\+aborted is set to 1 and the value is returned from callback.
+
+Other details\+:
+
+If an internal error occurs, the error code corresponding to the error is returned, but cb\+\_\+aborted is set to 0. \mbox{\Hypertarget{mparc_8h_af69cf2c23d9a3d0f4a175c7c1dc8af2e}\label{mparc_8h_af69cf2c23d9a3d0f4a175c7c1dc8af2e}} 
+\index{mparc.h@{mparc.h}!MPARC\_list\_iterator\_destroy@{MPARC\_list\_iterator\_destroy}}
+\index{MPARC\_list\_iterator\_destroy@{MPARC\_list\_iterator\_destroy}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_list\_iterator\_destroy()}{MPARC\_list\_iterator\_destroy()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+list\+\_\+iterator\+\_\+destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}} $\ast$$\ast$}]{iterator }\end{DoxyParamCaption})}
+
+
+
+Destroy the iterator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em iterator} & the target iterator \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a984c02b5c1b6a21cfbe863364f78208b}\label{mparc_8h_a984c02b5c1b6a21cfbe863364f78208b}} 
+\index{mparc.h@{mparc.h}!MPARC\_list\_iterator\_init@{MPARC\_list\_iterator\_init}}
+\index{MPARC\_list\_iterator\_init@{MPARC\_list\_iterator\_init}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_list\_iterator\_init()}{MPARC\_list\_iterator\_init()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+list\+\_\+iterator\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$$\ast$}]{structure,  }\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}} $\ast$$\ast$}]{iterator }\end{DoxyParamCaption})}
+
+
+
+Initialize the iterator that list the current files included. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em iterator} & the target iterator \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a0e2b9d912b91cac836a472009257f732}\label{mparc_8h_a0e2b9d912b91cac836a472009257f732}} 
+\index{mparc.h@{mparc.h}!MPARC\_list\_iterator\_next@{MPARC\_list\_iterator\_next}}
+\index{MPARC\_list\_iterator\_next@{MPARC\_list\_iterator\_next}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_list\_iterator\_next()}{MPARC\_list\_iterator\_next()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+list\+\_\+iterator\+\_\+next (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}} $\ast$$\ast$}]{iterator,  }\item[{const char $\ast$$\ast$}]{outnam }\end{DoxyParamCaption})}
+
+
+
+Update the state of the iterator to point to the next one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em iterator} & the target iterator \\
+\hline
+{\em outnam} & output string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err
+\end{DoxyReturn}
+If it returns KMPARC\+\_\+\+NOEXIST, the iterator has reached the end \mbox{\Hypertarget{mparc_8h_a397599ed1504ab0b9ad7a5c945c359ba}\label{mparc_8h_a397599ed1504ab0b9ad7a5c945c359ba}} 
+\index{mparc.h@{mparc.h}!MPARC\_malloc@{MPARC\_malloc}}
+\index{MPARC\_malloc@{MPARC\_malloc}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_malloc()}{MPARC\_malloc()}}
+{\footnotesize\ttfamily void $\ast$ MPARC\+\_\+malloc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}}}]{size }\end{DoxyParamCaption})}
+
+
+
+My malloc, for easy plug and switch. Extensions should use this instead of malloc. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em size} & size of bytes to allocate \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void$\ast$ allocated memory pointer
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+MPARC\+\_\+malloc has its pitfalls. Don\textquotesingle{}t fall for it. ~\newline
+ Right now is using C\textquotesingle{}s malloc, so it is at the mercy of that function as malloc has flaws. ~\newline
+ Allocating a zero sized object with MPARC\+\_\+\+Malloc, danger is from that it is implementation defined. 
+\end{DoxyNote}
+\mbox{\Hypertarget{mparc_8h_ad0e52e267c7096327e368e249c1f51fd}\label{mparc_8h_ad0e52e267c7096327e368e249c1f51fd}} 
+\index{mparc.h@{mparc.h}!MPARC\_memdup@{MPARC\_memdup}}
+\index{MPARC\_memdup@{MPARC\_memdup}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_memdup()}{MPARC\_memdup()}}
+{\footnotesize\ttfamily void $\ast$ MPARC\+\_\+memdup (\begin{DoxyParamCaption}\item[{const void $\ast$}]{src,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+
+
+Copy memory. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & source memory bytes, interpreted as unsigned char$\ast$ \\
+\hline
+{\em len} & length of src \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void$\ast$ duplicated value, interpreted as unsigned char$\ast$
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Use MPARC\+\_\+free to deallocate instead of \textquotesingle{}free\textquotesingle{} and \textquotesingle{}delete\textquotesingle{} for forward compatibility.
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_ad0e52e267c7096327e368e249c1f51fd}{MPARC\+\_\+memdup}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_a2666d0b1108a0727558b73f2e5ad53d1}\label{mparc_8h_a2666d0b1108a0727558b73f2e5ad53d1}} 
+\index{mparc.h@{mparc.h}!MPARC\_MXPSQL\_MPARC\_iter\_t\_sizeof@{MPARC\_MXPSQL\_MPARC\_iter\_t\_sizeof}}
+\index{MPARC\_MXPSQL\_MPARC\_iter\_t\_sizeof@{MPARC\_MXPSQL\_MPARC\_iter\_t\_sizeof}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_MXPSQL\_MPARC\_iter\_t\_sizeof()}{MPARC\_MXPSQL\_MPARC\_iter\_t\_sizeof()}}
+{\footnotesize\ttfamily size\+\_\+t MPARC\+\_\+\+MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t\+\_\+sizeof (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get sizeof \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}}. 
+
+\begin{DoxyReturn}{Returns}
+size\+\_\+t sizeof(\+MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t)
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__iter__t}{MXPSQL\+\_\+\+MPARC\+\_\+iter\+\_\+t}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_aab06ea978e0ab92f8b5086607fa9e4f4}\label{mparc_8h_aab06ea978e0ab92f8b5086607fa9e4f4}} 
+\index{mparc.h@{mparc.h}!MPARC\_MXPSQL\_MPARC\_t\_sizeof@{MPARC\_MXPSQL\_MPARC\_t\_sizeof}}
+\index{MPARC\_MXPSQL\_MPARC\_t\_sizeof@{MPARC\_MXPSQL\_MPARC\_t\_sizeof}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_MXPSQL\_MPARC\_t\_sizeof()}{MPARC\_MXPSQL\_MPARC\_t\_sizeof()}}
+{\footnotesize\ttfamily size\+\_\+t MPARC\+\_\+\+MXPSQL\+\_\+\+MPARC\+\_\+t\+\_\+sizeof (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get sizeof \mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}}. 
+
+\begin{DoxyReturn}{Returns}
+size\+\_\+t sizeof(\+MXPSQL\+\_\+\+MPARC\+\_\+t)
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_a3f22125e32bc318875eec834e9b4e236}\label{mparc_8h_a3f22125e32bc318875eec834e9b4e236}} 
+\index{mparc.h@{mparc.h}!MPARC\_parse\_filename@{MPARC\_parse\_filename}}
+\index{MPARC\_parse\_filename@{MPARC\_parse\_filename}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_parse\_filename()}{MPARC\_parse\_filename()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+parse\+\_\+filename (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+
+
+Parse the archive file from the filename into the structure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filename} & the filename to read from \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err Did it parse well or did not 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a10a53d66991368ae2ae051f485d8a728}\label{mparc_8h_a10a53d66991368ae2ae051f485d8a728}} 
+\index{mparc.h@{mparc.h}!MPARC\_parse\_filestream@{MPARC\_parse\_filestream}}
+\index{MPARC\_parse\_filestream@{MPARC\_parse\_filestream}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_parse\_filestream()}{MPARC\_parse\_filestream()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+parse\+\_\+filestream (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{FILE $\ast$}]{fpstream }\end{DoxyParamCaption})}
+
+
+
+Parse the opened file stream archive into the structure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em fpstream} & the stream to read from, should be opened in \char`\"{}rb\char`\"{} mode \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err Did it parse well or did not 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a19c08df623586464196d7ad99cd4b68b}\label{mparc_8h_a19c08df623586464196d7ad99cd4b68b}} 
+\index{mparc.h@{mparc.h}!MPARC\_parse\_str@{MPARC\_parse\_str}}
+\index{MPARC\_parse\_str@{MPARC\_parse\_str}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_parse\_str()}{MPARC\_parse\_str()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+parse\+\_\+str (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{stringy }\end{DoxyParamCaption})}
+
+
+
+Parse the archive into the structure, a simpler version of MPARC\+\_\+parse\+\_\+str\+\_\+advance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em stringy} & the string to be parsed to \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err Did it parse well or did not
+\end{DoxyReturn}
+It is MPARC\+\_\+parse\+\_\+str\+\_\+advance with the following options\+:
+
+
+\begin{DoxyItemize}
+\item Overwrite entries if duplicate found
+\end{DoxyItemize}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_aa9f7070ca13873d607746faf7f12486f}{MPARC\+\_\+parse\+\_\+str\+\_\+advance}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_aa9f7070ca13873d607746faf7f12486f}\label{mparc_8h_aa9f7070ca13873d607746faf7f12486f}} 
+\index{mparc.h@{mparc.h}!MPARC\_parse\_str\_advance@{MPARC\_parse\_str\_advance}}
+\index{MPARC\_parse\_str\_advance@{MPARC\_parse\_str\_advance}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_parse\_str\_advance()}{MPARC\_parse\_str\_advance()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+parse\+\_\+str\+\_\+advance (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{stringy,  }\item[{int}]{erronduplicate }\end{DoxyParamCaption})}
+
+
+
+Parse the archive into the structure with extra flags. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em stringy} & the string to be parsed to \\
+\hline
+{\em erronduplicate} & error with returning MPARC\+\_\+\+KEXISTS if the key exists \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err Did it parse well or did not 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a677f04c3376fd501c2d8aaa19f147984}\label{mparc_8h_a677f04c3376fd501c2d8aaa19f147984}} 
+\index{mparc.h@{mparc.h}!MPARC\_peek\_file@{MPARC\_peek\_file}}
+\index{MPARC\_peek\_file@{MPARC\_peek\_file}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_peek\_file()}{MPARC\_peek\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+peek\+\_\+file (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{const char $\ast$}]{filename,  }\item[{unsigned char $\ast$$\ast$}]{bout,  }\item[{\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}} $\ast$}]{sout }\end{DoxyParamCaption})}
+
+
+
+Peek the contents of a file of the archive. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filename} & the filename to peek the contents at \\
+\hline
+{\em bout} & the output pointer to a variable that represent the binary content of the file \\
+\hline
+{\em sout} & the output pointer to a variable that represent the size of bout \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_ae5d11cf031a7370f20dd6861746208df}\label{mparc_8h_ae5d11cf031a7370f20dd6861746208df}} 
+\index{mparc.h@{mparc.h}!MPARC\_perror@{MPARC\_perror}}
+\index{MPARC\_perror@{MPARC\_perror}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_perror()}{MPARC\_perror()}}
+{\footnotesize\ttfamily int MPARC\+\_\+perror (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}}}]{err }\end{DoxyParamCaption})}
+
+
+
+Print the error message to stderr. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em err} & error code \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Level of error
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_a0d77b86222a2630f482dc038b149e553}{MPARC\+\_\+fperror}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_a296a715e69d3ce375c7aceb6805fbcb7}\label{mparc_8h_a296a715e69d3ce375c7aceb6805fbcb7}} 
+\index{mparc.h@{mparc.h}!MPARC\_pop\_file@{MPARC\_pop\_file}}
+\index{MPARC\_pop\_file@{MPARC\_pop\_file}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_pop\_file()}{MPARC\_pop\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+pop\+\_\+file (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+
+
+Pop a file off the archive. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filename} & the filename to pop off \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_aea2c9efbe8291d48958898cad51a7b90}\label{mparc_8h_aea2c9efbe8291d48958898cad51a7b90}} 
+\index{mparc.h@{mparc.h}!MPARC\_push\_filename@{MPARC\_push\_filename}}
+\index{MPARC\_push\_filename@{MPARC\_push\_filename}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_push\_filename()}{MPARC\_push\_filename()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+push\+\_\+filename (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+
+
+Push a file read from the filesystem into the archive. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filename} & the filename to read from \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a307fe25e74de760a3e0f2b6890d87d3b}\label{mparc_8h_a307fe25e74de760a3e0f2b6890d87d3b}} 
+\index{mparc.h@{mparc.h}!MPARC\_push\_filestr@{MPARC\_push\_filestr}}
+\index{MPARC\_push\_filestr@{MPARC\_push\_filestr}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_push\_filestr()}{MPARC\_push\_filestr()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+push\+\_\+filestr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{filename,  }\item[{char $\ast$}]{stringc,  }\item[{\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}}}]{sizey }\end{DoxyParamCaption})}
+
+
+
+Push a string as a file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filename} & the filename to assign \\
+\hline
+{\em stringc} & the bytes of string \\
+\hline
+{\em sizey} & the size of stringc \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a630de32615c1c54087252d29422c2a90}\label{mparc_8h_a630de32615c1c54087252d29422c2a90}} 
+\index{mparc.h@{mparc.h}!MPARC\_push\_filestream@{MPARC\_push\_filestream}}
+\index{MPARC\_push\_filestream@{MPARC\_push\_filestream}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_push\_filestream()}{MPARC\_push\_filestream()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+push\+\_\+filestream (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{FILE $\ast$}]{filestream,  }\item[{char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+
+
+Push an active filestream into the archive as a file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filestream} & the active filestream to read from, should be opened in \char`\"{}rb\char`\"{} mode \\
+\hline
+{\em filename} & the filename to assign \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+filestream should be opened and closed manually 
+\end{DoxyNote}
+\mbox{\Hypertarget{mparc_8h_ae1e4e3bf0fb1ec74bb36780e79e33085}\label{mparc_8h_ae1e4e3bf0fb1ec74bb36780e79e33085}} 
+\index{mparc.h@{mparc.h}!MPARC\_push\_ufilestr@{MPARC\_push\_ufilestr}}
+\index{MPARC\_push\_ufilestr@{MPARC\_push\_ufilestr}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_push\_ufilestr()}{MPARC\_push\_ufilestr()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+push\+\_\+ufilestr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{filename,  }\item[{unsigned char $\ast$}]{ustringc,  }\item[{\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}}}]{sizy }\end{DoxyParamCaption})}
+
+
+
+Simple version of MPARC\+\_\+push\+\_\+ufilestr\+\_\+advance that does not strip the directory name. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filename} & the filename to assign \\
+\hline
+{\em ustringc} & the bytes of string \\
+\hline
+{\em sizy} & the size of ustringc \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_acc3b6d0d8a816228efe2cc8658e0ea07}{MPARC\+\_\+push\+\_\+ufilestr\+\_\+advance}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_acc3b6d0d8a816228efe2cc8658e0ea07}\label{mparc_8h_acc3b6d0d8a816228efe2cc8658e0ea07}} 
+\index{mparc.h@{mparc.h}!MPARC\_push\_ufilestr\_advance@{MPARC\_push\_ufilestr\_advance}}
+\index{MPARC\_push\_ufilestr\_advance@{MPARC\_push\_ufilestr\_advance}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_push\_ufilestr\_advance()}{MPARC\_push\_ufilestr\_advance()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+push\+\_\+ufilestr\+\_\+advance (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{filename,  }\item[{int}]{stripdir,  }\item[{int}]{overwrite,  }\item[{unsigned char $\ast$}]{ustringc,  }\item[{\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}}}]{sizy }\end{DoxyParamCaption})}
+
+
+
+Push an unsigned string as a file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filename} & the filename to assign \\
+\hline
+{\em stripdir} & strip the directory from the filename, set to 0 to disable \\
+\hline
+{\em overwrite} & if set to anything other than a 0, overwrites the entry if it exists. if set to 0, prevents you from overwriting it if it exists. set to 0 to disable ability to overwrite (already explained) \\
+\hline
+{\em ustringc} & the bytes of string \\
+\hline
+{\em sizy} & the size of ustringc \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Filename only works on forward slash if stripdir is set due to basename only supporting that operation. 
+\end{DoxyNote}
+\mbox{\Hypertarget{mparc_8h_a2b9e7a9a86d0fc0fc1d6d746cf1fe80d}\label{mparc_8h_a2b9e7a9a86d0fc0fc1d6d746cf1fe80d}} 
+\index{mparc.h@{mparc.h}!MPARC\_push\_voidfile@{MPARC\_push\_voidfile}}
+\index{MPARC\_push\_voidfile@{MPARC\_push\_voidfile}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_push\_voidfile()}{MPARC\_push\_voidfile()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+push\+\_\+voidfile (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{filename,  }\item[{void $\ast$}]{buffer\+\_\+guffer,  }\item[{\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}}}]{sizy }\end{DoxyParamCaption})}
+
+
+
+Push a void pointer as a file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em filename} & the filename to assign \\
+\hline
+{\em buffer\+\_\+guffer} & the void pointer \\
+\hline
+{\em sizy} & the size of buffer\+\_\+guffer \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the status code if successfully done 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_af9be2a1eddb8ee3683bbcbc1799c86af}\label{mparc_8h_af9be2a1eddb8ee3683bbcbc1799c86af}} 
+\index{mparc.h@{mparc.h}!MPARC\_query@{MPARC\_query}}
+\index{MPARC\_query@{MPARC\_query}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_query()}{MPARC\_query()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+query (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$$\ast$$\ast$}]{output,  }\item[{char $\ast$}]{command,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+
+
+Query the structre for files that match a specific criteria. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em output} & The files that match a specific criteria. \\
+\hline
+{\em command} & The criteria to look for \\
+\hline
+{\em ...} & Vaargs that depend on the command arg \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err Success or a failure (MPARC\+\_\+\+SUCCESS if yes, MPARC\+\_\+\+KNOEXIST if the command is invalid, MPARC\+\_\+\+IVAL if a problem occured)
+\end{DoxyReturn}
+There are multiple commands available in this query function. This list is formated as the following\+: \mbox{[}command\mbox{]} -\/ \mbox{[}description\mbox{]} -\/ \mbox{[}required vaargs\mbox{]} Available commands (case sensitive)\+: size\+\_\+bigger -\/ List all files that is bigger than the specified size -\/ \mbox{[}number, preferably MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)\mbox{]} size\+\_\+equal -\/ List all files that is equal to the specified size -\/ \mbox{[}number, preferably MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)\mbox{]} size\+\_\+smaller -\/ List all files that is small than the specified size -\/ \mbox{[}number, preferably MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)\mbox{]} extension -\/ Get the file extension based from the first dot -\/ \mbox{[}a string of the file extension, do not include the first dot in the parameter\mbox{]} rextension -\/ Get the file extension based from the last dot -\/ \mbox{[}a string of the file extension, do not include the first dot in the parameter\mbox{]}
+
+The output parameter is always terminated with NULL. It itself and its content is also dynamically allocated, so you must deallocate it manually using \textquotesingle{}MPARC\+\_\+free\textquotesingle{}, not \textquotesingle{}free\textquotesingle{} and \textquotesingle{}delete\mbox{[}\mbox{]}\textquotesingle{} for forward compatibility.
+
+Passing the wrong vaargs will lead to undefined behavior, I cannot defend you from against that unless you cooperate with me. C Standard Library says so to do undefined behaviour in vaargs implementation. \mbox{\Hypertarget{mparc_8h_a553da556faf3295b6a1930105ab7ccd4}\label{mparc_8h_a553da556faf3295b6a1930105ab7ccd4}} 
+\index{mparc.h@{mparc.h}!MPARC\_query\_vlist@{MPARC\_query\_vlist}}
+\index{MPARC\_query\_vlist@{MPARC\_query\_vlist}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_query\_vlist()}{MPARC\_query\_vlist()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+query\+\_\+vlist (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$$\ast$$\ast$}]{output,  }\item[{char $\ast$}]{command,  }\item[{va\+\_\+list}]{vlist }\end{DoxyParamCaption})}
+
+
+
+A version of MPARC\+\_\+query that accepts a va\+\_\+list instead. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em output} & The files that match a specific criteria \\
+\hline
+{\em command} & The criteria to look for \\
+\hline
+{\em vlist} & A list that is suppoused to be a vaargs that depend on the command arg \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err Success or a failure (MPARC\+\_\+\+SUCCESS if yes, MPARC\+\_\+\+KNOEXIST if the command is invalid, MPARC\+\_\+\+IVAL if a problem occured)
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_af9be2a1eddb8ee3683bbcbc1799c86af}{MPARC\+\_\+query}}
+\end{DoxySeeAlso}
+\begin{DoxyNote}{Note}
+You are responsible for starting and ending vlist. Also look at MPARC\+\_\+query for more bad things that could happen. 
+\end{DoxyNote}
+\mbox{\Hypertarget{mparc_8h_a0031c4afce4930f91d63017bddae08e7}\label{mparc_8h_a0031c4afce4930f91d63017bddae08e7}} 
+\index{mparc.h@{mparc.h}!MPARC\_readdir@{MPARC\_readdir}}
+\index{MPARC\_readdir@{MPARC\_readdir}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_readdir()}{MPARC\_readdir()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+readdir (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{srcdir,  }\item[{int}]{recursive,  }\item[{int($\ast$)(char $\ast$, int, char $\ast$$\ast$)}]{listdir }\end{DoxyParamCaption})}
+
+
+
+Read a directory into the structure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em srcdir} & the source directory to read from \\
+\hline
+{\em recursive} & read from subdirectories if not set to 0 \\
+\hline
+{\em listdir} & function to list a directory, shall not be NULL or else it returns an error. This is the function that handles listing the file and recursion. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err error status of reading
+\end{DoxyReturn}
+\begin{quote}
+listdir Prototyping \end{quote}
+the first parameter of the listdir function is the current directory that should be read from
+
+the second parameter indicates if it should be recursive, set to 0 if not, don\textquotesingle{}t if not
+
+the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc\textquotesingle{}ed or Malloc\textquotesingle{}ed (pls Calloc it) as it relies on finding NULL and the array getting freed
+
+the return value should always be 0 for success, other values indicate failure \mbox{\Hypertarget{mparc_8h_a1bbdf1d27c7dbf8c222535770fb5323f}\label{mparc_8h_a1bbdf1d27c7dbf8c222535770fb5323f}} 
+\index{mparc.h@{mparc.h}!MPARC\_realloc@{MPARC\_realloc}}
+\index{MPARC\_realloc@{MPARC\_realloc}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_realloc()}{MPARC\_realloc()}}
+{\footnotesize\ttfamily void $\ast$ MPARC\+\_\+realloc (\begin{DoxyParamCaption}\item[{void $\ast$}]{oldmem,  }\item[{\mbox{\hyperlink{mparc_8h_a6dd4c5df4f9e32a9e863fc789ebaddfb}{MXPSQL\+\_\+\+MPARC\+\_\+uint\+\_\+repr\+\_\+t}}}]{newsize }\end{DoxyParamCaption})}
+
+
+
+My realloc, for easy plug and switch. Extensions should use this instead of realloc. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em oldmem} & old memory to change size \\
+\hline
+{\em newsize} & new size \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void$\ast$ reallocated memory pointer
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+
+\end{DoxyNote}
+MPARC\+\_\+realloc has its pitfalls. Don\textquotesingle{}t fall for it. ~\newline
+ Right now is using C\textquotesingle{}s realloc, so it is at the mercy of that function as realloc has flaws. ~\newline
+ Common one\+: ~\newline
+ In place realloc, danger is from when it errors out and now you created a memory leak. ~\newline
+ Reusing old realloc pointers, danger is that it may have been invalidated. ~\newline
+ Allocating a zero sized object with MPARC\+\_\+realloc, danger is that it used to be implementation defined before C23, after C23 is now undefined behaviour. \mbox{\Hypertarget{mparc_8h_a6c36bdd202ca9213a5e55c51533c3f8c}\label{mparc_8h_a6c36bdd202ca9213a5e55c51533c3f8c}} 
+\index{mparc.h@{mparc.h}!MPARC\_rename\_file@{MPARC\_rename\_file}}
+\index{MPARC\_rename\_file@{MPARC\_rename\_file}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_rename\_file()}{MPARC\_rename\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+rename\+\_\+file (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{int}]{overwrite,  }\item[{char $\ast$}]{oldname,  }\item[{char $\ast$}]{newname }\end{DoxyParamCaption})}
+
+
+
+Rename an entry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure \\
+\hline
+{\em overwrite} & you want to overwrite? set to a non zero value. No overwrite? then set to 0 \\
+\hline
+{\em oldname} & the file you want to change name \\
+\hline
+{\em newname} & the new name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err the sttaus code if successfully done. MPARC\+\_\+\+KNOEXIST if oldname is not there and more...
+\end{DoxyReturn}
+Internally implemented with MPARC\+\_\+push\+\_\+ufilestr, MPARC\+\_\+pop\+\_\+file and MPARC\+\_\+peek\+\_\+file \mbox{\Hypertarget{mparc_8h_acccb962b77cce1fe50cb5fde3bf50051}\label{mparc_8h_acccb962b77cce1fe50cb5fde3bf50051}} 
+\index{mparc.h@{mparc.h}!MPARC\_sfperror@{MPARC\_sfperror}}
+\index{MPARC\_sfperror@{MPARC\_sfperror}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_sfperror()}{MPARC\_sfperror()}}
+{\footnotesize\ttfamily int MPARC\+\_\+sfperror (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}}}]{err,  }\item[{FILE $\ast$}]{filepstream,  }\item[{char $\ast$}]{emsg }\end{DoxyParamCaption})}
+
+
+
+Print the error message to your stream of choice with a message of your choice. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em err} & error code \\
+\hline
+{\em filepstream} & stream of your choice \\
+\hline
+{\em emsg} & message of your choice \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Level of error
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_a499191b4f97ceb2791a4861cd493b9d4}{MPARC\+\_\+strerror}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_a1594c0be7e62d1541f058feb7cbfa262}\label{mparc_8h_a1594c0be7e62d1541f058feb7cbfa262}} 
+\index{mparc.h@{mparc.h}!MPARC\_strdup@{MPARC\_strdup}}
+\index{MPARC\_strdup@{MPARC\_strdup}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_strdup()}{MPARC\_strdup()}}
+{\footnotesize\ttfamily char $\ast$ MPARC\+\_\+strdup (\begin{DoxyParamCaption}\item[{const char $\ast$}]{src }\end{DoxyParamCaption})}
+
+
+
+Copy string with no length limits. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & source string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char$\ast$ duplicated string
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Use \textquotesingle{}MPARC\+\_\+free\textquotesingle{} to deallocate instead of \textquotesingle{}free\textquotesingle{} and \textquotesingle{}delete\textquotesingle{} for forward compatibility.
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_a1594c0be7e62d1541f058feb7cbfa262}{MPARC\+\_\+strdup}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_a499191b4f97ceb2791a4861cd493b9d4}\label{mparc_8h_a499191b4f97ceb2791a4861cd493b9d4}} 
+\index{mparc.h@{mparc.h}!MPARC\_strerror@{MPARC\_strerror}}
+\index{MPARC\_strerror@{MPARC\_strerror}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_strerror()}{MPARC\_strerror()}}
+{\footnotesize\ttfamily int MPARC\+\_\+strerror (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}}}]{err,  }\item[{char $\ast$$\ast$}]{out }\end{DoxyParamCaption})}
+
+
+
+Get error string from MXPSQL\+\_\+\+MPARC\+\_\+err. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em err} & error code \\
+\hline
+{\em out} & output error string, can be NULL if an error occured \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Level of error 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a9c4e26f8545ca1670f968821602f9dc2}\label{mparc_8h_a9c4e26f8545ca1670f968821602f9dc2}} 
+\index{mparc.h@{mparc.h}!MPARC\_strndup@{MPARC\_strndup}}
+\index{MPARC\_strndup@{MPARC\_strndup}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_strndup()}{MPARC\_strndup()}}
+{\footnotesize\ttfamily char $\ast$ MPARC\+\_\+strndup (\begin{DoxyParamCaption}\item[{const char $\ast$}]{src,  }\item[{size\+\_\+t}]{ilen }\end{DoxyParamCaption})}
+
+
+
+Copy string with length limits. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & source string \\
+\hline
+{\em ilen} & max length to copy \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char$\ast$ duplicated string
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Use \textquotesingle{}MPARC\+\_\+free\textquotesingle{} to deallocate instead of \textquotesingle{}free\textquotesingle{} and \textquotesingle{}delete\textquotesingle{} for forward compatibility.
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{mparc_8h_a9c4e26f8545ca1670f968821602f9dc2}{MPARC\+\_\+strndup}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{mparc_8h_ab66f0b019f568c262b41520c209159ea}\label{mparc_8h_ab66f0b019f568c262b41520c209159ea}} 
+\index{mparc.h@{mparc.h}!MPARC\_strnlen@{MPARC\_strnlen}}
+\index{MPARC\_strnlen@{MPARC\_strnlen}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_strnlen()}{MPARC\_strnlen()}}
+{\footnotesize\ttfamily size\+\_\+t MPARC\+\_\+strnlen (\begin{DoxyParamCaption}\item[{const char $\ast$}]{str,  }\item[{size\+\_\+t}]{maxlen }\end{DoxyParamCaption})}
+
+
+
+My strlen for portability. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & string to check \\
+\hline
+{\em maxlen} & max length \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+size\+\_\+t actual str length or maxlen 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a13e565e42b5f37b7307260afbc958312}\label{mparc_8h_a13e565e42b5f37b7307260afbc958312}} 
+\index{mparc.h@{mparc.h}!MPARC\_strtok\_r@{MPARC\_strtok\_r}}
+\index{MPARC\_strtok\_r@{MPARC\_strtok\_r}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_strtok\_r()}{MPARC\_strtok\_r()}}
+{\footnotesize\ttfamily char $\ast$ MPARC\+\_\+strtok\+\_\+r (\begin{DoxyParamCaption}\item[{char $\ast$}]{s,  }\item[{const char $\ast$}]{delim,  }\item[{char $\ast$$\ast$}]{save\+\_\+ptr }\end{DoxyParamCaption})}
+
+
+
+Strtok Safe Edition. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & string to be tokenized, must be mutable \\
+\hline
+{\em delim} & delimiter to be used while tokenizing \\
+\hline
+{\em save\+\_\+ptr} & storage space for the rest of the \textquotesingle{}she\textquotesingle{} string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char$\ast$ The token 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mparc_8h_a6e9c04393cc1fb0621076a3894bbd596}\label{mparc_8h_a6e9c04393cc1fb0621076a3894bbd596}} 
+\index{mparc.h@{mparc.h}!MPARC\_swap\_file@{MPARC\_swap\_file}}
+\index{MPARC\_swap\_file@{MPARC\_swap\_file}!mparc.h@{mparc.h}}
+\doxysubsubsection{\texorpdfstring{MPARC\_swap\_file()}{MPARC\_swap\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{mparc_8h_ab94170c55bb379cd60ae08c6bb68100c}{MXPSQL\+\_\+\+MPARC\+\_\+err}} MPARC\+\_\+swap\+\_\+file (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_m_x_p_s_q_l___m_p_a_r_c__t}{MXPSQL\+\_\+\+MPARC\+\_\+t}} $\ast$}]{structure,  }\item[{char $\ast$}]{file1,  }\item[{char $\ast$}]{file2 }\end{DoxyParamCaption})}
+
+
+
+Swap 2 entries. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em structure} & the target structure. \\
+\hline
+{\em file1} & the filename to swap with file2. \\
+\hline
+{\em file2} & the filename to swap with file1. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+MXPSQL\+\_\+\+MPARC\+\_\+err Lazy.
+\end{DoxyReturn}
+Internally implemnted with MPARC\+\_\+push\+\_\+ufilestr and MPARC\+\_\+peek\+\_\+file 

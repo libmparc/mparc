@@ -1,0 +1,2984 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="d6/d08/mparc_8h" kind="file" language="C++">
+    <compoundname>mparc.h</compoundname>
+    <includes local="no">stdio.h</includes>
+    <includes local="no">stdarg.h</includes>
+    <includes local="no">stdint.h</includes>
+    <includes local="no">stddef.h</includes>
+    <includedby refid="d0/d29/main_8c" local="yes">main.c</includedby>
+    <includedby refid="dd/d48/mainv2_8c" local="yes">mainv2.c</includedby>
+    <includedby refid="d9/dd9/mparc_8c" local="yes">mparc.c</includedby>
+    <includedby refid="df/db9/tmain_8c" local="yes">tmain.c</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>mparc.h</label>
+        <link refid="d6/d08/mparc_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>stdarg.h</label>
+      </node>
+      <node id="5">
+        <label>stddef.h</label>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+      <node id="2">
+        <label>stdio.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>mparc.c</label>
+        <link refid="d9/dd9/mparc_8c"/>
+      </node>
+      <node id="1">
+        <label>mparc.h</label>
+        <link refid="d6/d08/mparc_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="d6/d08/mparc_8h_1a1ac2a561b94286c5b0a8c570933b4d75" prot="public" static="no">
+        <name>_MXPSQL_MPARC_H</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="3" column="9" bodyfile="mparc.h" bodystart="3" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="enum">
+      <memberdef kind="enum" id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" prot="public" static="no" strong="no">
+        <type></type>
+        <name>MXPSQL_MPARC_err</name>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca53d49c284005c01c8d5264038cbbcf2f" prot="public">
+          <name>MPARC_OK</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+<para>Everything&apos;s fine. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca46e0176fd1005f9135ee03aa01bd7e5e" prot="public">
+          <name>MPARC_IDK</name>
+          <initializer>= -1</initializer>
+          <briefdescription>
+<para>Generic error. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100cafe2b876879ed2597966705c23237b93b" prot="public">
+          <name>MPARC_INTERNAL</name>
+          <initializer>= -2</initializer>
+          <briefdescription>
+<para>Internal problem, not used. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385" prot="public">
+          <name>MPARC_NULL</name>
+          <initializer>= -3</initializer>
+          <briefdescription>
+<para>NULL input. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100cac45bcdf666c138541d02f21d9fa499cf" prot="public">
+          <name>MPARC_IVAL</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+<para>Invalid value or generic but more specific errors than MPARC_IDK. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca08d01838a3e0e8e9f612887427522302" prot="public">
+          <name>MPARC_KNOEXIST</name>
+          <initializer>=2</initializer>
+          <briefdescription>
+<para>Key does not exist. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100caa08f4bd6a058077df51796db882b8a1a" prot="public">
+          <name>MPARC_KEXISTS</name>
+          <initializer>=3</initializer>
+          <briefdescription>
+<para>Key exists. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100cadfdaf1581ab1118463f7c7483fdf6264" prot="public">
+          <name>MPARC_OOM</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+<para>Out Of Memory! </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca" prot="public">
+          <name>MPARC_NOTARCHIVE</name>
+          <initializer>=5</initializer>
+          <briefdescription>
+<para>The archive you provided is actually not an archive determined by the 25 character long MAGIC NUMBER or some other factor, but most likely the magic number. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324" prot="public">
+          <name>MPARC_ARCHIVETOOSHINY</name>
+          <initializer>=6</initializer>
+          <briefdescription>
+<para>The format version of the archive is too new to be digested. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e" prot="public">
+          <name>MPARC_CHKSUM</name>
+          <initializer>=7</initializer>
+          <briefdescription>
+<para>CRC checksum check and comparison failed. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4" prot="public">
+          <name>MPARC_CONSTRUCT_FAIL</name>
+          <initializer>=8</initializer>
+          <briefdescription>
+<para>Failure to construct archive. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f" prot="public">
+          <name>MPARC_OPPART</name>
+          <initializer>=9</initializer>
+          <briefdescription>
+<para>Operation not complete. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa" prot="public">
+          <name>MPARC_FERROR</name>
+          <initializer>=10</initializer>
+          <briefdescription>
+<para>FILE* seems to be having problems as ferror reports true or just that something is wrong with the archive itself. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Error states, these are self explanatory. But I give them brief anyways. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="80" column="5" bodyfile="mparc.h" bodystart="80" bodyend="158"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="d6/d08/mparc_8h_1a0b43069d31ce01c4447ed5207aec2b55" prot="public" static="no">
+        <type>enum <ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>typedef enum MXPSQL_MPARC_err MXPSQL_MPARC_err</definition>
+        <argsstring></argsstring>
+        <name>MXPSQL_MPARC_err</name>
+        <briefdescription>
+<para>Error states, these are self explanatory. But I give them brief anyways. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="158" column="22"/>
+      </memberdef>
+      <memberdef kind="typedef" id="d6/d08/mparc_8h_1af86786ca7b4ba1464c419b034cd238d3" prot="public" static="no">
+        <type>struct <ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref></type>
+        <definition>typedef struct MXPSQL_MPARC_t MXPSQL_MPARC_t</definition>
+        <argsstring></argsstring>
+        <name>MXPSQL_MPARC_t</name>
+        <briefdescription>
+<para>Ptr type of the archive, should be initialized to null on first use. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This should be initialized to NULL to prevent problems with uninitialized value.</para>
+<para>Don&apos;t ever try to dereference this thing.</para>
+<para>This can never be declared as a non pointer object.</para>
+<para>Not atomic or thread safe (never aim to be that for C99 suport and portability, you do it yourself with platform threads (pthreads, winapi threads or C11 threads if you can)). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="213" column="33" bodyfile="mparc.h" bodystart="213" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="d6/d08/mparc_8h_1a07c83537b86c7bd755c69f0dc234d291" prot="public" static="no">
+        <type>struct <ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref></type>
+        <definition>typedef struct MXPSQL_MPARC_iter_t MXPSQL_MPARC_iter_t</definition>
+        <argsstring></argsstring>
+        <name>MXPSQL_MPARC_iter_t</name>
+        <briefdescription>
+<para>Ptr type of the iterator, should be initialized to null on first use. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This should be initialized to NULL to prevent problems with uninitialized value.</para>
+<para>Don&apos;t ever try to dereference this thing.</para>
+<para>This can never be declared as a non pointer object. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="225" column="38" bodyfile="mparc.h" bodystart="225" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" prot="public" static="no">
+        <type>uint_fast64_t</type>
+        <definition>typedef uint_fast64_t MXPSQL_MPARC_uint_repr_t</definition>
+        <argsstring></argsstring>
+        <name>MXPSQL_MPARC_uint_repr_t</name>
+        <briefdescription>
+<para>Typedef our uint representation to make it easy to refactor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is currently typedef&apos;d to uint_fast64_t, but we can switch to unsigned long long or size_t </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="233" column="27" bodyfile="mparc.h" bodystart="233" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a499191b4f97ceb2791a4861cd493b9d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int MPARC_strerror</definition>
+        <argsstring>(MXPSQL_MPARC_err err, char **out)</argsstring>
+        <name>MPARC_strerror</name>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+          <declname>err</declname>
+        </param>
+        <param>
+          <type>char **</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>Get error string from MXPSQL_MPARC_err. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>err</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error code </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>out</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output error string, can be NULL if an error occured </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>int Level of error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="166" column="9" bodyfile="mparc.c" bodystart="3555" bodyend="3612" declfile="mparc.h" declline="166" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1acccb962b77cce1fe50cb5fde3bf50051" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int MPARC_sfperror</definition>
+        <argsstring>(MXPSQL_MPARC_err err, FILE *filepstream, char *emsg)</argsstring>
+        <name>MPARC_sfperror</name>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+          <declname>err</declname>
+        </param>
+        <param>
+          <type>FILE *</type>
+          <declname>filepstream</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>emsg</declname>
+        </param>
+        <briefdescription>
+<para>Print the error message to your stream of choice with a message of your choice. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>err</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error code </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filepstream</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stream of your choice </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>emsg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>message of your choice </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>int Level of error</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1a499191b4f97ceb2791a4861cd493b9d4" kindref="member">MPARC_strerror</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="177" column="9" bodyfile="mparc.c" bodystart="3614" bodyend="3625" declfile="mparc.h" declline="177" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a0d77b86222a2630f482dc038b149e553" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int MPARC_fperror</definition>
+        <argsstring>(MXPSQL_MPARC_err err, FILE *fileptrstream)</argsstring>
+        <name>MPARC_fperror</name>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+          <declname>err</declname>
+        </param>
+        <param>
+          <type>FILE *</type>
+          <declname>fileptrstream</declname>
+        </param>
+        <briefdescription>
+<para>Print the error message of your stream of choice. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>err</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error code </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fileptrstream</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stream of your choice </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>int Level of error</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1acccb962b77cce1fe50cb5fde3bf50051" kindref="member">MPARC_sfperror</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="187" column="9" bodyfile="mparc.c" bodystart="3627" bodyend="3629" declfile="mparc.h" declline="187" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1ae5d11cf031a7370f20dd6861746208df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int MPARC_perror</definition>
+        <argsstring>(MXPSQL_MPARC_err err)</argsstring>
+        <name>MPARC_perror</name>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+          <declname>err</declname>
+        </param>
+        <briefdescription>
+<para>Print the error message to stderr. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>err</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error code </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>int Level of error</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1a0d77b86222a2630f482dc038b149e553" kindref="member">MPARC_fperror</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="196" column="9" bodyfile="mparc.c" bodystart="3631" bodyend="3633" declfile="mparc.h" declline="196" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a1fe7a9487c96376771cec41e72f1fbf7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_init</definition>
+        <argsstring>(MXPSQL_MPARC_t **structure)</argsstring>
+        <name>MPARC_init</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> **</type>
+          <declname>structure</declname>
+        </param>
+        <briefdescription>
+<para>Initialize sturcture. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="243" column="22" bodyfile="mparc.c" bodystart="4522" bodyend="4552" declfile="mparc.h" declline="243" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a6da21dcbf030cec0307ad7bfd3ea4f48" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_copy</definition>
+        <argsstring>(MXPSQL_MPARC_t **structure, MXPSQL_MPARC_t **targetdest)</argsstring>
+        <name>MPARC_copy</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> **</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> **</type>
+          <declname>targetdest</declname>
+        </param>
+        <briefdescription>
+<para>Initialize structure by copying. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure for copying </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>targetdest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the destination target structure to be overwritten </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="251" column="22" bodyfile="mparc.c" bodystart="4554" bodyend="4596" declfile="mparc.h" declline="251" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a5a278819906e49b1155ee23cd2f3ad33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_destroy</definition>
+        <argsstring>(MXPSQL_MPARC_t **structure)</argsstring>
+        <name>MPARC_destroy</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> **</type>
+          <declname>structure</declname>
+        </param>
+        <briefdescription>
+<para>Tear down structure. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="258" column="22" bodyfile="mparc.c" bodystart="4598" bodyend="4637" declfile="mparc.h" declline="258" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a70b485272c72704901ab0e2c54d40820" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_list_array</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char ***listout, MXPSQL_MPARC_uint_repr_t *length)</argsstring>
+        <name>MPARC_list_array</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char ***</type>
+          <declname>listout</declname>
+        </param>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref> *</type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+<para>List out the current files included as an array. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>listout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the output list </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>length</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the length of listout </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done</para>
+</simplesect>
+<simplesect kind="note"><para>Free listout manually with MPARC_list_array_free, not &apos;free&apos; or &apos;delete&apos; for forward compatibility. Using &apos;MPARC_free&apos; would get you memory leaks instead.</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1a70b485272c72704901ab0e2c54d40820" kindref="member">MPARC_list_array</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="272" column="22" bodyfile="mparc.c" bodystart="4641" bodyend="4744" declfile="mparc.h" declline="272" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1abc033ce1084b6c7e42ebfa2415ccd160" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_list_array_free</definition>
+        <argsstring>(char ***list)</argsstring>
+        <name>MPARC_list_array_free</name>
+        <param>
+          <type>char ***</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+<para>Utility function that free the list that you created with MPARC_list_array. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>list</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the list you got </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err successful?</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1a70b485272c72704901ab0e2c54d40820" kindref="member">MPARC_list_array</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="281" column="22" bodyfile="mparc.c" bodystart="4746" bodyend="4754" declfile="mparc.h" declline="281" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a984c02b5c1b6a21cfbe863364f78208b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_list_iterator_init</definition>
+        <argsstring>(MXPSQL_MPARC_t **structure, MXPSQL_MPARC_iter_t **iterator)</argsstring>
+        <name>MPARC_list_iterator_init</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> **</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type><ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref> **</type>
+          <declname>iterator</declname>
+        </param>
+        <briefdescription>
+<para>Initialize the iterator that list the current files included. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>iterator</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target iterator </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="289" column="22" bodyfile="mparc.c" bodystart="4756" bodyend="4773" declfile="mparc.h" declline="289" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a0e2b9d912b91cac836a472009257f732" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_list_iterator_next</definition>
+        <argsstring>(MXPSQL_MPARC_iter_t **iterator, const char **outnam)</argsstring>
+        <name>MPARC_list_iterator_next</name>
+        <param>
+          <type><ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref> **</type>
+          <declname>iterator</declname>
+        </param>
+        <param>
+          <type>const char **</type>
+          <declname>outnam</declname>
+        </param>
+        <briefdescription>
+<para>Update the state of the iterator to point to the next one. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>iterator</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target iterator </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>outnam</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output string </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err</para>
+</simplesect>
+If it returns KMPARC_NOEXIST, the iterator has reached the end </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="301" column="22" bodyfile="mparc.c" bodystart="4775" bodyend="4790" declfile="mparc.h" declline="301" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1af69cf2c23d9a3d0f4a175c7c1dc8af2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_list_iterator_destroy</definition>
+        <argsstring>(MXPSQL_MPARC_iter_t **iterator)</argsstring>
+        <name>MPARC_list_iterator_destroy</name>
+        <param>
+          <type><ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref> **</type>
+          <declname>iterator</declname>
+        </param>
+        <briefdescription>
+<para>Destroy the iterator. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>iterator</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target iterator </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="308" column="22" bodyfile="mparc.c" bodystart="4792" bodyend="4796" declfile="mparc.h" declline="308" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1abdd468971dbef0efc6ff7b12a80ed11b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_list_foreach</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, int *cb_aborted, MXPSQL_MPARC_err(*callback)(MXPSQL_MPARC_t *, const char *))</argsstring>
+        <name>MPARC_list_foreach</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>cb_aborted</declname>
+        </param>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref>(*)(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *, const char *)</type>
+          <declname>callback</declname>
+        </param>
+        <briefdescription>
+<para>Foreach, with call backs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cb_aborted</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a flag that indicated if an error code resulted from abortion request or an internal error. Can be NULL. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>callback</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>callback function that gets called on every iteration </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done. MPARC_OK if successfull, other error codes if aborted (dependent on callback).</para>
+</simplesect>
+For the callback function:</para>
+<para>To continue an iteration, return MPARC_OK.</para>
+<para>To abort the loop, return any other values in MXPSQL_MPARC_err other than MPARC_OK. cb_aborted is set to 1 and the value is returned from callback.</para>
+<para>Other details:</para>
+<para>If an internal error occurs, the error code corresponding to the error is returned, but cb_aborted is set to 0. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="329" column="22" bodyfile="mparc.c" bodystart="4798" bodyend="4839" declfile="mparc.h" declline="329" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1ae8ef340b41eb2b0e988fd6a2dd76c5cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_exists</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, const char *filename)</argsstring>
+        <name>MPARC_exists</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Check if file entry exists. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to check </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done or errors out </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="337" column="22" bodyfile="mparc.c" bodystart="4841" bodyend="4891" declfile="mparc.h" declline="337" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1af9be2a1eddb8ee3683bbcbc1799c86af" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_query</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char ***output, char *command,...)</argsstring>
+        <name>MPARC_query</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char ***</type>
+          <declname>output</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>command</declname>
+        </param>
+        <param>
+          <type>...</type>
+        </param>
+        <briefdescription>
+<para>Query the structre for files that match a specific criteria. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>output</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The files that match a specific criteria. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>command</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The criteria to look for </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>...</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Vaargs that depend on the command arg </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err Success or a failure (MPARC_SUCCESS if yes, MPARC_KNOEXIST if the command is invalid, MPARC_IVAL if a problem occured)</para>
+</simplesect>
+There are multiple commands available in this query function. This list is formated as the following: [command] - [description] - [required vaargs] Available commands (case sensitive): size_bigger - List all files that is bigger than the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)] size_equal - List all files that is equal to the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)] size_smaller - List all files that is small than the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)] extension - Get the file extension based from the first dot - [a string of the file extension, do not include the first dot in the parameter] rextension - Get the file extension based from the last dot - [a string of the file extension, do not include the first dot in the parameter]</para>
+<para>The output parameter is always terminated with NULL. It itself and its content is also dynamically allocated, so you must deallocate it manually using &apos;MPARC_free&apos;, not &apos;free&apos; and &apos;delete[]&apos; for forward compatibility.</para>
+<para>Passing the wrong vaargs will lead to undefined behavior, I cannot defend you from against that unless you cooperate with me. C Standard Library says so to do undefined behaviour in vaargs implementation. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="362" column="22" bodyfile="mparc.c" bodystart="4893" bodyend="4902" declfile="mparc.h" declline="362" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a553da556faf3295b6a1930105ab7ccd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_query_vlist</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char ***output, char *command, va_list vlist)</argsstring>
+        <name>MPARC_query_vlist</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char ***</type>
+          <declname>output</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>command</declname>
+        </param>
+        <param>
+          <type>va_list</type>
+          <declname>vlist</declname>
+        </param>
+        <briefdescription>
+<para>A version of MPARC_query that accepts a va_list instead. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>output</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The files that match a specific criteria </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>command</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The criteria to look for </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vlist</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A list that is suppoused to be a vaargs that depend on the command arg </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err Success or a failure (MPARC_SUCCESS if yes, MPARC_KNOEXIST if the command is invalid, MPARC_IVAL if a problem occured)</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1af9be2a1eddb8ee3683bbcbc1799c86af" kindref="member">MPARC_query</ref></para>
+</simplesect>
+<simplesect kind="note"><para>You are responsible for starting and ending vlist. Also look at MPARC_query for more bad things that could happen. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="376" column="22" bodyfile="mparc.c" bodystart="4904" bodyend="5110" declfile="mparc.h" declline="376" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1acc3b6d0d8a816228efe2cc8658e0ea07" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_push_ufilestr_advance</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *filename, int stripdir, int overwrite, unsigned char *ustringc, MXPSQL_MPARC_uint_repr_t sizy)</argsstring>
+        <name>MPARC_push_ufilestr_advance</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>filename</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>stripdir</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>overwrite</declname>
+        </param>
+        <param>
+          <type>unsigned char *</type>
+          <declname>ustringc</declname>
+        </param>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref></type>
+          <declname>sizy</declname>
+        </param>
+        <briefdescription>
+<para>Push an unsigned string as a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to assign </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stripdir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>strip the directory from the filename, set to 0 to disable </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if set to anything other than a 0, overwrites the entry if it exists. if set to 0, prevents you from overwriting it if it exists. set to 0 to disable ability to overwrite (already explained) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ustringc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the bytes of string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sizy</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the size of ustringc </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done</para>
+</simplesect>
+<simplesect kind="note"><para>Filename only works on forward slash if stripdir is set due to basename only supporting that operation. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="391" column="22" bodyfile="mparc.c" bodystart="5114" bodyend="5132" declfile="mparc.h" declline="391" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1ae1e4e3bf0fb1ec74bb36780e79e33085" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_push_ufilestr</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *filename, unsigned char *ustringc, MXPSQL_MPARC_uint_repr_t sizy)</argsstring>
+        <name>MPARC_push_ufilestr</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>filename</declname>
+        </param>
+        <param>
+          <type>unsigned char *</type>
+          <declname>ustringc</declname>
+        </param>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref></type>
+          <declname>sizy</declname>
+        </param>
+        <briefdescription>
+<para>Simple version of MPARC_push_ufilestr_advance that does not strip the directory name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to assign </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ustringc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the bytes of string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sizy</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the size of ustringc </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1acc3b6d0d8a816228efe2cc8658e0ea07" kindref="member">MPARC_push_ufilestr_advance</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="403" column="22" bodyfile="mparc.c" bodystart="5134" bodyend="5136" declfile="mparc.h" declline="403" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a2b9e7a9a86d0fc0fc1d6d746cf1fe80d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_push_voidfile</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *filename, void *buffer_guffer, MXPSQL_MPARC_uint_repr_t sizy)</argsstring>
+        <name>MPARC_push_voidfile</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>filename</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>buffer_guffer</declname>
+        </param>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref></type>
+          <declname>sizy</declname>
+        </param>
+        <briefdescription>
+<para>Push a void pointer as a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to assign </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>buffer_guffer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the void pointer </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sizy</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the size of buffer_guffer </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="413" column="22" bodyfile="mparc.c" bodystart="5138" bodyend="5140" declfile="mparc.h" declline="413" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a307fe25e74de760a3e0f2b6890d87d3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_push_filestr</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *filename, char *stringc, MXPSQL_MPARC_uint_repr_t sizey)</argsstring>
+        <name>MPARC_push_filestr</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>filename</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>stringc</declname>
+        </param>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref></type>
+          <declname>sizey</declname>
+        </param>
+        <briefdescription>
+<para>Push a string as a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to assign </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stringc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the bytes of string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sizey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the size of stringc </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="423" column="22" bodyfile="mparc.c" bodystart="5142" bodyend="5144" declfile="mparc.h" declline="423" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1aea2c9efbe8291d48958898cad51a7b90" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_push_filename</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *filename)</argsstring>
+        <name>MPARC_push_filename</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Push a file read from the filesystem into the archive. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to read from </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="431" column="22" bodyfile="mparc.c" bodystart="5146" bodyend="5166" declfile="mparc.h" declline="431" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a630de32615c1c54087252d29422c2a90" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_push_filestream</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, FILE *filestream, char *filename)</argsstring>
+        <name>MPARC_push_filestream</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>FILE *</type>
+          <declname>filestream</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Push an active filestream into the archive as a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filestream</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the active filestream to read from, should be opened in &quot;rb&quot; mode </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to assign </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done</para>
+</simplesect>
+<simplesect kind="note"><para>filestream should be opened and closed manually </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="442" column="22" bodyfile="mparc.c" bodystart="5168" bodyend="5252" declfile="mparc.h" declline="442" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a6c36bdd202ca9213a5e55c51533c3f8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_rename_file</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, int overwrite, char *oldname, char *newname)</argsstring>
+        <name>MPARC_rename_file</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>overwrite</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>oldname</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>newname</declname>
+        </param>
+        <briefdescription>
+<para>Rename an entry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>you want to overwrite? set to a non zero value. No overwrite? then set to 0 </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>oldname</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the file you want to change name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>newname</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the new name </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the sttaus code if successfully done. MPARC_KNOEXIST if oldname is not there and more...</para>
+</simplesect>
+Internally implemented with MPARC_push_ufilestr, MPARC_pop_file and MPARC_peek_file </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="457" column="22" bodyfile="mparc.c" bodystart="5255" bodyend="5294" declfile="mparc.h" declline="457" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a40c04532243f85a4946b1ea1a7bc7aa8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_duplicate_file</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, int overwrite, char *srcfile, char *destfile)</argsstring>
+        <name>MPARC_duplicate_file</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>overwrite</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>srcfile</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>destfile</declname>
+        </param>
+        <briefdescription>
+<para>Duplicate an entry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>you want to overwrite? set to a non zero value. No overwrite? then set to 0 </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>srcfile</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the source file to duplicate from. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>destfile</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the destination file </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err Yes.</para>
+</simplesect>
+Internally implemented with MPARC_push_ufilestr and MPARC_peek_file </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="471" column="22" bodyfile="mparc.c" bodystart="5296" bodyend="5326" declfile="mparc.h" declline="471" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a6e9c04393cc1fb0621076a3894bbd596" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_swap_file</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *file1, char *file2)</argsstring>
+        <name>MPARC_swap_file</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>file1</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>file2</declname>
+        </param>
+        <briefdescription>
+<para>Swap 2 entries. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to swap with file2. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to swap with file1. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err Lazy.</para>
+</simplesect>
+Internally implemnted with MPARC_push_ufilestr and MPARC_peek_file </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="484" column="22" bodyfile="mparc.c" bodystart="5328" bodyend="5366" declfile="mparc.h" declline="484" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a296a715e69d3ce375c7aceb6805fbcb7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_pop_file</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *filename)</argsstring>
+        <name>MPARC_pop_file</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Pop a file off the archive. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to pop off </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="493" column="22" bodyfile="mparc.c" bodystart="5369" bodyend="5373" declfile="mparc.h" declline="493" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1aa1dfba39ba919efbeb4013e791d918ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_clear_file</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure)</argsstring>
+        <name>MPARC_clear_file</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <briefdescription>
+<para>Wipe everything (I mean every single file) off the archive. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="500" column="22" bodyfile="mparc.c" bodystart="5375" bodyend="5388" declfile="mparc.h" declline="500" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a677f04c3376fd501c2d8aaa19f147984" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_peek_file</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, const char *filename, unsigned char **bout, MXPSQL_MPARC_uint_repr_t *sout)</argsstring>
+        <name>MPARC_peek_file</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>filename</declname>
+        </param>
+        <param>
+          <type>unsigned char **</type>
+          <declname>bout</declname>
+        </param>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref> *</type>
+          <declname>sout</declname>
+        </param>
+        <briefdescription>
+<para>Peek the contents of a file of the archive. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to peek the contents at </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>bout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the output pointer to a variable that represent the binary content of the file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the output pointer to a variable that represent the size of bout </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="511" column="22" bodyfile="mparc.c" bodystart="5411" bodyend="5413" declfile="mparc.h" declline="511" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a5b17c807bb2fa6e05ac4130112ce6643" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_construct_str</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char **output)</argsstring>
+        <name>MPARC_construct_str</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char **</type>
+          <declname>output</declname>
+        </param>
+        <briefdescription>
+<para>Construct the archive into a string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>output</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the storage string </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done</para>
+</simplesect>
+<simplesect kind="note"><para>manually free output string with &apos;MPARC_free&apos;, not &apos;free&apos; or &apos;delete&apos; for forward compatibility.</para>
+</simplesect>
+Construct the archive into a string.</para>
+<para>SEE THIS TO SEE THE FILE FORMAT OF THE ARCHIVE THIS PART IS IMPORTANT TO SEE HOW IT IS IMPLEMENTED AND THE FORMAT</para>
+<para>How is the file constructed (along with little parsing information to make your own parser):</para>
+<para><orderedlist>
+<listitem><para>Build the header: <verbatim> Format: 
+     MXPSQL&apos;s Portable Archive;[VERSION]${JSON_WHATEV_METADATA}&gt;[NEWLINE]
+
+ The &apos;;&apos; character separates the Magic numbers (very long with 25 character I think) from the version number and json metadata
+
+ The &apos;$&apos; character separates the version and magic numbers from the metadata
+
+ The &apos;&gt;&apos; character works to indicate the start of entries
+ The newline is an anomaly though, but just put it in there
+
+ JSON_WHATEV_METADATA can be implementation defined
+ This C implementation will ignore any extra metadata
+
+ Construction note:
+ Make sure to base64 your metadata entries to prevent issues with parsing.
+
+ Parsing tips:
+ Split &apos;;&apos; from the whole archive to get the magic number first
+ Then split &apos;&gt;&apos; from to get the special info header
+ The split &apos;$&apos; from the special info header to get the version and extra metadata
+</verbatim></para>
+</listitem><listitem><para>Build the entries <verbatim> Format: 
+     [CRC32_OF_JSON]%{&quot;filename&quot;:[FILENAME],&quot;blob&quot;:[BASE64_BINARY], &quot;crcsum&quot;:[CRC32_OF_blob]}[NEWLINE]
+
+ The &apos;%&apos; character is to separate the checksum of the JSON from the JSON itself
+
+ You can add other metadata like date of creation, but there must be the entries &quot;filename&quot;, &quot;blob&quot; and &quot;crcsum&quot; in the JSON
+ This C implementation will ignore any extra metadata.
+
+ &quot;filename&quot; should contain the filename. (don&apos;t do any effects and magic on this field called &quot;filename&quot;)
+ &quot;blob&quot; should contain the base64 of the binary or text file. (base64 to make it a text file and not binary)
+ &quot;crcsum&quot; should contain the CRC32 checksum of the content of &quot;blob&quot; after converting it back to it&apos;s original form. (&quot;blob&quot; but wihtout base64)
+
+ Repeat this as required (how many entries are there you repeat)
+
+ Construction note:
+ The anomaly mention aboved is because the newline is added before the main content
+
+ Parsing note:
+     When parsing the entries, split from the begin &apos;&gt;&apos; marker first, and then the end &apos;@&apos; marker.
+     Then split each by newlines.
+     Ignore if a line start with &apos;#&apos; (EXACTLY WITH THAT CHARACTER, there must not even be any whitespace before it), a comment marker. Also ignore if a line is empty.
+     Then, foreach split &apos;%&apos; to get the crc and json.
+     Then compare the JSON to the crc.
+     Then parse the JSON as usual.
+
+ You could parse extra info in your implementation, but this C Based implementation will ignore extra ones. I repeat this line again.
+</verbatim></para>
+</listitem><listitem><para>Build the footer <verbatim> Format: 
+     @~
+
+ the &apos;@&apos; character is to signify end of entry
+ the &apos;~&apos; character is to signify end of file
+
+ Parsing note:
+ Make sure to not have anything beyond the footer, not even a newline.
+</verbatim></para>
+</listitem></orderedlist>
+</para>
+<para>Final note: This file should not have binary characters.</para>
+<para>Follow this (with placeholder) and you get this: <verbatim>MXPSQL&apos;s Portable Archive;[VERSION]${JSON_WHATEV_METADATA}&gt;[NEWLINE][CRC32_OF_JSON]%{&quot;filename&quot;:[FILENAME],&quot;blob&quot;:[BASE64_BINARY], &quot;crcsum&quot;:[CRC32_OF_blob]}[NEWLINE]@~
+</verbatim></para>
+<para>A real single entried one: <verbatim>MXPSQL&apos;s Portable Archive;1${&quot;WhatsThis&quot;: &quot;MPARC Logo lmao-Hahahaha&quot;}&gt;  
+134131812%{&quot;filename&quot;:&quot;./LICENSE.MIT&quot;,&quot;blob&quot;:&quot;TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu&quot;,&quot;crcsum&quot;:&quot;15584406&quot;}@~
+</verbatim></para>
+<para>A real (much more real) multi entried one: <verbatim>MXPSQL&apos;s Portable Archive;1${}&gt;  
+3601911152%{&quot;filename&quot;:&quot;LICENSE&quot;,&quot;blob&quot;:&quot;U2VlIExJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgYW5kIGNob29zZSBvbmUgb2YgdGhlbS4KCkxJQ0VOU0UuTEdQTCBjb250YWlucyBMR1BMLTIuMS1vci1sYXRlciBsaWNlbnNlLgpMSUNFTlNFLk1JVCBjb250YWlucyBNSVQgbGljZW5zZS4KCkxJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgc2hvdWxkIGJlIGRpc3RyaWJ1dGVkIHRvZ2V0aGVyIHdpdGggeW91ciBjb3B5LCBpZiBub3QsIHNvbWV0aGluZyBpcyB3cm9uZy4=&quot;,&quot;crcsum&quot;:&quot;404921597&quot;}  
+59879441%{&quot;filename&quot;:&quot;LICENSE.MIT&quot;,&quot;blob&quot;:&quot;TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu&quot;,&quot;crcsum&quot;:&quot;15584406&quot;}@~
+</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="522" column="22" bodyfile="mparc.c" bodystart="5512" bodyend="5586" declfile="mparc.h" declline="522" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a94c4c474b5f2f5e9f77bc67510f604da" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_construct_filename</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *filename)</argsstring>
+        <name>MPARC_construct_filename</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Construct the archive into a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename target </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="530" column="22" bodyfile="mparc.c" bodystart="5588" bodyend="5597" declfile="mparc.h" declline="530" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1aa125160bff8db1ddf1b8bb0aba864b74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_construct_filestream</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, FILE *fpstream)</argsstring>
+        <name>MPARC_construct_filestream</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>FILE *</type>
+          <declname>fpstream</declname>
+        </param>
+        <briefdescription>
+<para>Construct the archive into a file stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fpstream</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the file stream, should be opened in &quot;rb&quot; mode </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err the status code if successfully done</para>
+</simplesect>
+<simplesect kind="note"><para>fpstream should be closed and opened manually </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="540" column="22" bodyfile="mparc.c" bodystart="5599" bodyend="5631" declfile="mparc.h" declline="540" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1ae4700ba79f9bb8d8f93b71d88c442239" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_extract_advance</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *destdir, char **dir2make, void(*on_item)(const char *), int(*mk_dir)(char *))</argsstring>
+        <name>MPARC_extract_advance</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>destdir</declname>
+        </param>
+        <param>
+          <type>char **</type>
+          <declname>dir2make</declname>
+        </param>
+        <param>
+          <type>void(*)(const char *)</type>
+          <declname>on_item</declname>
+        </param>
+        <param>
+          <type>int(*)(char *)</type>
+          <declname>mk_dir</declname>
+        </param>
+        <briefdescription>
+<para>Advanced extraction function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>destdir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the destination directory </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dir2make</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>NULL if there is no directory to make, not NULL if it needs you to make a directory </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>on_item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>invoked everytime a new item is iterated over </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mk_dir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>invoked when directory is needed to be created, return 0 on success, non-zero on error. Overrides dir2make. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err error status, some code are special, see details</para>
+</simplesect>
+if the error code returns MPARC_OPPART, check dir2make to see if it needs you to make a new directory </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="557" column="22" bodyfile="mparc.c" bodystart="5634" bodyend="5820" declfile="mparc.h" declline="557" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a95a13effaf0c90322b07d3df688338df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_extract</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *destdir, char **dir2make)</argsstring>
+        <name>MPARC_extract</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>destdir</declname>
+        </param>
+        <param>
+          <type>char **</type>
+          <declname>dir2make</declname>
+        </param>
+        <briefdescription>
+<para>Simple version of MPARC_extract_advance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>destdir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the destination directory </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dir2make</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>NULL if there is no directory to make, not NULL if it needs you to make a directory </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err error status of extraction, some codes are special, see MPARC_extract_advance for more info</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1ae4700ba79f9bb8d8f93b71d88c442239" kindref="member">MPARC_extract_advance</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="568" column="22" bodyfile="mparc.c" bodystart="5822" bodyend="5824" declfile="mparc.h" declline="568" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a0031c4afce4930f91d63017bddae08e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_readdir</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *srcdir, int recursive, int(*listdir)(char *, int, char **))</argsstring>
+        <name>MPARC_readdir</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>srcdir</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>recursive</declname>
+        </param>
+        <param>
+          <type>int(*)(char *, int, char **)</type>
+          <declname>listdir</declname>
+        </param>
+        <briefdescription>
+<para>Read a directory into the structure. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>srcdir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the source directory to read from </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>recursive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>read from subdirectories if not set to 0 </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>listdir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>function to list a directory, shall not be NULL or else it returns an error. This is the function that handles listing the file and recursion. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err error status of reading</para>
+</simplesect>
+<blockquote><para>listdir Prototyping </para>
+</blockquote>the first parameter of the listdir function is the current directory that should be read from</para>
+<para>the second parameter indicates if it should be recursive, set to 0 if not, don&apos;t if not</para>
+<para>the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc&apos;ed or Malloc&apos;ed (pls Calloc it) as it relies on finding NULL and the array getting freed</para>
+<para>the return value should always be 0 for success, other values indicate failure </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="591" column="22" bodyfile="mparc.c" bodystart="5827" bodyend="5857" declfile="mparc.h" declline="591" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1aa9f7070ca13873d607746faf7f12486f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_parse_str_advance</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *stringy, int erronduplicate)</argsstring>
+        <name>MPARC_parse_str_advance</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>stringy</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>erronduplicate</declname>
+        </param>
+        <briefdescription>
+<para>Parse the archive into the structure with extra flags. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stringy</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the string to be parsed to </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>erronduplicate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error with returning MPARC_KEXISTS if the key exists </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err Did it parse well or did not </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="601" column="22" bodyfile="mparc.c" bodystart="5860" bodyend="5905" declfile="mparc.h" declline="601" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a19c08df623586464196d7ad99cd4b68b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_parse_str</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *stringy)</argsstring>
+        <name>MPARC_parse_str</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>stringy</declname>
+        </param>
+        <briefdescription>
+<para>Parse the archive into the structure, a simpler version of MPARC_parse_str_advance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stringy</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the string to be parsed to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err Did it parse well or did not</para>
+</simplesect>
+It is MPARC_parse_str_advance with the following options:</para>
+<para><itemizedlist>
+<listitem><para>Overwrite entries if duplicate found</para>
+</listitem></itemizedlist>
+</para>
+<para><simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1aa9f7070ca13873d607746faf7f12486f" kindref="member">MPARC_parse_str_advance</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="617" column="22" bodyfile="mparc.c" bodystart="5907" bodyend="5909" declfile="mparc.h" declline="617" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a10a53d66991368ae2ae051f485d8a728" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_parse_filestream</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, FILE *fpstream)</argsstring>
+        <name>MPARC_parse_filestream</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>FILE *</type>
+          <declname>fpstream</declname>
+        </param>
+        <briefdescription>
+<para>Parse the opened file stream archive into the structure. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fpstream</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the stream to read from, should be opened in &quot;rb&quot; mode </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err Did it parse well or did not </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="625" column="22" bodyfile="mparc.c" bodystart="5911" bodyend="5963" declfile="mparc.h" declline="625" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a3f22125e32bc318875eec834e9b4e236" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref></type>
+        <definition>MXPSQL_MPARC_err MPARC_parse_filename</definition>
+        <argsstring>(MXPSQL_MPARC_t *structure, char *filename)</argsstring>
+        <name>MPARC_parse_filename</name>
+        <param>
+          <type><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> *</type>
+          <declname>structure</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Parse the archive file from the filename into the structure. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>structure</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the target structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the filename to read from </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MXPSQL_MPARC_err Did it parse well or did not </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="633" column="22" bodyfile="mparc.c" bodystart="5965" bodyend="5971" declfile="mparc.h" declline="633" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a397599ed1504ab0b9ad7a5c945c359ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void *</type>
+        <definition>void * MPARC_malloc</definition>
+        <argsstring>(MXPSQL_MPARC_uint_repr_t size)</argsstring>
+        <name>MPARC_malloc</name>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref></type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+<para>My malloc, for easy plug and switch. Extensions should use this instead of malloc. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size of bytes to allocate </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void* allocated memory pointer</para>
+</simplesect>
+<simplesect kind="note"><para>MPARC_malloc has its pitfalls. Don&apos;t fall for it. <linebreak/>
+ Right now is using C&apos;s malloc, so it is at the mercy of that function as malloc has flaws. <linebreak/>
+ Allocating a zero sized object with MPARC_Malloc, danger is from that it is implementation defined. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="648" column="10" bodyfile="mparc.c" bodystart="5975" bodyend="5977" declfile="mparc.h" declline="648" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1ab23a5170998401c4b3852fe54d4374a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void *</type>
+        <definition>void * MPARC_calloc</definition>
+        <argsstring>(MXPSQL_MPARC_uint_repr_t arr_size, size_t el_size)</argsstring>
+        <name>MPARC_calloc</name>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref></type>
+          <declname>arr_size</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>el_size</declname>
+        </param>
+        <briefdescription>
+<para>My calloc, for easy plug and switch. Extensions should use this instead of calloc. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>arr_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size of array (if applicable, else put 1) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>el_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size of element </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void* allocated memory pointer</para>
+</simplesect>
+<simplesect kind="note"><para>MPARC_calloc has its pitfalls. Don&apos;t fall for it. <linebreak/>
+ Right now is using C&apos;s calloc, so it is at the mercy of that function as calloc has flaws. <linebreak/>
+ Allocating a zero sized object with MPARC_calloc, danger is from that it is implementation defined. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="661" column="10" bodyfile="mparc.c" bodystart="5979" bodyend="5981" declfile="mparc.h" declline="661" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a1bbdf1d27c7dbf8c222535770fb5323f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void *</type>
+        <definition>void * MPARC_realloc</definition>
+        <argsstring>(void *oldmem, MXPSQL_MPARC_uint_repr_t newsize)</argsstring>
+        <name>MPARC_realloc</name>
+        <param>
+          <type>void *</type>
+          <declname>oldmem</declname>
+        </param>
+        <param>
+          <type><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref></type>
+          <declname>newsize</declname>
+        </param>
+        <briefdescription>
+<para>My realloc, for easy plug and switch. Extensions should use this instead of realloc. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>oldmem</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>old memory to change size </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>newsize</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>new size </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void* reallocated memory pointer</para>
+</simplesect>
+<simplesect kind="note"><para></para>
+</simplesect>
+MPARC_realloc has its pitfalls. Don&apos;t fall for it. <linebreak/>
+ Right now is using C&apos;s realloc, so it is at the mercy of that function as realloc has flaws. <linebreak/>
+ Common one: <linebreak/>
+ In place realloc, danger is from when it errors out and now you created a memory leak. <linebreak/>
+ Reusing old realloc pointers, danger is that it may have been invalidated. <linebreak/>
+ Allocating a zero sized object with MPARC_realloc, danger is that it used to be implementation defined before C23, after C23 is now undefined behaviour. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="679" column="10" bodyfile="mparc.c" bodystart="5983" bodyend="5985" declfile="mparc.h" declline="679" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a95d02449201605a28ce5143bc19b1abc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void MPARC_free</definition>
+        <argsstring>(void *mem)</argsstring>
+        <name>MPARC_free</name>
+        <param>
+          <type>void *</type>
+          <declname>mem</declname>
+        </param>
+        <briefdescription>
+<para>My free, for easy plug and switch. Extensions should use this instead of free. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mem</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>memory to free</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para></para>
+</simplesect>
+MPARC_free has its pitfalls. Don&apos;t fall for it. <linebreak/>
+ Right now is using C&apos;s free, so it is at the mercy of that function as free has flaws. <linebreak/>
+ Common one: <linebreak/>
+ Double free, danger is that it is undefined behaviour to do so. <linebreak/>
+ Free not allocated memory, danger is that it is also undefined behaviour to do so. <linebreak/>
+ Not freeing memory if you are done with it, danger is that you played yourself with memory leaks. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="694" column="10" bodyfile="mparc.c" bodystart="5987" bodyend="5989" declfile="mparc.h" declline="694" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1aab06ea978e0ab92f8b5086607fa9e4f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t MPARC_MXPSQL_MPARC_t_sizeof</definition>
+        <argsstring>()</argsstring>
+        <name>MPARC_MXPSQL_MPARC_t_sizeof</name>
+        <briefdescription>
+<para>Get sizeof <ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>size_t sizeof(MXPSQL_MPARC_t)</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="705" column="12" bodyfile="mparc.c" bodystart="5993" bodyend="5995" declfile="mparc.h" declline="705" declcolumn="12"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a2666d0b1108a0727558b73f2e5ad53d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t MPARC_MXPSQL_MPARC_iter_t_sizeof</definition>
+        <argsstring>()</argsstring>
+        <name>MPARC_MXPSQL_MPARC_iter_t_sizeof</name>
+        <briefdescription>
+<para>Get sizeof <ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>size_t sizeof(MXPSQL_MPARC_iter_t)</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="713" column="12" bodyfile="mparc.c" bodystart="5997" bodyend="5999" declfile="mparc.h" declline="713" declcolumn="12"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1ab66f0b019f568c262b41520c209159ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t MPARC_strnlen</definition>
+        <argsstring>(const char *str, size_t maxlen)</argsstring>
+        <name>MPARC_strnlen</name>
+        <param>
+          <type>const char *</type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>maxlen</declname>
+        </param>
+        <briefdescription>
+<para>My strlen for portability. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string to check </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>maxlen</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>max length </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>size_t actual str length or maxlen </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="724" column="12" declfile="mparc.h" declline="724" declcolumn="12"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a13e565e42b5f37b7307260afbc958312" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>char *</type>
+        <definition>char * MPARC_strtok_r</definition>
+        <argsstring>(char *s, const char *delim, char **save_ptr)</argsstring>
+        <name>MPARC_strtok_r</name>
+        <param>
+          <type>char *</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>delim</declname>
+        </param>
+        <param>
+          <type>char **</type>
+          <declname>save_ptr</declname>
+        </param>
+        <briefdescription>
+<para>Strtok Safe Edition. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string to be tokenized, must be mutable </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>delim</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>delimiter to be used while tokenizing </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>save_ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>storage space for the rest of the &apos;she&apos; string </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>char* The token </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="733" column="10" declfile="mparc.h" declline="733" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1ad0e52e267c7096327e368e249c1f51fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void *</type>
+        <definition>void * MPARC_memdup</definition>
+        <argsstring>(const void *src, size_t len)</argsstring>
+        <name>MPARC_memdup</name>
+        <param>
+          <type>const void *</type>
+          <declname>src</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>len</declname>
+        </param>
+        <briefdescription>
+<para>Copy memory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>src</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>source memory bytes, interpreted as unsigned char* </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>length of src </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void* duplicated value, interpreted as unsigned char*</para>
+</simplesect>
+<simplesect kind="note"><para>Use MPARC_free to deallocate instead of &apos;free&apos; and &apos;delete&apos; for forward compatibility.</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1ad0e52e267c7096327e368e249c1f51fd" kindref="member">MPARC_memdup</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="745" column="10" declfile="mparc.h" declline="745" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a9c4e26f8545ca1670f968821602f9dc2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>char *</type>
+        <definition>char * MPARC_strndup</definition>
+        <argsstring>(const char *src, size_t ilen)</argsstring>
+        <name>MPARC_strndup</name>
+        <param>
+          <type>const char *</type>
+          <declname>src</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ilen</declname>
+        </param>
+        <briefdescription>
+<para>Copy string with length limits. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>src</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>source string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ilen</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>max length to copy </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>char* duplicated string</para>
+</simplesect>
+<simplesect kind="note"><para>Use &apos;MPARC_free&apos; to deallocate instead of &apos;free&apos; and &apos;delete&apos; for forward compatibility.</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1a9c4e26f8545ca1670f968821602f9dc2" kindref="member">MPARC_strndup</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="757" column="10" declfile="mparc.h" declline="757" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a1594c0be7e62d1541f058feb7cbfa262" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>char *</type>
+        <definition>char * MPARC_strdup</definition>
+        <argsstring>(const char *src)</argsstring>
+        <name>MPARC_strdup</name>
+        <param>
+          <type>const char *</type>
+          <declname>src</declname>
+        </param>
+        <briefdescription>
+<para>Copy string with no length limits. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>src</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>source string </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>char* duplicated string</para>
+</simplesect>
+<simplesect kind="note"><para>Use &apos;MPARC_free&apos; to deallocate instead of &apos;free&apos; and &apos;delete&apos; for forward compatibility.</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="d6/d08/mparc_8h_1a1594c0be7e62d1541f058feb7cbfa262" kindref="member">MPARC_strdup</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="768" column="10" declfile="mparc.h" declline="768" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a3a202a71270a2d8faf571af197e42e6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>char *</type>
+        <definition>char * MPARC_basename</definition>
+        <argsstring>(const char *filename)</argsstring>
+        <name>MPARC_basename</name>
+        <param>
+          <type>const char *</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Get the basename of the file paht. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>file path </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>char* Base name of filename</para>
+</simplesect>
+On unix, it is strrchr&apos;d on &apos;/&apos; only.</para>
+<para>On windows, it is not only strrchr&apos;d on &apos;/&apos;, it is also strchrr&apos;d on &apos;\&apos; (How you say the \ character on C) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="781" column="10" declfile="mparc.h" declline="781" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1ac62666bee60ef27ce66c4fb3361a467f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>char *</type>
+        <definition>char * MPARC_dirname</definition>
+        <argsstring>(char *path)</argsstring>
+        <name>MPARC_dirname</name>
+        <param>
+          <type>char *</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Get directory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>file path </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>char* the directory path without the filename </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="788" column="10" declfile="mparc.h" declline="788" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="d6/d08/mparc_8h_1a1d9ab18fe1541bbb781847327dc66475" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>char *</type>
+        <definition>char * MPARC_get_extension</definition>
+        <argsstring>(const char *fnp, int full_or_not)</argsstring>
+        <name>MPARC_get_extension</name>
+        <param>
+          <type>const char *</type>
+          <declname>fnp</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>full_or_not</declname>
+        </param>
+        <briefdescription>
+<para>Get the extension. Dodgy implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fnp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>file path with extension </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>full_or_not</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if set to 0, strip from the last &apos;.&apos;, else strip from the first &apos;.&apos; </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>char* the extension </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="mparc.h" line="796" column="10" declfile="mparc.h" declline="796" declcolumn="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header With Implementation. Never reeterant, thread and async safe, probably. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>MPARC, A Dumb Archiver Format C Rewrite Of MPAR. Test file.</para>
+<para><simplesect kind="author"><para>MXPSQL </para>
+</simplesect>
+<simplesect kind="version"><para>0.1 </para>
+</simplesect>
+<simplesect kind="date"><para>2022-09-26</para>
+</simplesect>
+<simplesect kind="copyright"><para></para>
+</simplesect>
+Licensed To You Under Teh MIT License and the LGPL-2.1-Or-Later License</para>
+<para>MIT License</para>
+<para>Copyright (c) 2022 MXPSQL</para>
+<para>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</para>
+<para>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</para>
+<para>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</para>
+<para>MPARC, A rewrite of MPAR IN C, a dumb archiver format Copyright (C) 2022 MXPSQL</para>
+<para>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.</para>
+<para>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.</para>
+<para>You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>_MXPSQL_MPARC_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_MXPSQL_MPARC_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>(!(defined(__STDC__)<sp/>&amp;&amp;<sp/>__STDC__))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="preprocessor">#error<sp/>&quot;C<sp/>must<sp/>be<sp/>ANSI<sp/>C,<sp/>not<sp/>K&amp;R<sp/>C<sp/>or<sp/>non<sp/>ANSI<sp/>C<sp/>compliant<sp/>C&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__cplusplus)<sp/>||<sp/>defined(c_plusplus)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdio&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdarg&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdio.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdarg.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdint.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stddef.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Error<sp/>reporting</highlight></codeline>
+<codeline lineno="80" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/>{</highlight></codeline>
+<codeline lineno="85" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca53d49c284005c01c8d5264038cbbcf2f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca53d49c284005c01c8d5264038cbbcf2f" kindref="member">MPARC_OK</ref><sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca46e0176fd1005f9135ee03aa01bd7e5e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca46e0176fd1005f9135ee03aa01bd7e5e" kindref="member">MPARC_IDK</ref><sp/>=<sp/>-1,</highlight></codeline>
+<codeline lineno="96" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100cafe2b876879ed2597966705c23237b93b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100cafe2b876879ed2597966705c23237b93b" kindref="member">MPARC_INTERNAL</ref><sp/>=<sp/>-2,</highlight></codeline>
+<codeline lineno="101" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385" kindref="member">MPARC_NULL</ref><sp/>=<sp/>-3,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100cac45bcdf666c138541d02f21d9fa499cf" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100cac45bcdf666c138541d02f21d9fa499cf" kindref="member">MPARC_IVAL</ref><sp/>=<sp/>1,</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca08d01838a3e0e8e9f612887427522302" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca08d01838a3e0e8e9f612887427522302" kindref="member">MPARC_KNOEXIST</ref>=2,</highlight></codeline>
+<codeline lineno="118" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100caa08f4bd6a058077df51796db882b8a1a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100caa08f4bd6a058077df51796db882b8a1a" kindref="member">MPARC_KEXISTS</ref>=3,</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100cadfdaf1581ab1118463f7c7483fdf6264" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100cadfdaf1581ab1118463f7c7483fdf6264" kindref="member">MPARC_OOM</ref><sp/>=<sp/>4,</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca" kindref="member">MPARC_NOTARCHIVE</ref>=5,</highlight></codeline>
+<codeline lineno="135" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324" kindref="member">MPARC_ARCHIVETOOSHINY</ref>=6,</highlight></codeline>
+<codeline lineno="140" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e" kindref="member">MPARC_CHKSUM</ref>=7,</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4" kindref="member">MPARC_CONSTRUCT_FAIL</ref>=8,</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f" kindref="member">MPARC_OPPART</ref>=9,</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa" kindref="member">MPARC_FERROR</ref>=10</highlight></codeline>
+<codeline lineno="158" refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref>;</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="d6/d08/mparc_8h_1a499191b4f97ceb2791a4861cd493b9d4" kindref="member">MPARC_strerror</ref>(<ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/>err,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>out);</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="d6/d08/mparc_8h_1acccb962b77cce1fe50cb5fde3bf50051" kindref="member">MPARC_sfperror</ref>(<ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/>err,<sp/>FILE*<sp/>filepstream,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>emsg);</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="d6/d08/mparc_8h_1a0d77b86222a2630f482dc038b149e553" kindref="member">MPARC_fperror</ref>(<ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/>err,<sp/>FILE*<sp/>fileptrstream);</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="d6/d08/mparc_8h_1ae5d11cf031a7370f20dd6861746208df" kindref="member">MPARC_perror</ref>(<ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/>err);</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Types</highlight></codeline>
+<codeline lineno="213" refid="d6/d08/mparc_8h_1af86786ca7b4ba1464c419b034cd238d3" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref><sp/><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>;</highlight></codeline>
+<codeline lineno="225" refid="d6/d08/mparc_8h_1a07c83537b86c7bd755c69f0dc234d291" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref><sp/><ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref>;</highlight></codeline>
+<codeline lineno="233" refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>uint_fast64_t<sp/><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref>;</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"></highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Main<sp/>functions</highlight></codeline>
+<codeline lineno="243"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a1fe7a9487c96376771cec41e72f1fbf7" kindref="member">MPARC_init</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>**<sp/>structure);</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a6da21dcbf030cec0307ad7bfd3ea4f48" kindref="member">MPARC_copy</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>**<sp/>structure,<sp/><ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>**<sp/>targetdest);</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a5a278819906e49b1155ee23cd2f3ad33" kindref="member">MPARC_destroy</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>**<sp/>structure);</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a70b485272c72704901ab0e2c54d40820" kindref="member">MPARC_list_array</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">***<sp/>listout,<sp/><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref>*<sp/>length);</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1abc033ce1084b6c7e42ebfa2415ccd160" kindref="member">MPARC_list_array_free</ref>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">***<sp/>list);</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a984c02b5c1b6a21cfbe863364f78208b" kindref="member">MPARC_list_iterator_init</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>**<sp/>structure,<sp/><ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref>**<sp/>iterator);</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a0e2b9d912b91cac836a472009257f732" kindref="member">MPARC_list_iterator_next</ref>(<ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref>**<sp/>iterator,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>outnam);</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1af69cf2c23d9a3d0f4a175c7c1dc8af2e" kindref="member">MPARC_list_iterator_destroy</ref>(<ref refid="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t" kindref="compound">MXPSQL_MPARC_iter_t</ref>**<sp/>iterator);</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1abdd468971dbef0efc6ff7b12a80ed11b" kindref="member">MPARC_list_foreach</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>cb_aborted,<sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/>(*callback)(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*));</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1ae8ef340b41eb2b0e988fd6a2dd76c5cc" kindref="member">MPARC_exists</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename);</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1af9be2a1eddb8ee3683bbcbc1799c86af" kindref="member">MPARC_query</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">***<sp/>output,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>command,<sp/>...);</highlight></codeline>
+<codeline lineno="376"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a553da556faf3295b6a1930105ab7ccd4" kindref="member">MPARC_query_vlist</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">***<sp/>output,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>command,<sp/>va_list<sp/>vlist);</highlight></codeline>
+<codeline lineno="377"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="391"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1acc3b6d0d8a816228efe2cc8658e0ea07" kindref="member">MPARC_push_ufilestr_advance</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>stripdir,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>overwrite,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>ustringc,<sp/><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref><sp/>sizy);</highlight></codeline>
+<codeline lineno="403"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1ae1e4e3bf0fb1ec74bb36780e79e33085" kindref="member">MPARC_push_ufilestr</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>ustringc,<sp/><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref><sp/>sizy);</highlight></codeline>
+<codeline lineno="413"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a2b9e7a9a86d0fc0fc1d6d746cf1fe80d" kindref="member">MPARC_push_voidfile</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>buffer_guffer,<sp/><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref><sp/>sizy);</highlight></codeline>
+<codeline lineno="423"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a307fe25e74de760a3e0f2b6890d87d3b" kindref="member">MPARC_push_filestr</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>stringc,<sp/><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref><sp/>sizey);</highlight></codeline>
+<codeline lineno="431"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1aea2c9efbe8291d48958898cad51a7b90" kindref="member">MPARC_push_filename</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename);</highlight></codeline>
+<codeline lineno="442"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a630de32615c1c54087252d29422c2a90" kindref="member">MPARC_push_filestream</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/>FILE*<sp/>filestream,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename);</highlight></codeline>
+<codeline lineno="443"><highlight class="normal"></highlight></codeline>
+<codeline lineno="457"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a6c36bdd202ca9213a5e55c51533c3f8c" kindref="member">MPARC_rename_file</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>overwrite,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>oldname,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>newname);</highlight></codeline>
+<codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a40c04532243f85a4946b1ea1a7bc7aa8" kindref="member">MPARC_duplicate_file</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>overwrite,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>srcfile,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>destfile);</highlight></codeline>
+<codeline lineno="484"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a6e9c04393cc1fb0621076a3894bbd596" kindref="member">MPARC_swap_file</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>file1,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>file2);</highlight></codeline>
+<codeline lineno="485"><highlight class="normal"></highlight></codeline>
+<codeline lineno="493"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a296a715e69d3ce375c7aceb6805fbcb7" kindref="member">MPARC_pop_file</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename);</highlight></codeline>
+<codeline lineno="500"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1aa1dfba39ba919efbeb4013e791d918ef" kindref="member">MPARC_clear_file</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure);</highlight></codeline>
+<codeline lineno="501"><highlight class="normal"></highlight></codeline>
+<codeline lineno="511"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a677f04c3376fd501c2d8aaa19f147984" kindref="member">MPARC_peek_file</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>bout,<sp/><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref>*<sp/>sout);</highlight></codeline>
+<codeline lineno="512"><highlight class="normal"></highlight></codeline>
+<codeline lineno="522"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a5b17c807bb2fa6e05ac4130112ce6643" kindref="member">MPARC_construct_str</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>output);</highlight></codeline>
+<codeline lineno="530"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a94c4c474b5f2f5e9f77bc67510f604da" kindref="member">MPARC_construct_filename</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename);</highlight></codeline>
+<codeline lineno="540"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1aa125160bff8db1ddf1b8bb0aba864b74" kindref="member">MPARC_construct_filestream</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/>FILE*<sp/>fpstream);</highlight></codeline>
+<codeline lineno="541"><highlight class="normal"></highlight></codeline>
+<codeline lineno="542"><highlight class="normal"></highlight></codeline>
+<codeline lineno="557"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1ae4700ba79f9bb8d8f93b71d88c442239" kindref="member">MPARC_extract_advance</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>destdir,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>dir2make,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>(*on_item)(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*),<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>(*mk_dir)(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*));</highlight></codeline>
+<codeline lineno="568"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a95a13effaf0c90322b07d3df688338df" kindref="member">MPARC_extract</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>destdir,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>dir2make);</highlight></codeline>
+<codeline lineno="569"><highlight class="normal"></highlight></codeline>
+<codeline lineno="591"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a0031c4afce4930f91d63017bddae08e7" kindref="member">MPARC_readdir</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>srcdir,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>recursive,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>(*listdir)(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**));</highlight></codeline>
+<codeline lineno="592"><highlight class="normal"></highlight></codeline>
+<codeline lineno="601"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1aa9f7070ca13873d607746faf7f12486f" kindref="member">MPARC_parse_str_advance</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>stringy,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>erronduplicate);</highlight></codeline>
+<codeline lineno="617"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a19c08df623586464196d7ad99cd4b68b" kindref="member">MPARC_parse_str</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>stringy);</highlight></codeline>
+<codeline lineno="625"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a10a53d66991368ae2ae051f485d8a728" kindref="member">MPARC_parse_filestream</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/>FILE*<sp/>fpstream);</highlight></codeline>
+<codeline lineno="633"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="d6/d08/mparc_8h_1ab94170c55bb379cd60ae08c6bb68100c" kindref="member">MXPSQL_MPARC_err</ref><sp/><ref refid="d6/d08/mparc_8h_1a3f22125e32bc318875eec834e9b4e236" kindref="member">MPARC_parse_filename</ref>(<ref refid="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t" kindref="compound">MXPSQL_MPARC_t</ref>*<sp/>structure,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>filename);</highlight></codeline>
+<codeline lineno="634"><highlight class="normal"></highlight></codeline>
+<codeline lineno="635"><highlight class="normal"></highlight></codeline>
+<codeline lineno="636"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Memory<sp/>management<sp/>utilities<sp/>for<sp/>easy<sp/>refactoring</highlight></codeline>
+<codeline lineno="648"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="d6/d08/mparc_8h_1a397599ed1504ab0b9ad7a5c945c359ba" kindref="member">MPARC_malloc</ref>(<ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref><sp/>size);</highlight></codeline>
+<codeline lineno="661"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="d6/d08/mparc_8h_1ab23a5170998401c4b3852fe54d4374a3" kindref="member">MPARC_calloc</ref>(<ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref><sp/>arr_size,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>el_size);</highlight></codeline>
+<codeline lineno="679"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="d6/d08/mparc_8h_1a1bbdf1d27c7dbf8c222535770fb5323f" kindref="member">MPARC_realloc</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>oldmem,<sp/><ref refid="d6/d08/mparc_8h_1a6dd4c5df4f9e32a9e863fc789ebaddfb" kindref="member">MXPSQL_MPARC_uint_repr_t</ref><sp/>newsize);</highlight></codeline>
+<codeline lineno="694"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="d6/d08/mparc_8h_1a95d02449201605a28ce5143bc19b1abc" kindref="member">MPARC_free</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>mem);</highlight></codeline>
+<codeline lineno="695"><highlight class="normal"></highlight></codeline>
+<codeline lineno="696"><highlight class="normal"></highlight></codeline>
+<codeline lineno="697"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Type<sp/>internal<sp/>utilities</highlight></codeline>
+<codeline lineno="705"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="d6/d08/mparc_8h_1aab06ea978e0ab92f8b5086607fa9e4f4" kindref="member">MPARC_MXPSQL_MPARC_t_sizeof</ref>();</highlight></codeline>
+<codeline lineno="713"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="d6/d08/mparc_8h_1a2666d0b1108a0727558b73f2e5ad53d1" kindref="member">MPARC_MXPSQL_MPARC_iter_t_sizeof</ref>();</highlight></codeline>
+<codeline lineno="714"><highlight class="normal"></highlight></codeline>
+<codeline lineno="715"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Auxiliary<sp/>function</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="716"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#ifdef<sp/>MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="724" refid="d6/d08/mparc_8h_1ab66f0b019f568c262b41520c209159ea" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="d6/d08/mparc_8h_1ab66f0b019f568c262b41520c209159ea" kindref="member">MPARC_strnlen</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>str,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>maxlen);</highlight></codeline>
+<codeline lineno="733" refid="d6/d08/mparc_8h_1a13e565e42b5f37b7307260afbc958312" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="d6/d08/mparc_8h_1a13e565e42b5f37b7307260afbc958312" kindref="member">MPARC_strtok_r</ref><sp/>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*s,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*delim,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>**save_ptr);</highlight></codeline>
+<codeline lineno="745" refid="d6/d08/mparc_8h_1ad0e52e267c7096327e368e249c1f51fd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="d6/d08/mparc_8h_1ad0e52e267c7096327e368e249c1f51fd" kindref="member">MPARC_memdup</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>src,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>len);</highlight></codeline>
+<codeline lineno="757" refid="d6/d08/mparc_8h_1a9c4e26f8545ca1670f968821602f9dc2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="d6/d08/mparc_8h_1a9c4e26f8545ca1670f968821602f9dc2" kindref="member">MPARC_strndup</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>src,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ilen);</highlight></codeline>
+<codeline lineno="768" refid="d6/d08/mparc_8h_1a1594c0be7e62d1541f058feb7cbfa262" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="d6/d08/mparc_8h_1a1594c0be7e62d1541f058feb7cbfa262" kindref="member">MPARC_strdup</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>src);</highlight></codeline>
+<codeline lineno="781" refid="d6/d08/mparc_8h_1a3a202a71270a2d8faf571af197e42e6e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="d6/d08/mparc_8h_1a3a202a71270a2d8faf571af197e42e6e" kindref="member">MPARC_basename</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*filename);</highlight></codeline>
+<codeline lineno="788" refid="d6/d08/mparc_8h_1ac62666bee60ef27ce66c4fb3361a467f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="d6/d08/mparc_8h_1ac62666bee60ef27ce66c4fb3361a467f" kindref="member">MPARC_dirname</ref><sp/>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*path);</highlight></codeline>
+<codeline lineno="796" refid="d6/d08/mparc_8h_1a1d9ab18fe1541bbb781847327dc66475" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="d6/d08/mparc_8h_1a1d9ab18fe1541bbb781847327dc66475" kindref="member">MPARC_get_extension</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>fnp,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>full_or_not);</highlight></codeline>
+<codeline lineno="797"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="798"><highlight class="normal"></highlight></codeline>
+<codeline lineno="799"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__cplusplus)<sp/>||<sp/>defined(c_plusplus)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="800"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="801"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="802"><highlight class="normal"></highlight></codeline>
+<codeline lineno="803"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>end<sp/>of<sp/>header</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="mparc.h"/>
+  </compounddef>
+</doxygen>

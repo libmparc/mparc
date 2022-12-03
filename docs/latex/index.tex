@@ -1,0 +1,45 @@
+\label{index_md_README}%
+\Hypertarget{index_md_README}%
+ 
+\begin{DoxyInlineImage}
+\includegraphics[height=\baselineskip,keepaspectratio=true]{logo.png}%Logo is the MPARC archive behind an \#ffffff background lmao
+\end{DoxyInlineImage}
+
+
+MPAR archive reimplemented in C instead of C++, more advanced than before.\hypertarget{index_autotoc_md1}{}\doxysection{Enough of the boring stuff}\label{index_autotoc_md1}
+\hypertarget{index_autotoc_md2}{}\doxysubsection{Why should I use this library and archive format}\label{index_autotoc_md2}
+An archive format, but not just that. ~\newline
+ It\textquotesingle{}s in plain text! Not any plain text, ASCII plain text! ~\newline
+ Even binary files are in plain text because we use Base64 encoding on them!
+
+You can manipulate and extract these archives with a text editor, a crc32 encoder (decoder optional, but good for checks) and a base64 encoder/decoder!
+
+Versatile! You can make it into a key value database store somehow. Can store literal bytes of structs (uh oh endian problems)!\hypertarget{index_autotoc_md3}{}\doxysubsection{Why shouldn\textquotesingle{}t I use this library and archive format}\label{index_autotoc_md3}
+
+\begin{DoxyItemize}
+\item The code I wrote may not be up to quality control. ~\newline
+
+\item This code pulls in libc and uses dynamic allocation. ~\newline
+
+\item Calloc hater? Not for you, this library is proliferated with calloc calls. ~\newline
+
+\item Oh also the archives are bigger than zip or tar as they are binary based and this format is plain text based and plain text files are larger than binary files.
+\end{DoxyItemize}\hypertarget{index_autotoc_md4}{}\doxysubsection{Teach me how to build it}\label{index_autotoc_md4}
+You only need libc for standard functions, but (the boehm garbage collector/dmalloc) can be used to debug memory issues.
+
+\begin{quote}
+Also this can be built with the old makefile (Makefile.\+dumb) (trust me, I am the old method), ~\newline
+ \end{quote}
+autotools (Less broken, but still yes you need to make it yourself) ~\newline
+ or CMake (it works, please do it in the build/ directory).\hypertarget{index_autotoc_md5}{}\doxysubsection{How can I implement this format in my own method?}\label{index_autotoc_md5}
+Go to \href{./mparc.c}{\texttt{ the source code}} and find the MPARC\+\_\+construct\+\_\+str function body, ~\newline
+ there is the instruction there for you on how to construct the archive by hand, ~\newline
+ you can also use the hand construction instructions to make your own library.
+
+You also know how to parse the file just by looking at the specification on file construction.
+
+Read those instructions, think about parsing it and putting it together and there you have your own library implementation! ~\newline
+ Or just copy my code and say it is yours (HEY!).\hypertarget{index_autotoc_md6}{}\doxysubsection{How can I make bindings to my own language?}\label{index_autotoc_md6}
+You make it yourself, or use \href{./mparc.swigi}{\texttt{ SWIG}}!
+
+However, you want C++? You can use the C functions immediately! 
