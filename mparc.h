@@ -5,7 +5,7 @@
 /**
   * @file mparc.h
   * @author MXPSQL
-  * @brief MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header With Implementation. Reentrant functions. Not thread and async safe, probably.
+  * @brief MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header. Reentrant functions. Not thread and async safe, probably.
   * @version 0.1
   * @date 2022-09-26
   * 
