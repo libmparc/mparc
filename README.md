@@ -53,4 +53,4 @@ Or just copy my code and say it is yours (HEY!).
 
 You make it yourself, or use [SWIG](./mparc.swigi)!
 
-However, you want C++? You can use the C functions immediately!
+However, you want C++? You can use the C functions immediately! Or use the C++ Wrappers I made for you.

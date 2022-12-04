@@ -397,7 +397,7 @@ extern "C"{
      * 
      * @note Filename only works on forward slash if stripdir is set due to basename only supporting that operation.
      */
-    MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy);
+    MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, const char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy);
     /**
      * @brief Simple version of MPARC_push_ufilestr_advance that does not strip the directory name
      * 
@@ -409,7 +409,7 @@ extern "C"{
      * 
      * @see MPARC_push_ufilestr_advance
      */
-    MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy);
+    MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, const char* filename, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy);
     /**
      * @brief Push a void pointer as a file
      * 
@@ -419,7 +419,7 @@ extern "C"{
      * @param sizy the size of buffer_guffer
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, MXPSQL_MPARC_uint_repr_t sizy);
+    MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, const char* filename, void* buffer_guffer, MXPSQL_MPARC_uint_repr_t sizy);
     /**
      * @brief Push a string as a file
      * 
@@ -429,7 +429,7 @@ extern "C"{
      * @param sizey the size of stringc
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, MXPSQL_MPARC_uint_repr_t sizey);
+    MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, const char* filename, char* stringc, MXPSQL_MPARC_uint_repr_t sizey);
     /**
      * @brief Push a file read from the filesystem into the archive
      * 
@@ -437,7 +437,7 @@ extern "C"{
      * @param filename the filename to read from
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_push_filename(MXPSQL_MPARC_t* structure, char* filename);
+    MXPSQL_MPARC_err MPARC_push_filename(MXPSQL_MPARC_t* structure, const char* filename);
     /**
      * @brief Push an active filestream into the archive as a file
      * 
@@ -448,7 +448,7 @@ extern "C"{
      * 
      * @note filestream should be opened and closed manually
      */
-    MXPSQL_MPARC_err MPARC_push_filestream(MXPSQL_MPARC_t* structure, FILE* filestream, char* filename);
+    MXPSQL_MPARC_err MPARC_push_filestream(MXPSQL_MPARC_t* structure, FILE* filestream, const char* filename);
 
     /**
      * @brief Rename an entry
@@ -499,7 +499,7 @@ extern "C"{
      * @param filename the filename to pop off
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_pop_file(MXPSQL_MPARC_t* structure, char* filename);
+    MXPSQL_MPARC_err MPARC_pop_file(MXPSQL_MPARC_t* structure, const char* filename);
     /**
      * @brief Wipe everything (I mean every single file) off the archive
      * 
@@ -536,7 +536,7 @@ extern "C"{
      * @param filename the filename target
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_construct_filename(MXPSQL_MPARC_t* structure, char* filename);
+    MXPSQL_MPARC_err MPARC_construct_filename(MXPSQL_MPARC_t* structure, const char* filename);
     /**
      * @brief Construct the archive into a file stream
      * 
@@ -639,7 +639,7 @@ extern "C"{
      * @param filename the filename to read from
      * @return MXPSQL_MPARC_err Did it parse well or did not
      */
-    MXPSQL_MPARC_err MPARC_parse_filename(MXPSQL_MPARC_t* structure, char* filename);
+    MXPSQL_MPARC_err MPARC_parse_filename(MXPSQL_MPARC_t* structure, const char* filename);
 
 
     // Memory management utilities for easy refactoring

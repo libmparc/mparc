@@ -3641,14 +3641,14 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		}
 
 
-		static MXPSQL_MPARC_err MPARC_i_push_ufilestr_advancea(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy, crc_t crc3){
+		static MXPSQL_MPARC_err MPARC_i_push_ufilestr_advancea(MXPSQL_MPARC_t* structure, const char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy, crc_t crc3){
 			MPARC_blob_store blob = {
 				sizy,
 				ustringc,
 				crc3
 			};
 
-			char* pfilename = NULL;
+			const char* pfilename = NULL;
 			if(stripdir != 0){
 				pfilename = MPARC_basename(pfilename);
 			}
@@ -5119,7 +5119,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 
 
-		MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy){
+		MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, const char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy){
 			crc_t crc3 = crc_init();
 			crc3 = crc_update(crc3, ustringc, sizy);
 			crc3 = crc_finalize(crc3);
@@ -5139,19 +5139,19 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, char* filename, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy){
+		MXPSQL_MPARC_err MPARC_push_ufilestr(MXPSQL_MPARC_t* structure, const char* filename, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy){
 			return MPARC_push_ufilestr_advance(structure, filename, 0, 1, ustringc, sizy);
 		}
 
-		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, char* filename, void* buffer_guffer, MXPSQL_MPARC_uint_repr_t sizey){
+		MXPSQL_MPARC_err MPARC_push_voidfile(MXPSQL_MPARC_t* structure, const char* filename, void* buffer_guffer, MXPSQL_MPARC_uint_repr_t sizey){
 			return MPARC_push_ufilestr(structure, filename, (unsigned char*)buffer_guffer, sizey);
 		}
 
-		MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, char* filename, char* stringc, MXPSQL_MPARC_uint_repr_t sizey){
+		MXPSQL_MPARC_err MPARC_push_filestr(MXPSQL_MPARC_t* structure, const char* filename, char* stringc, MXPSQL_MPARC_uint_repr_t sizey){
 				return MPARC_push_ufilestr(structure, filename, (unsigned char*) stringc, sizey);
 		}
 
-		MXPSQL_MPARC_err MPARC_push_filename(MXPSQL_MPARC_t* structure, char* filename){
+		MXPSQL_MPARC_err MPARC_push_filename(MXPSQL_MPARC_t* structure, const char* filename){
 				if(structure == NULL) {
 					return MPARC_IVAL;
 				}
@@ -5173,7 +5173,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				return err;
 		}
 
-		MXPSQL_MPARC_err MPARC_push_filestream(MXPSQL_MPARC_t* structure, FILE* filestream, char* filename){
+		MXPSQL_MPARC_err MPARC_push_filestream(MXPSQL_MPARC_t* structure, FILE* filestream, const char* filename){
 				if(filestream == NULL){
 					structure->my_err = MPARC_FERROR;
 					return MPARC_FERROR;
@@ -5374,7 +5374,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		}
 
 
-		MXPSQL_MPARC_err MPARC_pop_file(MXPSQL_MPARC_t* structure, char* filename){
+		MXPSQL_MPARC_err MPARC_pop_file(MXPSQL_MPARC_t* structure, const char* filename){
 				if(MPARC_exists(structure, filename) == MPARC_KNOEXIST) return MPARC_KNOEXIST;
 				map_remove(&structure->globby, filename);
 				return MPARC_OK;
@@ -5593,7 +5593,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_construct_filename(MXPSQL_MPARC_t* structure, char* filename){
+		MXPSQL_MPARC_err MPARC_construct_filename(MXPSQL_MPARC_t* structure, const char* filename){
 			FILE* fpstream = fopen(filename, "wb+");
 			if(fpstream == NULL){
 				structure->my_err = MPARC_FERROR;
@@ -5970,7 +5970,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			return err;
 		}
 
-		MXPSQL_MPARC_err MPARC_parse_filename(MXPSQL_MPARC_t* structure, char* filename){
+		MXPSQL_MPARC_err MPARC_parse_filename(MXPSQL_MPARC_t* structure, const char* filename){
 			FILE* filepointerstream = fopen(filename, "r");
 			if(filepointerstream == NULL) return MPARC_FERROR;
 			MXPSQL_MPARC_err err = MPARC_parse_filestream(structure, filepointerstream);
