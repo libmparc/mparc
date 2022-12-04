@@ -37,6 +37,7 @@ var NAVTREE =
       [ "Data Structure Index", "classes.htm", null ],
       [ "Data Fields", "functions.htm", [
         [ "All", "functions.htm", null ],
+        [ "Functions", "functions_func.htm", null ],
         [ "Variables", "functions_vars.htm", null ]
       ] ]
     ] ],

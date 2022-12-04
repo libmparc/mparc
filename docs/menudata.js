@@ -29,6 +29,7 @@ var menudata={children:[
 {text:"Data Structure Index",url:"classes.htm"},
 {text:"Data Fields",url:"functions.htm",children:[
 {text:"All",url:"functions.htm"},
+{text:"Functions",url:"functions_func.htm"},
 {text:"Variables",url:"functions_vars.htm"}]}]},
 {text:"Files",url:"files.htm",children:[
 {text:"File List",url:"files.htm"},
