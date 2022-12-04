@@ -72,6 +72,8 @@
 #include <time.h>
 #include <stdint.h>
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #ifdef MPARC_DEBUG
 #define MPARC_MEM_DEBUG 1
 
@@ -93,6 +95,8 @@
 #else
 /// @brief Check yo mem leaks rn
 #define CHECK_LEAKS()
+#endif
+
 #endif
 
 /* defines */
