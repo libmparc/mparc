@@ -55,6 +55,8 @@
 #define _MXPSQL_MPARC_CXX
 
 #if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900)
+// NOOP
+#else
 #error "Compiler Not C++11 Compliant"
 #endif
 
