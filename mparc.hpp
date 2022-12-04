@@ -18,6 +18,10 @@
 
 namespace MXPSQL{
     namespace MPARC{
+        /**
+         * @brief The C++ Object Oriented wrapper for MXPSQL_MPARC_err
+         * 
+         */
         class MPARC_Error{
             private:
             MXPSQL_MPARC_err err = MPARC_OK;
@@ -71,6 +75,10 @@ namespace MXPSQL{
             bool isOk(){return (this->getErr() == MPARC_OK);}
         };
 
+        /**
+         * @brief The C++ Object Oriented wrapper for MXPSQL_MPARC_t*
+         * 
+         */
         class MPARC{
             private:
             /**
