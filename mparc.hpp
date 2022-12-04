@@ -131,6 +131,12 @@ namespace MXPSQL{
                 }
             }
 
+            /**
+             * @brief Am I OK?
+             * 
+             * @return true I am OK
+             * @return false I am not OK
+             */
             bool isOk(){return (this->getErr() == MPARC_OK);}
         };
 
