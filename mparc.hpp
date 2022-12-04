@@ -73,27 +73,54 @@ namespace MXPSQL{
 
         class MPARC{
             private:
+            /**
+             * @brief The handle
+             * 
+             */
             MXPSQL_MPARC_t* archive = NULL;
 
             public:
+            /**
+             * @brief Construct a new MPARC object in a boring manner
+             * 
+             */
             MPARC() {
                 MXPSQL_MPARC_err err = MPARC_init(&archive);
                 MPARC_Error(err).OrThrow(); // throw
             }
 
+            /**
+             * @brief Construct a new MPARC object by reading a file
+             * 
+             * @param path archive file to read
+             */
             MPARC(const char* path) : MPARC() {
                 MXPSQL_MPARC_err err = MPARC_parse_filename(archive, path);
                 MPARC_Error(err).OrThrow();
             }
 
+            /**
+             * @brief Construct a new MPARC object by reading a file, but with C++ Strings instead of boring old C Strings
+             * 
+             * @param path archive file to read
+             */
             MPARC(std::string path) : MPARC(path.c_str()) {}
 
+            /**
+             * @brief Construct a new MPARC object by copying and plagiarising other instances.
+             * 
+             * @param other 
+             */
             MPARC(MPARC& other) : MPARC() {
                 MXPSQL_MPARC_t* Ptr = other.getInstance();
                 MXPSQL_MPARC_err err = MPARC_copy(&Ptr, &archive);
                 MPARC_Error(err).OrThrow();
             }
 
+            /**
+             * @brief Destroy the MPARC object and its handle
+             * 
+             */
             ~MPARC(){
                 MPARC_destroy(&archive);
             }
@@ -111,7 +138,13 @@ namespace MXPSQL{
                 return archive;
             }
 
-
+            
+            /**
+             * @brief List itself to a vector
+             * 
+             * @param out output vector
+             * @return MPARC_Error Success?
+             */
             MPARC_Error list(std::vector<std::string>& out){
                 MPARC_Error err(MPARC_OK);
 
