@@ -1,0 +1,5 @@
+# Jekyllrb build settings
+plugins:
+	- jekyll-remote-theme
+
+remote_theme: pages-theme/slate@v0.2.0
