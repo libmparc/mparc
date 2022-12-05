@@ -143,7 +143,7 @@ int main(int argc, char* argv[]){
 
     MPARC_construct_filename(archive, "ck_chorder.mpar");
     // printf("%s", PRIuFAST32);
-	MPARC_clear_file(archive);
+	MPARC_clear(archive);
     {
         MXPSQL_MPARC_err err = MPARC_parse_filename(archive, "ck_chorder.mpar");
         if(err != MPARC_OK){

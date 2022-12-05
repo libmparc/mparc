@@ -3624,7 +3624,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			return 0;
 		}
 
-		int MPARC_sfperror(MXPSQL_MPARC_err err, FILE* filepstream, char* emsg){
+		int MPARC_sfperror(MXPSQL_MPARC_err err, FILE* filepstream, const char* emsg){
 			char* s = "";
 			// printf("%d", err);
 			int r = MPARC_strerror(err, &s);
@@ -4903,7 +4903,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_query(MXPSQL_MPARC_t* structure, char*** output, char* command, ...){
+		MXPSQL_MPARC_err MPARC_query(MXPSQL_MPARC_t* structure, char*** output, const char* command, ...){
 			MXPSQL_MPARC_err err = MPARC_OK;
 			va_list vaarg_list;
 
@@ -4914,7 +4914,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			return err;
 		}
 
-		MXPSQL_MPARC_err MPARC_query_vlist(MXPSQL_MPARC_t* structure, char*** output, char* command, va_list vlist){
+		MXPSQL_MPARC_err MPARC_query_vlist(MXPSQL_MPARC_t* structure, char*** output, const char* command, va_list vlist){
 			MXPSQL_MPARC_err err = MPARC_OK;
 			char** flist = NULL;
 			MXPSQL_MPARC_uint_repr_t flist_len = 0;
@@ -5265,7 +5265,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		}
 
 
-		MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, int overwrite, char* oldname, char* newname){
+		MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, int overwrite, const char* oldname, const char* newname){
 			MXPSQL_MPARC_err err = MPARC_OK;
 			if((err = MPARC_exists(structure, oldname)) == MPARC_KNOEXIST) {
 				structure->my_err = err;
@@ -5306,7 +5306,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			return err;
 		}
 
-		MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, int overwrite, char* srcfile, char* destfile){
+		MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, int overwrite, const char* srcfile, const char* destfile){
 			MXPSQL_MPARC_err err = MPARC_OK;
 			if((err = MPARC_exists(structure, srcfile)) == MPARC_KNOEXIST) {
 				structure->my_err = err;
@@ -5338,7 +5338,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			return err;
 		}
 
-		MXPSQL_MPARC_err MPARC_swap_file(MXPSQL_MPARC_t* structure, char* file1, char* file2){
+		MXPSQL_MPARC_err MPARC_swap_file(MXPSQL_MPARC_t* structure, const char* file1, const char* file2){
 			MXPSQL_MPARC_err err = MPARC_OK;
 
 			if((err = MPARC_exists(structure, file1)) == MPARC_KNOEXIST) {
@@ -5385,7 +5385,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_clear_file(MXPSQL_MPARC_t* structure){
+		MXPSQL_MPARC_err MPARC_clear(MXPSQL_MPARC_t* structure){
 			char** entryos = NULL;
 			MXPSQL_MPARC_uint_repr_t eos_s = 0;
 			MXPSQL_MPARC_err err = MPARC_list_array(structure, &entryos, &eos_s);
@@ -5644,7 +5644,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		}
 
 		
-		MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*)){
+		MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, const char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*)){
 			{
 				char** listy = NULL;
 				MXPSQL_MPARC_uint_repr_t listys = 0;
@@ -5832,12 +5832,12 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make){
+		MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, const char* destdir, char** dir2make){
 			return MPARC_extract_advance(structure, destdir, dir2make, NULL, NULL);
 		}
 
 
-		MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, char* srcdir, int recursive, int (*listdir)(char*, int, char**)){
+		MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, const char* srcdir, int recursive, int (*listdir)(const char*, int, char**)){
 			if(listdir == NULL) return MPARC_IVAL;
 
 			char** flists = NULL;
@@ -5870,7 +5870,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		}
 
 
-		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, char* Stringy, int erronduplicate){
+		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* Stringy, int erronduplicate){
 			MXPSQL_MPARC_err err = MPARC_OK;
 
 			{
@@ -5917,7 +5917,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 			return err;
 		}
 
-		MXPSQL_MPARC_err MPARC_parse_str(MXPSQL_MPARC_t* structure, char* stringy){
+		MXPSQL_MPARC_err MPARC_parse_str(MXPSQL_MPARC_t* structure, const char* stringy){
 			return MPARC_parse_str_advance(structure, stringy, 0);
 		}
 

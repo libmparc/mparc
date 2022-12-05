@@ -77,6 +77,10 @@
 
 namespace MXPSQL{
     namespace MPARC{
+        class MPARC;
+        class MPARC_Iter;
+        class MPARC_Error;
+
         /**
          * @brief The C++ Object Oriented wrapper for MXPSQL_MPARC_err
          * 
@@ -116,7 +120,13 @@ namespace MXPSQL{
              */
             void OrDie() {
                 if(this->getErr() != MPARC_OK){
-                    std::abort();
+                    try{
+                        this->OrThrow();
+                    }
+                    catch(std::runtime_error& err){
+                        std::cerr << err.what() << std::endl << "Die operation has been requested, so death by abortion with std::abort!" << std::endl;
+                        std::abort();
+                    }
                 }
             }
 
@@ -126,7 +136,7 @@ namespace MXPSQL{
              */
             void OrThrow(){
                 if(this->getErr() != MPARC_OK){
-                    std::string str = std::string("MPARC Runtime Error with code of ") + std::to_string(((int)this->getErr()));
+                    std::string str = std::string("MPARC Runtime Error with code of ") + std::to_string(((int)this->getErr())) + ": " + "|";
                     throw std::runtime_error(str.c_str());
                 }
             }
@@ -138,6 +148,54 @@ namespace MXPSQL{
              * @return false I am not OK
              */
             bool isOk(){return (this->getErr() == MPARC_OK);}
+        };
+
+        /**
+         * @brief The C++ Object Oriented wrapper for MXPSQL_MPARC_iter_t*
+         * 
+         */
+        class MPARC_Iter{
+            private:
+            /**
+             * @brief The handle
+             * 
+             */
+            MXPSQL_MPARC_iter_t* handle = NULL;
+
+            public:
+            /**
+             * @brief Construct a new mparc iterator object
+             * 
+             * @param Ptr 
+             */
+            MPARC_Iter(MXPSQL_MPARC_t* Ptr){
+                MXPSQL_MPARC_err err = MPARC_list_iterator_init(&Ptr, &handle);
+                MPARC_Error(err).OrThrow();
+            }
+
+            /**
+             * @brief Destroy the mparc iterator object
+             * 
+             */
+            ~MPARC_Iter(){
+                MPARC_list_iterator_destroy(&handle);
+            }
+
+            /**
+             * @brief Advance the iterator state
+             * 
+             * @param out Filename during advancing
+             * @return MPARC_Error status
+             */
+            MPARC_Error next(std::string& out){
+                MXPSQL_MPARC_err err = MPARC_OK;
+                const char* nam = NULL;
+
+                err = MPARC_list_iterator_next(&handle, &nam);
+                out = std::string(nam);
+
+                return MPARC_Error(err);
+            }
         };
 
         /**
@@ -168,7 +226,7 @@ namespace MXPSQL{
              * @param path archive file to read
              */
             MPARC(const char* path) : MPARC() {
-                MXPSQL_MPARC_err err = MPARC_parse_filename(archive, path);
+                MXPSQL_MPARC_err err = MPARC_parse_filename(this->getInstance(), path);
                 MPARC_Error(err).OrThrow();
             }
 
@@ -201,7 +259,7 @@ namespace MXPSQL{
 
 
             /**
-             * @brief Get the internal MXPSQL_MPARC_t instance
+             * @brief Get the internal MXPSQL_MPARC_t instance. Use this if you use with the C Functions or you need to leverage the power of pointers.
              * 
              * @return MXPSQL_MPARC_t* pointer to the internal instance
              * 
@@ -211,7 +269,17 @@ namespace MXPSQL{
                 return archive;
             }
 
-            
+
+
+            /**
+             * @brief Grab an iterator instance
+             * 
+             * @return MPARC_Iter Yo iterator
+             */
+            MPARC_Iter grabIterator(){
+                return MPARC_Iter(this->getInstance());
+            }
+
             /**
              * @brief List itself to a vector
              * 
@@ -222,29 +290,257 @@ namespace MXPSQL{
                 MPARC_Error err(MPARC_OK);
 
                 {
-                    MXPSQL_MPARC_iter_t* iter = NULL;
-                    MXPSQL_MPARC_err ierr = MPARC_list_iterator_init(&archive, &iter);
-                    if(ierr != MPARC_OK){
-                        err.setErr(ierr);
-                        return err;
-                    }
+                    MPARC_Iter iter = this->grabIterator();
 
-                    const char* outnam = NULL;
+                    std::string name = "";
 
-                    while((ierr = MPARC_list_iterator_next(&iter, &outnam)) == MPARC_OK){
-                        out.push_back(std::string(outnam));
-                    }
-
-                    MPARC_list_iterator_destroy(&iter);
-
-                    if(ierr != MPARC_KNOEXIST){
-                        err.setErr(ierr);
-                        return err;
+                    for(err.setErr(MPARC_OK); err.isOk() == true; err = iter.next(name)){
+                        out.push_back(name);
                     }
                 }
 
                 return err;
-            }            
+            }
+
+            
+
+            /**
+             * @brief Push a file
+             * 
+             * @param filename file to push
+             * @param binary content of file
+             * @param size size of binary
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error push(std::string filename, unsigned char* binary, MXPSQL_MPARC_uint_repr_t size){
+                MXPSQL_MPARC_err err = MPARC_push_ufilestr(this->getInstance(), filename.c_str(), binary, size);
+                return MPARC_Error(err);
+            }
+
+            /**
+             * @brief Push a file stream
+             * 
+             * @param filename file to push
+             * @param strem stream to read from
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error push(std::string filename, std::ifstream& strem){
+                MPARC_Error err(MPARC_OK);
+                if(!strem.is_open() || !strem.good()){
+                    err.setErr(MPARC_FERROR);
+                    return err;
+                }
+
+                {
+                    std::vector<unsigned char> bin(std::istreambuf_iterator<char>(strem), {});
+
+                    err = push(filename, &bin[0], bin.size());
+                }
+
+                return err;
+            }
+
+            /**
+             * @brief Push a file name
+             * 
+             * @param filename file to push
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error push(std::string filename){
+                std::ifstream strem(filename, std::ios::binary);
+                return push(filename, strem);
+            }
+
+
+
+            /**
+             * @brief Peek the contents
+             * 
+             * @param filename file to see
+             * @param bout binary content
+             * @param sout size of binary
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error peek(std::string filename, unsigned char** bout, MXPSQL_MPARC_uint_repr_t* sout){
+                MXPSQL_MPARC_err err = MPARC_peek_file(this->getInstance(), filename.c_str(), bout, sout);
+                return MPARC_Error(err);
+            }
+
+
+
+            /**
+             * @brief Rename files
+             * 
+             * @param filename1 Old filename
+             * @param filename2 New filename
+             * @param overwrite Clobber/Overwrite filename2 if it exists?
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error rename(std::string filename1, std::string filename2, bool overwrite){
+                MXPSQL_MPARC_err err = MPARC_rename_file(this->getInstance(), (overwrite ? 1 : 0), filename1.c_str(), filename2.c_str());
+                return MPARC_Error(err);
+            }
+
+            /**
+             * @brief Duplicate files
+             * 
+             * @param filename1 Source filename
+             * @param filename2 Destination filename 
+             * @param overwrite Clobber/Overwrite filename2 if it exists
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error duplicate(std::string filename1, std::string filename2, bool overwrite){
+                MXPSQL_MPARC_err err = MPARC_duplicate_file(this->getInstance(), (overwrite ? 1 : 0), filename1.c_str(), filename2.c_str());
+                return MPARC_Error(err);
+            }
+
+            /**
+             * @brief Swap files
+             * 
+             * @param filename1 swap victim
+             * @param filename2 another swap victim
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error swap(std::string filename1, std::string filename2){
+                MXPSQL_MPARC_err err = MPARC_swap_file(this->getInstance(), filename1.c_str(), filename2.c_str());
+                return MPARC_Error(err);
+            }
+
+
+
+            /**
+             * @brief Pop a file off
+             * 
+             * @param filename file to pop off
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error pop(std::string filename){
+                MXPSQL_MPARC_err err = MPARC_pop_file(this->getInstance(), filename.c_str());
+                return MPARC_Error(err);
+            }
+
+            /**
+             * @brief Clear the whole archive
+             * 
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error clear(){
+                MXPSQL_MPARC_err err = MPARC_clear(this->getInstance());
+                return MPARC_Error(err);
+            }
+
+
+
+
+            /**
+             * @brief Construct archive into a string
+             * 
+             * @param out output
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error construct(std::string& out){
+                char* chout = NULL;
+                MXPSQL_MPARC_err err = MPARC_construct_str(this->getInstance(), &chout);
+                if(chout) {
+                    out = std::string(chout);
+                    MPARC_free(chout);
+                }
+                return MPARC_Error(err);
+            }
+
+            /**
+             * @brief Construct an archive and write it to a stream
+             * 
+             * @param out output stream to write into
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error construct(std::ostream& out){
+                std::string i = "";
+                MPARC_Error err = this->construct(i);
+                out << i;
+                return err;
+            }
+
+
+
+            /**
+             * @brief Extract the archive, pro edition
+             * 
+             * @param dest_dir destination directory
+             * @param dir2make What directory should I make?
+             * @param on_item Called everytime a file is to be extracted
+             * @param mk_dir Make me a directory function
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error extract(std::string dest_dir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*)){
+                MXPSQL_MPARC_err err = MPARC_extract_advance(this->getInstance(), dest_dir.c_str(), dir2make, on_item, mk_dir);
+                return MPARC_Error(err);
+            }
+
+            /**
+             * @brief Extract the archive
+             * 
+             * @param dest_dir destination directory
+             * @param dir2make What directory should I make?
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error extract(std::string dest_dir, char** dir2make){
+                return this->extract(dest_dir, dir2make, NULL, NULL);
+            }
+
+
+
+            /**
+             * @brief Read a directory
+             * 
+             * @param srcdir directory to read
+             * @param recursive recursive read?
+             * @param listdir function to deal with directory reading
+             * @return MPARC_Error Success?
+             * 
+             * @details
+             * 
+             * > listdir Prototyping
+             * 
+             * the first parameter of the listdir function is the current directory that should be read from
+             * 
+             * the second parameter indicates if it should be recursive, its set to 0 if not, set to a non zero value (this implementation sets it to 1) if not
+             * 
+             * the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc'ed or Malloc'ed (pls Calloc it) (Also please use the MPARC allocation functions instead of the standard libc ones) as it relies on finding NULL and the array getting freed
+             * 
+             * the return value should always be 0 for success, other values indicate failure
+             */
+            MPARC_Error readdir(std::string srcdir, bool recursive, int (*listdir)(const char*, int, char**)){
+                MXPSQL_MPARC_err err = MPARC_readdir(this->getInstance(), srcdir.c_str(), (recursive ? 1 : 0), listdir);
+                return MPARC_Error(err);
+            }
+
+
+
+            /**
+             * @brief Parse an archive
+             * 
+             * @param str Content of the archive or filename
+             * @param interpretation_mode How to interpret the archive, true to interpretet as the archive content, false to interpret as a filename
+             * @param erroronduplicate Error out if a duplicate is found
+             * @return MPARC_Error Success?
+             */
+            MPARC_Error parse(std::string str, bool interpretation_mode, bool erroronduplicate){
+                MXPSQL_MPARC_err err = MPARC_OK;
+                if(interpretation_mode){
+                    err = MPARC_parse_str_advance(str.c_str(), (erroronduplicate ? 1 : 0));
+                }
+                else{
+                    std::ifstream strem(str, std::ios::binary);
+                    return this->parse(strem);
+                }
+                return MPARC_Error(err);
+            }
+
+            MPARC_Error parse(std::ifstream& strem){
+                if(!strem.is_open() || !strem.good()) return MPARC_Error(MPARC_FERROR);
+                return this->parse(std::string(std::istreambuf_iterator<char>(strem), {}), false, false);
+            }
         };
     }
 }

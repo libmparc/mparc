@@ -220,7 +220,7 @@ extern "C"{
      * 
      * @see MPARC_strerror
      */
-    int MPARC_sfperror(MXPSQL_MPARC_err err, FILE* filepstream, char* emsg);
+    int MPARC_sfperror(MXPSQL_MPARC_err err, FILE* filepstream, const char* emsg);
     /**
      * @brief Print the error message of your stream of choice
      * 
@@ -368,7 +368,7 @@ extern "C"{
      * 
      * Passing the wrong vaargs will lead to undefined behavior, I cannot defend you from against that unless you cooperate with me. C Standard Library says so to do undefined behaviour in vaargs implementation.
      */
-    MXPSQL_MPARC_err MPARC_query(MXPSQL_MPARC_t* structure, char*** output, char* command, ...);
+    MXPSQL_MPARC_err MPARC_query(MXPSQL_MPARC_t* structure, char*** output, const char* command, ...);
     /**
      * @brief A version of MPARC_query that accepts a va_list instead
      * 
@@ -382,7 +382,7 @@ extern "C"{
      * 
      * @note You are responsible for starting and ending vlist. Also look at MPARC_query for more bad things that could happen.
      */
-    MXPSQL_MPARC_err MPARC_query_vlist(MXPSQL_MPARC_t* structure, char*** output, char* command, va_list vlist);
+    MXPSQL_MPARC_err MPARC_query_vlist(MXPSQL_MPARC_t* structure, char*** output, const char* command, va_list vlist);
     
     /**
      * @brief Push an unsigned string as a file
@@ -463,7 +463,7 @@ extern "C"{
      * 
      * Internally implemented with MPARC_push_ufilestr, MPARC_pop_file and MPARC_peek_file
      */
-    MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, int overwrite, char* oldname, char* newname);
+    MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, int overwrite, const char* oldname, const char* newname);
     /**
      * @brief Duplicate an entry
      * 
@@ -477,20 +477,20 @@ extern "C"{
      * 
      * Internally implemented with MPARC_push_ufilestr and MPARC_peek_file
      */
-    MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, int overwrite, char* srcfile, char* destfile);
+    MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, int overwrite, const char* srcfile, const char* destfile);
     /**
      * @brief Swap 2 entries
      * 
      * @param structure the target structure.
-     * @param file1 the filename to swap with file2.
-     * @param file2 the filename to swap with file1.
+     * @param file1 the filename to swap with file2. Also a swap victim
+     * @param file2 the filename to swap with file1. Also a swap victim
      * @return MXPSQL_MPARC_err Lazy.
      * 
      * @details
      * 
      * Internally implemnted with MPARC_push_ufilestr and MPARC_peek_file
      */
-    MXPSQL_MPARC_err MPARC_swap_file(MXPSQL_MPARC_t* structure, char* file1, char* file2);
+    MXPSQL_MPARC_err MPARC_swap_file(MXPSQL_MPARC_t* structure, const char* file1, const char* file2);
 
     /**
      * @brief Pop a file off the archive
@@ -506,7 +506,7 @@ extern "C"{
      * @param structure the target structure
      * @return MXPSQL_MPARC_err the status code if successfully done
      */
-    MXPSQL_MPARC_err MPARC_clear_file(MXPSQL_MPARC_t* structure);
+    MXPSQL_MPARC_err MPARC_clear(MXPSQL_MPARC_t* structure);
 
     /**
      * @brief Peek the contents of a file of the archive
@@ -563,7 +563,7 @@ extern "C"{
      * 
      * if the error code returns MPARC_OPPART, check dir2make to see if it needs you to make a new directory
      */
-    MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*));
+    MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, const char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*));
     /**
      * @brief Simple version of MPARC_extract_advance
      * 
@@ -574,7 +574,7 @@ extern "C"{
      * 
      * @see MPARC_extract_advance
      */
-    MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, char* destdir, char** dir2make);
+    MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, const char* destdir, char** dir2make);
 
     /**
      * @brief Read a directory into the structure
@@ -591,23 +591,23 @@ extern "C"{
      * 
      * the first parameter of the listdir function is the current directory that should be read from
      * 
-     * the second parameter indicates if it should be recursive, set to 0 if not, don't if not
+     * the second parameter indicates if it should be recursive, its set to 0 if not, set to a non zero value (this implementation sets it to 1) if not
      * 
-     * the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc'ed or Malloc'ed (pls Calloc it) as it relies on finding NULL and the array getting freed
+     * the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc'ed or Malloc'ed (pls Calloc it) (Also please use the MPARC allocation functions instead of the standard libc ones) as it relies on finding NULL and the array getting freed
      * 
      * the return value should always be 0 for success, other values indicate failure
      */
-    MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, char* srcdir, int recursive, int (*listdir)(char*, int, char**));
+    MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, const char* srcdir, int recursive, int (*listdir)(const char*, int, char**));
 
     /**
      * @brief Parse the archive into the structure with extra flags
      * 
      * @param structure the target structure
      * @param stringy the string to be parsed to
-     * @param erronduplicate error with returning MPARC_KEXISTS if the key exists
+     * @param erronduplicate error with returning MPARC_KEXISTS if the key exists, activated by not setting it to 0.
      * @return MXPSQL_MPARC_err Did it parse well or did not
      */
-    MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, char* stringy, int erronduplicate);
+    MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* stringy, int erronduplicate);
     /**
      * @brief Parse the archive into the structure, a simpler version of MPARC_parse_str_advance
      * 
@@ -623,7 +623,7 @@ extern "C"{
      * 
      * @see MPARC_parse_str_advance
      */
-    MXPSQL_MPARC_err MPARC_parse_str(MXPSQL_MPARC_t* structure, char* stringy);
+    MXPSQL_MPARC_err MPARC_parse_str(MXPSQL_MPARC_t* structure, const char* stringy);
     /**
      * @brief Parse the opened file stream archive into the structure
      * 

@@ -61,7 +61,7 @@ int main(int argc, char** argv){
     opmode = argv[2];
 
     printf("Clearing archive state\n");
-    if((err = MPARC_clear_file(archive)) != MPARC_OK){
+    if((err = MPARC_clear(archive)) != MPARC_OK){
         MPARC_perror(err);
         exit_c = EXIT_FAILURE;
         goto exit_handler;
