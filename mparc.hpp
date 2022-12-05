@@ -539,7 +539,7 @@ namespace MXPSQL{
 
             MPARC_Error parse(std::ifstream& strem){
                 if(!strem.is_open() || !strem.good()) return MPARC_Error(MPARC_FERROR);
-                return this->parse(std::string(std::istreambuf_iterator<char>(strem), {}), false, false);
+                return this->parse(strem.rdbuf().str(), false, false);
             }
         };
     }
