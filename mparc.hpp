@@ -529,7 +529,7 @@ namespace MXPSQL{
             MPARC_Error parse(std::string str, bool interpretation_mode, bool erroronduplicate){
                 MXPSQL_MPARC_err err = MPARC_OK;
                 if(interpretation_mode){
-                    err = MPARC_parse_str_advance(str.c_str(), (erroronduplicate ? 1 : 0));
+                    err = MPARC_parse_str_advance(this->getInstance(), str.c_str(), (erroronduplicate ? 1 : 0));
                 }
                 else{
                     std::ifstream strem(str, std::ios::binary);
