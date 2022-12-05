@@ -65,6 +65,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <sstream>
 
 #include <cstdio>
 #include <cstdarg>
@@ -539,7 +540,11 @@ namespace MXPSQL{
 
             MPARC_Error parse(std::ifstream& strem){
                 if(!strem.is_open() || !strem.good()) return MPARC_Error(MPARC_FERROR);
-                return this->parse(strem.rdbuf()->str(), false, false);
+                std::string str = "";
+                std::stringstream ss;
+                ss << strem.rdbuf();
+                str = ss.str();
+                return this->parse(str, false, false);
             }
         };
     }
