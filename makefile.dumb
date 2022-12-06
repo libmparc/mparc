@@ -1,5 +1,5 @@
-CFLAGS:=-fpic -pipe -fdiagnostics-color -g -Og -std=c99 -pedantic -Wall -Wextra -Werror
-CXXFLAGS:=-fpic -pipe -fdiagnostics-color -g -Og -std=c++11 -pedantic -Wall -Wextra -Werror
+CFLAGS:=-std=c99 $(shell cat ccflegs.txt)
+CXXFLAGS:=-std=c++11 $(shell cat ccflegs.txt)
 # If you need DMalloc, uncomment the line below
 # LDLIBS:=-ldmallocth
 

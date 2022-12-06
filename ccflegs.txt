@@ -1,0 +1,1 @@
+-fpic -pipe -fdiagnostics-color -g -Og -pedantic -Wall -Wextra -Werror

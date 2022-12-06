@@ -11,3 +11,7 @@ insert_final_newline = true
 # MPAR specific: No newlines in MPAR files.
 [*.mpar]
 insert_final_newline = false
+
+# Text files: Also no newlines
+[*.txt]
+insert_final_newline = false
