@@ -5481,7 +5481,8 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		 * 		Parsing note:
 		 * 			When parsing the entries, split from the begin '>' marker first, and then the end '@' marker.
 		 * 			Then split each by newlines.
-		 * 			Ignore if a line start with '#' (EXACTLY WITH THAT CHARACTER, there must not even be any whitespace before it), a comment marker. Also ignore if a line is empty.
+		 * 			Ignore if a line start with '#' (EXACTLY WITH THAT CHARACTER, there must not even be any whitespace before it; You shall not strip it), a comment marker.  
+		 * 			Also ignore if a line is empty.
 		 * 			Then, foreach split '%' to get the crc and json.
 		 * 			Then compare the JSON to the crc.
 		 * 			Then parse the JSON as usual.

@@ -434,17 +434,22 @@ namespace MXPSQL{
 
 
             /**
-             * @brief Construct archive into a string
+             * @brief Construct archive into a string or from a file
              * 
-             * @param out output
+             * @param out output/filename
+             * @param interpretation_mode How to interpret out, true to put output there, false to use it as a destination filename
              * @return MPARC_Error Success?
              */
-            MPARC_Error construct(std::string& out){
+            MPARC_Error construct(std::string& out, bool interpretation_mode){
                 char* chout = NULL;
                 MXPSQL_MPARC_err err = MPARC_construct_str(this->getInstance(), &chout);
-                if(chout) {
+                if(interpretation_mode){
                     out = std::string(chout);
                     MPARC_free(chout);
+                }
+                else{
+                    std::ofstream strem(out, std::ios::binary);
+                    return this->construct(strem);
                 }
                 return MPARC_Error(err);
             }
@@ -457,7 +462,7 @@ namespace MXPSQL{
              */
             MPARC_Error construct(std::ostream& out){
                 std::string i = "";
-                MPARC_Error err = this->construct(i);
+                MPARC_Error err = this->construct(i, true);
                 out << i;
                 return err;
             }
@@ -538,6 +543,12 @@ namespace MXPSQL{
                 return MPARC_Error(err);
             }
 
+            /**
+             * @brief Parse from a stream
+             * 
+             * @param strem the stream to read from
+             * @return MPARC_Error Success?
+             */
             MPARC_Error parse(std::ifstream& strem){
                 if(!strem.is_open() || !strem.good()) return MPARC_Error(MPARC_FERROR);
                 std::string str = "";
