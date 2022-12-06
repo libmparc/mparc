@@ -5206,6 +5206,8 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 						return MPARC_FERROR;
 				}
 
+				clearerr(filestream);
+
 				if(fseek(filestream, 0, SEEK_SET) != 0){
 						structure->my_err = MPARC_FERROR;
 						return MPARC_FERROR;
@@ -5504,6 +5506,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		 * 
 		 * Final note:
 		 * 		This file should not have binary characters.
+		 * 		Parsing should fail if BOM or non ASCII character is found.
 		 * 
 		 * 		 
 		 * Follow this (with placeholder) and you get this:
@@ -5873,7 +5876,6 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 
 		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* Stringy, int erronduplicate){
 			MXPSQL_MPARC_err err = MPARC_OK;
-
 			{
 				char* s3 = MPARC_strdup(Stringy);
 				if(s3 == NULL) {
@@ -5936,6 +5938,8 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 				structure->my_err = MPARC_FERROR;
 				return MPARC_FERROR;
 			}
+
+			clearerr(fpstream);
 
 			if(fseek(fpstream, 0, SEEK_SET) != 0){
 					structure->my_err = MPARC_FERROR;
