@@ -2,22 +2,57 @@
 <html lang="en">
 	<head>
 		<title>MPARC Home page</title>
-		<style>
-			html {
-				font-family: sans-serif, monospace, cursive, fantasy;
-				display: block;
-				text-align: center;
-			}
-		</style>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta charset="UTF-8" />
+
+		<link rel="stylesheet" href="./style.css" />
+
 	</head>
 	<body>
-		<h1>MPARC</h1>
+		<h1 class="ch70red">MPARC</h1>
 		
 		<hr>
 		
 		<p>The homepage of the MPARC project.</p>
-		<p>You may want to go to <a href="./docs/index.htm"> the docs</a> if you are using the library.</p>
-		<p>Want the source code? <a href="https://github.com/MOALib/mparc">There</a> is your link.</p>
-		<p>I know this is bad. But I put effort to rid of that serif font.</p>
+
+		<br>
+
+		<div class="flexmedia">
+			<div class="flexbox autoflow">
+				<div class="azurebox">
+					<h2>Naming</h2>
+					<ul>
+						<li>The name of the format is <strong class="ch70red">MPAR.</strong></li>
+						<li>The name of the library to manipulate the MPAR archives is <strong class="ch70red">MPARC</strong>.</li>
+						<li>So <strong class="ch70red" 
+							onclick="window.alert('MPAR and MPARC are different things!\nMPAR is the archive format.\nMPARC is the C Library that manipulates MPAR archives.\nI don\'t know, but how you did not get that!?!')"
+							>do not confuse</strong> yourself with <strong class="ch70red">MPAR</strong> and <strong class="ch70red">MPARC</strong>.</li>
+					</ul>
+				</div>
+
+				<div class="azurebox">
+					<h2 class="ch70red">Links</h2>
+					<ul>
+						<li>You may want to go to <a href="./docs/index.htm"> the docs</a> if you are using the library.</li>
+						<li>Want the source code? <a href="https://github.com/MOALib/mparc">There</a> is your link.</li>
+						<li>Want to see a real MPAR archive? Your <a href="./lsarah.mpar">archive</a> is here.</li>
+					</ul>
+				</div>
+
+				<div class="azurebox">
+					<h2>Project Contributors</h2>
+					<ul>
+						<li><strong class="ch70red">MXPSQL</strong></li>
+						<li>...</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		
+		<br>		
+		
+		<p>I know this is bad. But I put effort to rid of that serif font. Unless...</p>
 	</body>
 </html>

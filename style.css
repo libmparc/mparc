@@ -1,0 +1,74 @@
+/***
+ * MXPSQL MPARC Web page style sheet
+ * The One and Only, stylesheet for that home page
+ * This is it, azure and aliceblue.
+ * A monolithic CSS Stylesheet.
+ * The End.
+ */
+
+/**
+    Basic style
+*/
+/* elemental modification */
+html {
+    font-family: sans-serif, monospace, cursive, fantasy, serif;
+    display: block;
+    text-align: center;
+    background-color: aliceblue;
+}
+
+ul {
+    list-style-type: square;
+}
+
+
+/* class containers classes */
+.flexmedia{
+    display: flex;
+}
+
+.flexbox{
+    display: flex;
+    flex-grow: 1;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
+}
+
+
+.azurebox {
+    border-style: solid;
+    border-color: black;
+    border-width: 5px;
+
+    background-color: azure;
+}
+
+
+.autoflow{
+    overflow: auto;
+}
+
+
+/* color classes */
+.ch70red{
+    color: red;
+
+    transition: 0.3s;
+}
+
+
+/* elemental events */
+a:visited {
+    color: yellowgreen;
+}
+a:hover{
+    color: red;
+}
+
+
+/* custom class events */
+.ch70red:hover {
+    color: blueviolet;
+}
