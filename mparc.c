@@ -3455,27 +3455,43 @@ static int isLittleEndian(){
 	return (*((uint8_t*)(&i))) == 0x67;
 }
 
-static unsigned char* XORCipher(const unsigned char* bytes_src, size_t length, const int key){
+
+static unsigned char* XORCipher(const unsigned char* bytes_src, MXPSQL_MPARC_uint_repr_t length, const unsigned char* keys, MXPSQL_MPARC_uint_repr_t keylength){
 	((void)isLittleEndian);
 	unsigned char* bytes_out = MPARC_memdup(bytes_src, length);
-	for(size_t i = 0; i < length; i++){
-		unsigned char byte = bytes_out[i] ^ key;
-		bytes_out[i] = byte;
+	if(bytes_out){
+		for(MXPSQL_MPARC_uint_repr_t i = 0; i < length; i++){
+			unsigned char byte = bytes_out[i] ^ keys[length % keylength];
+			bytes_out[i] = byte;
+		}
 	}
 	return bytes_out;
 }
 
-static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int key){
+static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_uint_repr_t length, const int* keys, MXPSQL_MPARC_uint_repr_t keylength){
 	((void)XORCipher);
 	unsigned char* bytes_out = MPARC_memdup(bytes_src, length);
-	for(size_t i = 0; i < length; i++){
-		unsigned char byte = bytes_out[i] + (key);
-		bytes_out[i] = byte;
+	if(bytes_out){
+		for(MXPSQL_MPARC_uint_repr_t i = 0; i < length; i++){
+			unsigned char byte = bytes_out[i] + (keys[length % keylength]);
+			bytes_out[i] = byte;
+		}
 	}
 	return bytes_out;
+}
+
+static unsigned char* XRCipher(const unsigned char * bytes_src, MXPSQL_MPARC_uint_repr_t length, const unsigned char* XORKeys, MXPSQL_MPARC_uint_repr_t XORKeyLength, const int* ROTKeys, MXPSQL_MPARC_uint_repr_t ROTKeyLength){
+	((void)ROTCipher);
+	unsigned char* XORBytes = XORCipher(bytes_src, length, XORKeys, XORKeyLength);
+	unsigned char* ROTBytes = NULL;
+	if(XORBytes){
+		ROTBytes = ROTCipher(XORBytes, length, ROTKeys, XORKeyLength);
+	}
+	return ROTBytes;
 }
 
 /* END OF SNIPPETS */
+
 
 /* BEGINNING OF MY SECTION OK */
 
@@ -3566,7 +3582,7 @@ static unsigned char* ROTCipher(const char * bytes_src, size_t length, const int
 		}
 
 		int MPARC_strerror(MXPSQL_MPARC_err err, char** out){
-			((void)ROTCipher);
+			((void)XRCipher);
 			switch(err){
 				case MPARC_OK:
 				*out = MPARC_strdup("it fine, no error");
