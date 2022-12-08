@@ -13,6 +13,7 @@ var mparc_8c =
     [ "STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER", "d9/dd9/mparc_8c.htm#ac81508c80aafaf02a004a59dbff7dcc5", null ],
     [ "STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION", "d9/dd9/mparc_8c.htm#a326f77dcf18011fb94858f1a047eea10", null ],
     [ "MPARC_calloc", "d9/dd9/mparc_8c.htm#ab23a5170998401c4b3852fe54d4374a3", null ],
+    [ "MPARC_cipher", "d9/dd9/mparc_8c.htm#ad6484053854eda8c457e08869a8378c2", null ],
     [ "MPARC_clear", "d9/dd9/mparc_8c.htm#a211f6b2c204d841108a1c841daafa80e", null ],
     [ "MPARC_construct_filename", "d9/dd9/mparc_8c.htm#adabab1461aa5fa7e8aa042a00c2a4a0c", null ],
     [ "MPARC_construct_filestream", "d9/dd9/mparc_8c.htm#aa125160bff8db1ddf1b8bb0aba864b74", null ],

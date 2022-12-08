@@ -11,6 +11,10 @@ var struct_m_x_p_s_q_l___m_p_a_r_c__t =
     [ "magic_byte_sep", "d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a1aaeaaaecc899e3003cc87acb0b673f7", null ],
     [ "meta_sep", "d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a9feb8e13bc3ba1aeb2ad15519ae47848", null ],
     [ "my_err", "d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa0b92957bff728a7ad943ae7ccfdb33d", null ],
+    [ "ROTKey", "d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a856a6068552baf6827633d65c5506cf3", null ],
+    [ "ROTKeyLength", "d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ab2a172f99285250583934935a0ee9ae4", null ],
     [ "vlist", "d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a986b6427a9a2601d2b48e3a65a842e21", null ],
-    [ "writerVersion", "d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6dc1d2da99ae25490088f0f36ffc4286", null ]
+    [ "writerVersion", "d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6dc1d2da99ae25490088f0f36ffc4286", null ],
+    [ "XORKey", "d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aec68c1a4bea12ff2c922e268e558869d", null ],
+    [ "XORKeyLength", "d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa71c354e7e80ce9b7eee81fee7928b0c", null ]
 ];

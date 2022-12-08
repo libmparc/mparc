@@ -68,8 +68,12 @@
         <topic label="magic_byte_sep" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a1aaeaaaecc899e3003cc87acb0b673f7"/>
         <topic label="meta_sep" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a9feb8e13bc3ba1aeb2ad15519ae47848"/>
         <topic label="my_err" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa0b92957bff728a7ad943ae7ccfdb33d"/>
+        <topic label="ROTKey" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a856a6068552baf6827633d65c5506cf3"/>
+        <topic label="ROTKeyLength" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ab2a172f99285250583934935a0ee9ae4"/>
         <topic label="vlist" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a986b6427a9a2601d2b48e3a65a842e21"/>
         <topic label="writerVersion" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6dc1d2da99ae25490088f0f36ffc4286"/>
+        <topic label="XORKey" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aec68c1a4bea12ff2c922e268e558869d"/>
+        <topic label="XORKeyLength" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa71c354e7e80ce9b7eee81fee7928b0c"/>
       </topic>
     </topic>
     <topic label="Data Structure Index" href="classes.htm"/>
@@ -94,8 +98,12 @@
           <topic label="magic_byte_sep" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a1aaeaaaecc899e3003cc87acb0b673f7"/>
           <topic label="meta_sep" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a9feb8e13bc3ba1aeb2ad15519ae47848"/>
           <topic label="my_err" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa0b92957bff728a7ad943ae7ccfdb33d"/>
+          <topic label="ROTKey" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a856a6068552baf6827633d65c5506cf3"/>
+          <topic label="ROTKeyLength" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ab2a172f99285250583934935a0ee9ae4"/>
           <topic label="vlist" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a986b6427a9a2601d2b48e3a65a842e21"/>
           <topic label="writerVersion" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6dc1d2da99ae25490088f0f36ffc4286"/>
+          <topic label="XORKey" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aec68c1a4bea12ff2c922e268e558869d"/>
+          <topic label="XORKeyLength" href="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa71c354e7e80ce9b7eee81fee7928b0c"/>
         </topic>
         <topic label="MXPSQL_MPARC_iter_t" href="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm">
           <topic label="archive" href="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm#a0b5107e8ae5f147b2946780382581147"/>
@@ -112,6 +120,7 @@
         <topic label="STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER" href="d9/dd9/mparc_8c.htm#ac81508c80aafaf02a004a59dbff7dcc5"/>
         <topic label="STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION" href="d9/dd9/mparc_8c.htm#a326f77dcf18011fb94858f1a047eea10"/>
         <topic label="MPARC_calloc" href="d9/dd9/mparc_8c.htm#ab23a5170998401c4b3852fe54d4374a3"/>
+        <topic label="MPARC_cipher" href="d9/dd9/mparc_8c.htm#ad6484053854eda8c457e08869a8378c2"/>
         <topic label="MPARC_clear" href="d9/dd9/mparc_8c.htm#a211f6b2c204d841108a1c841daafa80e"/>
         <topic label="MPARC_construct_filename" href="d9/dd9/mparc_8c.htm#adabab1461aa5fa7e8aa042a00c2a4a0c"/>
         <topic label="MPARC_construct_filestream" href="d9/dd9/mparc_8c.htm#aa125160bff8db1ddf1b8bb0aba864b74"/>
@@ -174,12 +183,14 @@
           <topic label="MPARC_NOTARCHIVE" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca"/>
           <topic label="MPARC_ARCHIVETOOSHINY" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324"/>
           <topic label="MPARC_CHKSUM" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e"/>
+          <topic label="MPARC_NOCRYPT" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77"/>
           <topic label="MPARC_CONSTRUCT_FAIL" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4"/>
           <topic label="MPARC_OPPART" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f"/>
           <topic label="MPARC_FERROR" href="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa"/>
         </topic>
         <topic label="MPARC_basename" href="d6/d08/mparc_8h.htm#a3a202a71270a2d8faf571af197e42e6e"/>
         <topic label="MPARC_calloc" href="d6/d08/mparc_8h.htm#ab23a5170998401c4b3852fe54d4374a3"/>
+        <topic label="MPARC_cipher" href="d6/d08/mparc_8h.htm#ad6484053854eda8c457e08869a8378c2"/>
         <topic label="MPARC_clear" href="d6/d08/mparc_8h.htm#a211f6b2c204d841108a1c841daafa80e"/>
         <topic label="MPARC_construct_filename" href="d6/d08/mparc_8h.htm#adabab1461aa5fa7e8aa042a00c2a4a0c"/>
         <topic label="MPARC_construct_filestream" href="d6/d08/mparc_8h.htm#aa125160bff8db1ddf1b8bb0aba864b74"/>

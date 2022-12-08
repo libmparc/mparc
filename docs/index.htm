@@ -103,11 +103,14 @@ Logo is the MPARC archive behind an #ffffff background lmao</div></div>
 Enough of the boring stuff</h1>
 <h2><a class="anchor" id="autotoc_md2"></a>
 Why should I use this library and archive format</h2>
-<p >An archive format, but not just that. <br  />
+<ul>
+<li>An archive format, but not just that. <br  />
  It's in plain text! Not any plain text, ASCII plain text! <br  />
- Even binary files are in plain text because we use Base64 encoding on them!</p>
-<p >You can manipulate and extract these archives with a text editor, a crc32 encoder (decoder optional, but good for checks) and a base64 encoder/decoder!</p>
-<p >Versatile! You can make it into a key value database store somehow. Can store literal bytes of structs (uh oh endian problems)!</p>
+ Even binary files are in plain text because we use Base64 encoding on them!</li>
+<li>You can manipulate and extract these archives with a text editor, a crc32 encoder (decoder optional, but good for checks) and a base64 encoder/decoder!</li>
+<li>Versatile! You can make it into a key value database store somehow. Can store literal bytes of structs (uh oh endian problems)!</li>
+<li>Built in encryption</li>
+</ul>
 <h2><a class="anchor" id="autotoc_md3"></a>
 Why shouldn't I use this library and archive format</h2>
 <ul>
@@ -117,7 +120,9 @@ Why shouldn't I use this library and archive format</h2>
 </li>
 <li>Calloc hater? Not for you, this library is proliferated with calloc calls. <br  />
 </li>
+<li>Memory leaks</li>
 <li>Oh also the archives are bigger than zip or tar as they are binary based and this format is plain text based and plain text files are larger than binary files.</li>
+<li>Encryption is basic (XOR and ROT13 or ROT??)</li>
 </ul>
 <h2><a class="anchor" id="autotoc_md4"></a>
 Teach me how to build it</h2>
@@ -146,7 +151,7 @@ How can I make bindings to my own language?</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Dec 6 2022 19:53:30 for MPARC by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5 </li>
+    <li class="footer">Generated on Thu Dec 8 2022 18:31:50 for MPARC by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5 </li>
   </ul>
 </div>
 </body>

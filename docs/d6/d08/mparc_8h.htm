@@ -140,10 +140,11 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca">MPARC_NOTARCHIVE</a> =5
 , <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324">MPARC_ARCHIVETOOSHINY</a> =6
 , <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e">MPARC_CHKSUM</a> =7
-, <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4">MPARC_CONSTRUCT_FAIL</a> =8
+, <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77">MPARC_NOCRYPT</a> =8
 , <br />
-&#160;&#160;<a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f">MPARC_OPPART</a> =9
-, <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa">MPARC_FERROR</a> =10
+&#160;&#160;<a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4">MPARC_CONSTRUCT_FAIL</a> =9
+, <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f">MPARC_OPPART</a> =10
+, <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa">MPARC_FERROR</a> =11
 <br />
  }</td></tr>
 <tr class="memdesc:ab94170c55bb379cd60ae08c6bb68100c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error states, these are self explanatory. But I give them brief anyways.  <a href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100c">More...</a><br /></td></tr>
@@ -175,6 +176,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a5a278819906e49b1155ee23cd2f3ad33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100c">MXPSQL_MPARC_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d08/mparc_8h.htm#a5a278819906e49b1155ee23cd2f3ad33">MPARC_destroy</a> (<a class="el" href="../../d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm">MXPSQL_MPARC_t</a> **structure)</td></tr>
 <tr class="memdesc:a5a278819906e49b1155ee23cd2f3ad33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tear down structure.  <a href="../../d6/d08/mparc_8h.htm#a5a278819906e49b1155ee23cd2f3ad33">More...</a><br /></td></tr>
 <tr class="separator:a5a278819906e49b1155ee23cd2f3ad33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6484053854eda8c457e08869a8378c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100c">MXPSQL_MPARC_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d08/mparc_8h.htm#ad6484053854eda8c457e08869a8378c2">MPARC_cipher</a> (<a class="el" href="../../d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm">MXPSQL_MPARC_t</a> *structure, int SetXOR, unsigned char *XORKeyIn, <a class="el" href="../../d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb">MXPSQL_MPARC_uint_repr_t</a> XORKeyLengthIn, unsigned char **XORKeyOut, <a class="el" href="../../d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb">MXPSQL_MPARC_uint_repr_t</a> *XORKeyLengthOut, int SetROT, int *ROTKeyIn, <a class="el" href="../../d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb">MXPSQL_MPARC_uint_repr_t</a> ROTKeyLengthIn, int **ROTKeyOut, <a class="el" href="../../d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb">MXPSQL_MPARC_uint_repr_t</a> *ROTKeyLengthOut)</td></tr>
+<tr class="memdesc:ad6484053854eda8c457e08869a8378c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Control cipher encryption;One function to control two ciphers (horrible design)  <a href="../../d6/d08/mparc_8h.htm#ad6484053854eda8c457e08869a8378c2">More...</a><br /></td></tr>
+<tr class="separator:ad6484053854eda8c457e08869a8378c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70b485272c72704901ab0e2c54d40820"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100c">MXPSQL_MPARC_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d08/mparc_8h.htm#a70b485272c72704901ab0e2c54d40820">MPARC_list_array</a> (<a class="el" href="../../d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm">MXPSQL_MPARC_t</a> *structure, char ***listout, <a class="el" href="../../d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb">MXPSQL_MPARC_uint_repr_t</a> *length)</td></tr>
 <tr class="memdesc:a70b485272c72704901ab0e2c54d40820"><td class="mdescLeft">&#160;</td><td class="mdescRight">List out the current files included as an array.  <a href="../../d6/d08/mparc_8h.htm#a70b485272c72704901ab0e2c54d40820">More...</a><br /></td></tr>
 <tr class="separator:a70b485272c72704901ab0e2c54d40820"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -438,6 +442,8 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e" name="ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e"></a>MPARC_CHKSUM&#160;</td><td class="fielddoc"><p >CRC checksum check and comparison failed. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77" name="ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77"></a>MPARC_NOCRYPT&#160;</td><td class="fielddoc"><p >No encryption is set. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4" name="ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4"></a>MPARC_CONSTRUCT_FAIL&#160;</td><td class="fielddoc"><p >Failure to construct archive. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f" name="ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f"></a>MPARC_OPPART&#160;</td><td class="fielddoc"><p >Operation not complete. </p>
@@ -516,6 +522,110 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>MPARC_calloc has its pitfalls. Don't fall for it. <br  />
  Right now is using C's calloc, so it is at the mercy of that function as calloc has flaws. <br  />
  Allocating a zero sized object with MPARC_calloc, danger is from that it is implementation defined. </dd></dl>
+
+</div>
+</div>
+<a id="ad6484053854eda8c457e08869a8378c2" name="ad6484053854eda8c457e08869a8378c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6484053854eda8c457e08869a8378c2">&#9670;&#160;</a></span>MPARC_cipher()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100c">MXPSQL_MPARC_err</a> MPARC_cipher </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm">MXPSQL_MPARC_t</a> *&#160;</td>
+          <td class="paramname"><em>structure</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>SetXOR</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char *&#160;</td>
+          <td class="paramname"><em>XORKeyIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb">MXPSQL_MPARC_uint_repr_t</a>&#160;</td>
+          <td class="paramname"><em>XORKeyLengthIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char **&#160;</td>
+          <td class="paramname"><em>XORKeyOut</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb">MXPSQL_MPARC_uint_repr_t</a> *&#160;</td>
+          <td class="paramname"><em>XORKeyLengthOut</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>SetROT</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>ROTKeyIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb">MXPSQL_MPARC_uint_repr_t</a>&#160;</td>
+          <td class="paramname"><em>ROTKeyLengthIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int **&#160;</td>
+          <td class="paramname"><em>ROTKeyOut</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb">MXPSQL_MPARC_uint_repr_t</a> *&#160;</td>
+          <td class="paramname"><em>ROTKeyLengthOut</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Control cipher encryption;One function to control two ciphers (horrible design) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">structure</td><td>the target structure </td></tr>
+    <tr><td class="paramname">SetXOR</td><td>Indicate if you want to set XOR Encryption </td></tr>
+    <tr><td class="paramname">XORKeyIn</td><td>XOR Key Input </td></tr>
+    <tr><td class="paramname">XORKeyLengthIn</td><td>XOR Key Input Length </td></tr>
+    <tr><td class="paramname">XORKeyOut</td><td>XOR Key Output </td></tr>
+    <tr><td class="paramname">XORKeyLengthOut</td><td>XOR Key Output Length </td></tr>
+    <tr><td class="paramname">SetROT</td><td>Indicate if you want to set ROT Encryption </td></tr>
+    <tr><td class="paramname">ROTKeyIn</td><td>ROT Key Input </td></tr>
+    <tr><td class="paramname">ROTKeyLengthIn</td><td>ROT Key Input Length </td></tr>
+    <tr><td class="paramname">ROTKeyOut</td><td>ROT Key Output Length </td></tr>
+    <tr><td class="paramname">ROTKeyLengthOut</td><td>ROT Key Output Length </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>MXPSQL_MPARC_err the status code: MPARC_OK if any encryption is set, MPARC_NOCRYPT if no encryption is set</dd></dl>
+<p>To disable encryption set XORKeyIn or ROTKeyIn to NULL</p>
+<p >Output is first put before setting the new key, so you can get the old key.</p>
+<dl class="section note"><dt>Note</dt><dd>Having the wrong encryption key will cause garbage data. </dd></dl>
 
 </div>
 </div>
@@ -673,16 +783,18 @@ Functions</h2></td></tr>
  The '&gt;' character works to indicate the start of entries
  The newline is an anomaly though, but just put it in there
 
- JSON_WHATEV_METADATA can be implementation defined
- This C implementation will ignore any extra metadata
+ JSON_WHATEV_METADATA have certain mandaroty parameters.  
+ There must be the "encrypt" field to indicate encryption provided.  
+ Standard encryption algorithm is XOR and ROT (ROT13 or anything else like ROT100 or whatever).  
+ Other field specific to each implementation are ignored.
 
  Construction note:
  Make sure to base64 your metadata entries to prevent issues with parsing.
 
  Parsing tips:
- Split ';' from the whole archive to get the magic number first
- Then split '&gt;' from to get the special info header
- The split '$' from the special info header to get the version and extra metadata
+     Split ';' from the whole archive to get the magic number first  
+     Then split '&gt;' from to get the special info header  
+     The split '$' from the special info header to get the version and extra metadata.
 </pre></li>
 <li>Build the entries <pre class="fragment"> Format: 
      [CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]
@@ -699,7 +811,8 @@ Functions</h2></td></tr>
  Repeat this as required (how many entries are there you repeat)
 
  Construction note:
- The anomaly mention aboved is because the newline is added before the main content
+ The anomaly mention aboved is because the newline is added before the main content.  
+ XOR cipher is applied before ROT cipher, this sequencing is Mandatory for all implementations.
 
  Parsing note:
      When parsing the entries, split from the begin '&gt;' marker first, and then the end '@' marker.
@@ -709,6 +822,8 @@ Functions</h2></td></tr>
      Then, foreach split '%' to get the crc and json.
      Then compare the JSON to the crc.
      Then parse the JSON as usual.
+
+     Each implementation shall decrypt with ROT before XOR because XOR is applied before ROT during construction, this sequencing is Mandatory. Be prepared to wrap your head with this.
 
  You could parse extra info in your implementation, but this C Based implementation will ignore extra ones. I repeat this line again.
 </pre></li>
@@ -724,9 +839,9 @@ Functions</h2></td></tr>
 </ol>
 <p >Final note: This file should not have binary characters. Parsing should fail if BOM or non ASCII character is found.</p>
 <p >Follow this (with placeholder) and you get this: </p><pre class="fragment">MXPSQL's Portable Archive;[VERSION]${JSON_WHATEV_METADATA}&gt;[NEWLINE][CRC32_OF_JSON]%{"filename":[FILENAME],"blob":[BASE64_BINARY], "crcsum":[CRC32_OF_blob]}[NEWLINE]@~
-</pre><p >A real single entried one: </p><pre class="fragment">MXPSQL's Portable Archive;1${"WhatsThis": "MPARC Logo lmao-Hahahaha"}&gt;  
+</pre><p >A real single entried one: </p><pre class="fragment">MXPSQL's Portable Archive;1${"WhatsThis": "MPARC Logo lmao-Hahahaha", "encrypt": []}&gt;  
 134131812%{"filename":"./LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
-</pre><p >A real (much more real) multi entried one: </p><pre class="fragment">MXPSQL's Portable Archive;1${}&gt;  
+</pre><p >A real (much more real) multi entried one: </p><pre class="fragment">MXPSQL's Portable Archive;1${"encrypt": []}&gt;  
 3601911152%{"filename":"LICENSE","blob":"U2VlIExJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgYW5kIGNob29zZSBvbmUgb2YgdGhlbS4KCkxJQ0VOU0UuTEdQTCBjb250YWlucyBMR1BMLTIuMS1vci1sYXRlciBsaWNlbnNlLgpMSUNFTlNFLk1JVCBjb250YWlucyBNSVQgbGljZW5zZS4KCkxJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgc2hvdWxkIGJlIGRpc3RyaWJ1dGVkIHRvZ2V0aGVyIHdpdGggeW91ciBjb3B5LCBpZiBub3QsIHNvbWV0aGluZyBpcyB3cm9uZy4=","crcsum":"404921597"}  
 59879441%{"filename":"LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
 </pre> 
@@ -2681,7 +2796,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d6/d08/mparc_8h.htm">mparc.h</a></li>
-    <li class="footer">Generated on Tue Dec 6 2022 19:53:24 for MPARC by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5 </li>
+    <li class="footer">Generated on Thu Dec 8 2022 18:31:48 for MPARC by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5 </li>
   </ul>
 </div>
 </body>

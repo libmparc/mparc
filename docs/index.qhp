@@ -75,8 +75,12 @@
 <section title="magic_byte_sep" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a1aaeaaaecc899e3003cc87acb0b673f7"/>
 <section title="meta_sep" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a9feb8e13bc3ba1aeb2ad15519ae47848"/>
 <section title="my_err" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa0b92957bff728a7ad943ae7ccfdb33d"/>
+<section title="ROTKey" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a856a6068552baf6827633d65c5506cf3"/>
+<section title="ROTKeyLength" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ab2a172f99285250583934935a0ee9ae4"/>
 <section title="vlist" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a986b6427a9a2601d2b48e3a65a842e21"/>
 <section title="writerVersion" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6dc1d2da99ae25490088f0f36ffc4286"/>
+<section title="XORKey" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aec68c1a4bea12ff2c922e268e558869d"/>
+<section title="XORKeyLength" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa71c354e7e80ce9b7eee81fee7928b0c"/>
 </section>
 </section>
 <section title="Data Structure Index" ref="classes.htm"/>
@@ -101,8 +105,12 @@
 <section title="magic_byte_sep" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a1aaeaaaecc899e3003cc87acb0b673f7"/>
 <section title="meta_sep" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a9feb8e13bc3ba1aeb2ad15519ae47848"/>
 <section title="my_err" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa0b92957bff728a7ad943ae7ccfdb33d"/>
+<section title="ROTKey" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a856a6068552baf6827633d65c5506cf3"/>
+<section title="ROTKeyLength" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ab2a172f99285250583934935a0ee9ae4"/>
 <section title="vlist" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a986b6427a9a2601d2b48e3a65a842e21"/>
 <section title="writerVersion" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6dc1d2da99ae25490088f0f36ffc4286"/>
+<section title="XORKey" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aec68c1a4bea12ff2c922e268e558869d"/>
+<section title="XORKeyLength" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa71c354e7e80ce9b7eee81fee7928b0c"/>
 </section>
 <section title="MXPSQL_MPARC_iter_t" ref="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm">
 <section title="archive" ref="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm#a0b5107e8ae5f147b2946780382581147"/>
@@ -119,6 +127,7 @@
 <section title="STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER" ref="d9/dd9/mparc_8c.htm#ac81508c80aafaf02a004a59dbff7dcc5"/>
 <section title="STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION" ref="d9/dd9/mparc_8c.htm#a326f77dcf18011fb94858f1a047eea10"/>
 <section title="MPARC_calloc" ref="d9/dd9/mparc_8c.htm#ab23a5170998401c4b3852fe54d4374a3"/>
+<section title="MPARC_cipher" ref="d9/dd9/mparc_8c.htm#ad6484053854eda8c457e08869a8378c2"/>
 <section title="MPARC_clear" ref="d9/dd9/mparc_8c.htm#a211f6b2c204d841108a1c841daafa80e"/>
 <section title="MPARC_construct_filename" ref="d9/dd9/mparc_8c.htm#adabab1461aa5fa7e8aa042a00c2a4a0c"/>
 <section title="MPARC_construct_filestream" ref="d9/dd9/mparc_8c.htm#aa125160bff8db1ddf1b8bb0aba864b74"/>
@@ -181,12 +190,14 @@
 <section title="MPARC_NOTARCHIVE" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca"/>
 <section title="MPARC_ARCHIVETOOSHINY" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324"/>
 <section title="MPARC_CHKSUM" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e"/>
+<section title="MPARC_NOCRYPT" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77"/>
 <section title="MPARC_CONSTRUCT_FAIL" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4"/>
 <section title="MPARC_OPPART" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f"/>
 <section title="MPARC_FERROR" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa"/>
 </section>
 <section title="MPARC_basename" ref="d6/d08/mparc_8h.htm#a3a202a71270a2d8faf571af197e42e6e"/>
 <section title="MPARC_calloc" ref="d6/d08/mparc_8h.htm#ab23a5170998401c4b3852fe54d4374a3"/>
+<section title="MPARC_cipher" ref="d6/d08/mparc_8h.htm#ad6484053854eda8c457e08869a8378c2"/>
 <section title="MPARC_clear" ref="d6/d08/mparc_8h.htm#a211f6b2c204d841108a1c841daafa80e"/>
 <section title="MPARC_construct_filename" ref="d6/d08/mparc_8h.htm#adabab1461aa5fa7e8aa042a00c2a4a0c"/>
 <section title="MPARC_construct_filestream" ref="d6/d08/mparc_8h.htm#aa125160bff8db1ddf1b8bb0aba864b74"/>
@@ -343,10 +354,14 @@
 <keyword name="push(std::string filename)" id="MXPSQL::MPARC::MPARC::push_a51ceea22405f62bc513137759bcdcc47" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a51ceea22405f62bc513137759bcdcc47"/>
 <keyword name="readdir(std::string srcdir, bool recursive, int(*listdir)(const char *, int, char **))" id="MXPSQL::MPARC::MPARC::readdir_a5314ce89d9fd2f73c35f215d8778f048" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a5314ce89d9fd2f73c35f215d8778f048"/>
 <keyword name="rename(std::string filename1, std::string filename2, bool overwrite)" id="MXPSQL::MPARC::MPARC::rename_af9a513455c336dcf197851525554248f" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#af9a513455c336dcf197851525554248f"/>
+<keyword name="ROTKey" id="MXPSQL_MPARC_t::ROTKey_a856a6068552baf6827633d65c5506cf3" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a856a6068552baf6827633d65c5506cf3"/>
+<keyword name="ROTKeyLength" id="MXPSQL_MPARC_t::ROTKeyLength_ab2a172f99285250583934935a0ee9ae4" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ab2a172f99285250583934935a0ee9ae4"/>
 <keyword name="setErr(MXPSQL_MPARC_err err)" id="MXPSQL::MPARC::MPARC_Error::setErr_af5c0dade1dbd2ab28ac8e0e34263df2f" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#af5c0dade1dbd2ab28ac8e0e34263df2f"/>
 <keyword name="swap(std::string filename1, std::string filename2)" id="MXPSQL::MPARC::MPARC::swap_ad5e1c6132df41f41082334b8a35cf423" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad5e1c6132df41f41082334b8a35cf423"/>
 <keyword name="vlist" id="MXPSQL_MPARC_t::vlist_a986b6427a9a2601d2b48e3a65a842e21" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a986b6427a9a2601d2b48e3a65a842e21"/>
 <keyword name="writerVersion" id="MXPSQL_MPARC_t::writerVersion_a6dc1d2da99ae25490088f0f36ffc4286" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6dc1d2da99ae25490088f0f36ffc4286"/>
+<keyword name="XORKey" id="MXPSQL_MPARC_t::XORKey_aec68c1a4bea12ff2c922e268e558869d" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aec68c1a4bea12ff2c922e268e558869d"/>
+<keyword name="XORKeyLength" id="MXPSQL_MPARC_t::XORKeyLength_aa71c354e7e80ce9b7eee81fee7928b0c" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa71c354e7e80ce9b7eee81fee7928b0c"/>
 <keyword name="~MPARC()" id="MXPSQL::MPARC::MPARC::~MPARC_a16a6ccd4573e3ebec8396b2a4e3aef5a" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a16a6ccd4573e3ebec8396b2a4e3aef5a"/>
 <keyword name="~MPARC_Iter()" id="MXPSQL::MPARC::MPARC_Iter::~MPARC_Iter_a70c30c3ed125aafe586207548681c462" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a70c30c3ed125aafe586207548681c462"/>
 <keyword name="_MXPSQL_MPARC_C" id="mparc.c::_MXPSQL_MPARC_C_ad57dcf6ba7f1516ed844dec4459b117b" ref="d9/dd9/mparc_8c.htm#ad57dcf6ba7f1516ed844dec4459b117b"/>
@@ -356,6 +371,8 @@
 <keyword name="MPARC_calloc(MXPSQL_MPARC_uint_repr_t arr_size, size_t el_size)" id="mparc.c::MPARC_calloc_ab23a5170998401c4b3852fe54d4374a3" ref="d9/dd9/mparc_8c.htm#ab23a5170998401c4b3852fe54d4374a3"/>
 <keyword name="MPARC_calloc(MXPSQL_MPARC_uint_repr_t arr_size, size_t el_size)" id="mparc.h::MPARC_calloc_ab23a5170998401c4b3852fe54d4374a3" ref="d6/d08/mparc_8h.htm#ab23a5170998401c4b3852fe54d4374a3"/>
 <keyword name="MPARC_CHKSUM" id="mparc.h::MPARC_CHKSUM_ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e"/>
+<keyword name="MPARC_cipher(MXPSQL_MPARC_t *structure, int SetXOR, unsigned char *XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char **XORKeyOut, MXPSQL_MPARC_uint_repr_t *XORKeyLengthOut, int SetROT, int *ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int **ROTKeyOut, MXPSQL_MPARC_uint_repr_t *ROTKeyLengthOut)" id="mparc.c::MPARC_cipher_ad6484053854eda8c457e08869a8378c2" ref="d9/dd9/mparc_8c.htm#ad6484053854eda8c457e08869a8378c2"/>
+<keyword name="MPARC_cipher(MXPSQL_MPARC_t *structure, int SetXOR, unsigned char *XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char **XORKeyOut, MXPSQL_MPARC_uint_repr_t *XORKeyLengthOut, int SetROT, int *ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int **ROTKeyOut, MXPSQL_MPARC_uint_repr_t *ROTKeyLengthOut)" id="mparc.h::MPARC_cipher_ad6484053854eda8c457e08869a8378c2" ref="d6/d08/mparc_8h.htm#ad6484053854eda8c457e08869a8378c2"/>
 <keyword name="MPARC_clear(MXPSQL_MPARC_t *structure)" id="mparc.c::MPARC_clear_a211f6b2c204d841108a1c841daafa80e" ref="d9/dd9/mparc_8c.htm#a211f6b2c204d841108a1c841daafa80e"/>
 <keyword name="MPARC_clear(MXPSQL_MPARC_t *structure)" id="mparc.h::MPARC_clear_a211f6b2c204d841108a1c841daafa80e" ref="d6/d08/mparc_8h.htm#a211f6b2c204d841108a1c841daafa80e"/>
 <keyword name="MPARC_CONSTRUCT_FAIL" id="mparc.h::MPARC_CONSTRUCT_FAIL_ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4"/>
@@ -415,6 +432,7 @@
 <keyword name="MPARC_MXPSQL_MPARC_iter_t_sizeof()" id="mparc.h::MPARC_MXPSQL_MPARC_iter_t_sizeof_a2666d0b1108a0727558b73f2e5ad53d1" ref="d6/d08/mparc_8h.htm#a2666d0b1108a0727558b73f2e5ad53d1"/>
 <keyword name="MPARC_MXPSQL_MPARC_t_sizeof()" id="mparc.c::MPARC_MXPSQL_MPARC_t_sizeof_aab06ea978e0ab92f8b5086607fa9e4f4" ref="d9/dd9/mparc_8c.htm#aab06ea978e0ab92f8b5086607fa9e4f4"/>
 <keyword name="MPARC_MXPSQL_MPARC_t_sizeof()" id="mparc.h::MPARC_MXPSQL_MPARC_t_sizeof_aab06ea978e0ab92f8b5086607fa9e4f4" ref="d6/d08/mparc_8h.htm#aab06ea978e0ab92f8b5086607fa9e4f4"/>
+<keyword name="MPARC_NOCRYPT" id="mparc.h::MPARC_NOCRYPT_ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77"/>
 <keyword name="MPARC_NOTARCHIVE" id="mparc.h::MPARC_NOTARCHIVE_ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca"/>
 <keyword name="MPARC_NULL" id="mparc.h::MPARC_NULL_ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385"/>
 <keyword name="MPARC_OK" id="mparc.h::MPARC_OK_ab94170c55bb379cd60ae08c6bb68100ca53d49c284005c01c8d5264038cbbcf2f" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca53d49c284005c01c8d5264038cbbcf2f"/>
@@ -480,6 +498,7 @@
 <keyword name="MPARC_NOTARCHIVE" id="mparc.h::MPARC_NOTARCHIVE_ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca"/>
 <keyword name="MPARC_ARCHIVETOOSHINY" id="mparc.h::MPARC_ARCHIVETOOSHINY_ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324"/>
 <keyword name="MPARC_CHKSUM" id="mparc.h::MPARC_CHKSUM_ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e"/>
+<keyword name="MPARC_NOCRYPT" id="mparc.h::MPARC_NOCRYPT_ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77"/>
 <keyword name="MPARC_CONSTRUCT_FAIL" id="mparc.h::MPARC_CONSTRUCT_FAIL_ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4"/>
 <keyword name="MPARC_OPPART" id="mparc.h::MPARC_OPPART_ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f"/>
 <keyword name="MPARC_FERROR" id="mparc.h::MPARC_FERROR_ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa"/>
