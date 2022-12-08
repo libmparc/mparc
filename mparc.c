@@ -5716,7 +5716,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		 * 		
 		 * 		"filename" should contain the filename. (don't do any effects and magic on this field called "filename")
 		 * 		"blob" should contain the base64 of the binary or text file. (base64 to make it a text file and not binary)
-		 * 		"crcsum" should contain the CRC32 checksum of the content of "blob" after converting it back to it's original form. ("blob" but wihtout base64)
+		 * 		"crcsum" should contain the CRC32 checksum of the content of "blob" after converting it back to it's original form. ("blob" but wihtout base64). If encryption is set, the "crcsum" should be the non base64 encoded and unencrypted "blob" ("blob" with no base64 encoding and encruption)
 		 * 		
 		 * 		Repeat this as required (how many entries are there you repeat)
 		 * 		

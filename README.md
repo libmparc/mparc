@@ -12,11 +12,14 @@ MPAR archive reimplemented in C instead of C++, more advanced than before.
 ### Why should I use this library and archive format
 
 - An archive format, but not just that.  
-It's in plain text! Not any plain text, ASCII plain text!  
-Even binary files are in plain text because we use Base64 encoding on them!
-- You can manipulate and extract these archives with a text editor, a crc32 encoder (decoder optional, but good for checks) and a base64 encoder/decoder!
+  It's in plain text! Not any plain text, ASCII plain text!  
+  Even binary files are in plain text because we use Base64 encoding on them!
+- Human Readable and Editable;  
+  You can manipulate and extract these archives with a text editor, a crc32 encoder (decoder optional, but good for checks, ok not really) and a base64 encoder/decoder!  
+  Format has comments 
 - Versatile! You can make it into a key value database store somehow. Can store literal bytes of structs (uh oh endian problems)!
 - Built in encryption
+- Extensible format;You can add extra fields to the archive
 
 
 ### Why shouldn't I use this library and archive format
@@ -24,9 +27,11 @@ Even binary files are in plain text because we use Base64 encoding on them!
 - The code I wrote may not be up to quality control.  
 - This code pulls in libc and uses dynamic allocation.  
 - Calloc hater? Not for you, this library is proliferated with calloc calls.  
-- Memory leaks
+- Memory leaks, probably.
 - Oh also the archives are bigger than zip or tar as they are binary based and this format is plain text based and plain text files are larger than binary files.
 - Encryption is basic (XOR and ROT13 or ROT??)
+- Difficult to work with once encryption is set;  
+  Having to use XOR and ROT Cipher tools to do encryption and decryption
 
 
 ### Teach me how to build it
