@@ -3485,7 +3485,7 @@ static unsigned char* XRCipher(const unsigned char * bytes_src, MXPSQL_MPARC_uin
 	unsigned char* XORBytes = XORCipher(bytes_src, length, XORKeys, XORKeyLength);
 	unsigned char* ROTBytes = NULL;
 	if(XORBytes){
-		ROTBytes = ROTCipher(XORBytes, length, ROTKeys, XORKeyLength);
+		ROTBytes = ROTCipher(XORBytes, length, ROTKeys, ROTKeyLength);
 	}
 	return ROTBytes;
 }
