@@ -3558,6 +3558,18 @@ static unsigned char* XRCipher(const unsigned char * bytes_src, MXPSQL_MPARC_uin
 				/// Internal error reporting
 				MXPSQL_MPARC_err my_err;
 
+
+				/// XOR Cipher stuff: Key
+				unsigned char* XORKey;
+				/// XOR Cipher stuff: Length
+				MXPSQL_MPARC_uint_repr_t XORKeyLength;
+
+				/// ROT Cipher stuff: Key
+				int* ROTKey;
+				/// ROT Cipher stuff: Length
+				MXPSQL_MPARC_uint_repr_t ROTKeyLength;
+				
+
 				
 				/// hidden
 				va_list vlist;
