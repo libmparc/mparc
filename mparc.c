@@ -5753,6 +5753,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		 * Final note:
 		 * 		This file should not have binary characters.
 		 * 		Parsing should fail if BOM or non ASCII character is found.
+		 * 		Encryption is optional;XOR and ROT (the standard encryption) can be disabled (by default it is disabled).
 		 * 
 		 * 		 
 		 * Follow this (with placeholder) and you get this:
