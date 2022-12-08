@@ -3480,16 +3480,6 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 	return bytes_out;
 }
 
-static unsigned char* XRCipher(const unsigned char * bytes_src, MXPSQL_MPARC_uint_repr_t length, const unsigned char* XORKeys, MXPSQL_MPARC_uint_repr_t XORKeyLength, const int* ROTKeys, MXPSQL_MPARC_uint_repr_t ROTKeyLength){
-	((void)ROTCipher);
-	unsigned char* XORBytes = XORCipher(bytes_src, length, XORKeys, XORKeyLength);
-	unsigned char* ROTBytes = NULL;
-	if(XORBytes){
-		ROTBytes = ROTCipher(XORBytes, length, ROTKeys, ROTKeyLength);
-	}
-	return ROTBytes;
-}
-
 /* END OF SNIPPETS */
 
 
