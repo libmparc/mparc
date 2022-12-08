@@ -3584,7 +3584,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		int MPARC_strerror(MXPSQL_MPARC_err err, char** out){
-			((void)XRCipher);
+			((void)ROTCipher);
 			switch(err){
 				case MPARC_OK:
 				*out = MPARC_strdup("it fine, no error");
