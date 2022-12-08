@@ -141,6 +141,11 @@ int main(int argc, char* argv[]){
         }
     } */
 
+    // test encryption
+    MPARC_cipher(archive, 
+    1, (unsigned char*) "yes", strlen("yes"), NULL, NULL,
+    0, NULL, 0, NULL, NULL);
+
     MPARC_construct_filename(archive, "ck_chorder.mpar");
     // printf("%s", PRIuFAST32);
 	MPARC_clear(archive);

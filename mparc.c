@@ -3469,7 +3469,6 @@ static unsigned char* XORCipher(const unsigned char* bytes_src, MXPSQL_MPARC_uin
 }
 
 static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_uint_repr_t length, const int* keys, MXPSQL_MPARC_uint_repr_t keylength){
-	((void)XORCipher);
 	unsigned char* bytes_out = MPARC_memdup(bytes_src, length);
 	if(bytes_out){
 		for(MXPSQL_MPARC_uint_repr_t i = 0; i < length; i++){
@@ -3549,12 +3548,13 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				MXPSQL_MPARC_err my_err;
 
 
-				/// XOR Cipher stuff: Key
+				/* Ciphers for encryption, just basic one;You want strong one? It's a DIY for you, I am not doing it so you do it. */
+				/// XOR Cipher stuff: Key, NULL to disable it
 				unsigned char* XORKey;
 				/// XOR Cipher stuff: Length
 				MXPSQL_MPARC_uint_repr_t XORKeyLength;
 
-				/// ROT Cipher stuff: Key
+				/// ROT Cipher stuff: Key, NULL to disable it
 				int* ROTKey;
 				/// ROT Cipher stuff: Length
 				MXPSQL_MPARC_uint_repr_t ROTKeyLength;
@@ -3576,7 +3576,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		};
 
 		MXPSQL_MPARC_err MPARC_get_last_error(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_err* out){
-			if(!structure || !*structure || !out) return MPARC_IVAL;
+			if(!structure || !*structure || !out) return MPARC_NULL;
 			MXPSQL_MPARC_err err = (*structure)->my_err;
 			*out = err;
 			if(err < MPARC_OK) return MPARC_IVAL;
@@ -3584,7 +3584,6 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		int MPARC_strerror(MXPSQL_MPARC_err err, char** out){
-			((void)ROTCipher);
 			switch(err){
 				case MPARC_OK:
 				*out = MPARC_strdup("it fine, no error");
@@ -3837,6 +3836,34 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 		static char* MPARC_i_construct_header(MXPSQL_MPARC_t* structure){
 			JsonNode* nod = json_mkobject();
+			if(!nod) return NULL;
+
+			{
+				// set flags to nod
+				{
+					// encryption flag
+					JsonNode* ecrypt = json_mkarray();
+					if(!ecrypt) return NULL;
+
+					unsigned char* XORStat = NULL;
+					int* ROTStat = NULL;
+					MPARC_cipher(structure, 
+					0, NULL, 0, &XORStat, NULL, 
+					0, NULL, 0, &ROTStat, NULL);
+
+					if(XORStat){
+						JsonNode* XORNode = json_mkstring("XOR");
+						json_append_element(ecrypt, XORNode);
+					}
+					if(ROTStat){
+						JsonNode* ROTNode = json_mkstring("ROT");
+						json_append_element(ecrypt, ROTNode);
+					}
+
+					json_append_member(nod, "encrypt", ecrypt);
+				}
+			}
+
 			char* s = json_encode(nod);
 			if(!s) return NULL;
 
@@ -3899,12 +3926,46 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 						MPARC_blob_store bob_the_blob = *bob_the_blob_raw;
 						unsigned char* btob = NULL;
 						MXPSQL_MPARC_uint_repr_t sizey = 0;
-						if(bob_the_blob.binary_size < 1){
-							btob = (unsigned char*) MPARC_strdup("");
-							sizey = strlen((char*) btob); // redundant, but more programatic
-						}
-						else{
-							btob = b64.btoa(bob_the_blob.binary_blob, bob_the_blob.binary_size, &sizey);
+						{
+							unsigned char* blobg = bob_the_blob.binary_blob;
+							{
+								// crypt blob
+								unsigned char* XORK = NULL;
+								MXPSQL_MPARC_uint_repr_t XORL = 0;
+								int* ROTK = NULL;
+								MXPSQL_MPARC_uint_repr_t ROTL = 0;
+
+								MPARC_cipher(structure, 
+								0, NULL, 0, &XORK, &XORL, 
+								0, NULL, 0, &ROTK, &ROTL);
+
+								if(XORK){
+									unsigned char* tblobg = XORCipher(blobg, bob_the_blob.binary_size, XORK, XORL);
+									if(!tblobg) return NULL;
+									unsigned char* oblobg = blobg;
+									blobg = tblobg;
+									free(oblobg);
+								}
+
+								if(ROTK){
+									unsigned char* tblobg = ROTCipher(blobg, bob_the_blob.binary_size, ROTK, ROTL);
+									if(!tblobg) return NULL;
+									unsigned char* oblobg = blobg;
+									blobg = tblobg;
+									free(oblobg);
+								}
+							}
+
+							{
+								// perform base64
+								if(bob_the_blob.binary_size < 1){
+									btob = (unsigned char*) MPARC_strdup("");
+									sizey = strlen((char*) btob); // redundant, but more programatic
+								}
+								else{
+									btob = b64.btoa(blobg, bob_the_blob.binary_size, &sizey);
+								}
+							}
 						}
 
 						#ifdef MPARC_MEM_DEBUG_VERBOSE
@@ -4241,6 +4302,87 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 						return MPARC_NOTARCHIVE;
 					}
 
+					{
+						// Metadata parsers
+						MXPSQL_MPARC_err status = MPARC_OK;
+						char* peb = MPARC_strdup(peb_tok);
+						if(!peb) {
+							status = MPARC_OOM;
+							goto pebxit;
+						}
+
+						{
+							char* msav = NULL;
+							char meta_sep_sep[2] = {structure->meta_sep, '\0'};
+							char* toks = MPARC_strtok_r(peb, meta_sep_sep, &msav);
+							if(toks == NULL || strcmp(peb_tok, "") == 0 || strcmp(msav, "") == 0){
+								status = MPARC_NOTARCHIVE;
+								goto pebxit;
+							}
+
+							{
+								char* js = msav;
+								JsonNode* jsnode = json_decode(js);
+								if(!js) {
+									status = MPARC_NOTARCHIVE;
+									goto pebxit;
+								}
+
+								{
+									bool ecrypt_found = false;
+									JsonNode* child_i = NULL;
+									json_foreach(child_i, jsnode) {
+
+										if(strcmp(child_i->key, "encrypt") == 0 && child_i->tag == JSON_ARRAY){ // check for encryption
+
+											ecrypt_found = true;
+											JsonNode* child_ecrypt = NULL;
+
+											json_foreach(child_ecrypt, child_i) {
+
+												if(child_ecrypt->tag == JSON_STRING && child_ecrypt->key == NULL){
+													char* key = NULL;
+													unsigned char* XORStat = NULL;
+													unsigned char* ROTStat = NULL;
+
+													MPARC_cipher(structure,
+													0, NULL, 0, &XORStat, NULL,
+													0, NULL, 0, &ROTStat, NULL);
+
+													if(strcmp(key, "XOR") == 0 && XORStat == NULL){
+														status = MPARC_NOCRYPT;
+														goto pebxit;
+													}
+
+													if(strcmp(key, "ROT") == 0 && ROTStat == NULL){
+														status = MPARC_NOCRYPT;
+														goto pebxit;
+													}
+												}
+												else{
+													status = MPARC_NOTARCHIVE;
+													goto pebxit;
+												}
+
+											}
+										}
+
+									}
+
+									if(!ecrypt_found) {
+										status = MPARC_NOTARCHIVE;
+										goto pebxit;
+									}
+								}
+							}
+						}
+
+						goto pebxit; // redundant IK, but the POWER OF GOTO STATEMENTS WE YOLO AND LEROY THIS ERROR HANDLING
+
+						pebxit:
+						free(peb);
+						if(status != MPARC_OK) return status;
+					}
 
 					{
 						char meta_sep_sep[2] = {structure->meta_sep, '\0'};
@@ -4477,54 +4619,91 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				
 				{
 					MXPSQL_MPARC_uint_repr_t bsize = 1;
-					unsigned char* un64_blob = NULL;
+					unsigned char* pun64_blob = NULL;
 					if(strlen(blob) > 1){
-						un64_blob = b64.atob((unsigned char*) blob, strlen(blob), &bsize);
+						pun64_blob = b64.atob((unsigned char*) blob, strlen(blob), &bsize);
 					}
 					else{
-						un64_blob = (unsigned char*) MPARC_strdup("");
+						pun64_blob = (unsigned char*) MPARC_strdup("");
 					}
 
-					if(un64_blob == NULL){
+					if(pun64_blob == NULL){
 						err = MPARC_OOM;
 						goto errhandler;
 					}
 
 					{
-						MPARC_blob_store store = {
-							bsize,
-							un64_blob,
-							crc3
-						};
 
-						#ifdef MPARC_MEM_DEBUG_VERBOSE
+						unsigned char* un64_blob = MPARC_memdup(pun64_blob, bsize);
 						{
-							fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Printing unb64 blob after parsing of %s with size of %"PRIuFAST64":\n", filename, store.binary_size);
-							for(MXPSQL_MPARC_uint_repr_t i = 0; i < store.binary_size; i++){
-								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", store.binary_blob[i]);
+							unsigned char* XORK = NULL;
+							unsigned char* ROTK = NULL;
+							MXPSQL_MPARC_uint_repr_t XORL = 0;
+							MXPSQL_MPARC_uint_repr_t ROTL = 0;
+
+							MPARC_cipher(structure,
+							0, NULL, 0, &XORK, &XORL,
+							0, NULL, 0, &ROTK, &ROTL);
+
+							if(ROTK){
+								unsigned char* tun64_blob = ROTCipher(un64_blob, bsize, ROTK, ROTL);
+								if(!tun64_blob) {
+									err = MPARC_OOM;
+									goto errhandler;
+								}
+
+								unsigned char* ou64_blob = un64_blob;
+								un64_blob = tun64_blob;
 							}
-							printf("\n");
-						}
-						#endif
 
-						crc_t crc = crc_init();
-						crc = crc_update(crc, store.binary_blob, store.binary_size);
-						crc = crc_finalize(crc);
-			
-						/* printf("%"PRIuFAST32" %"PRIuFAST32"\n", crc, crc3); */
-						if(crc != crc3){
-							// errno = EILSEQ;
-							// err = MPARC_CHKSUM;
-							// structure->my_err = err;
-							// goto errhandler;
-						}
-						store.binary_crc = crc;
+							if(XORK){
+								unsigned char* tun64_blob = XORCipher(un64_blob, bsize, XORK, XORL);
+								if(!tun64_blob) {
+									err = MPARC_OOM;
+									goto errhandler;
+								}
 
-						// map_set(&structure->globby, filename, store);
-						err = MPARC_i_push_ufilestr_advancea(structure, filename, 0, erronduplicate, store.binary_blob, store.binary_size, store.binary_crc);
-						if(err != MPARC_OK){
-							structure->my_err = err;
-							goto errhandler;
+								unsigned char* ou64_blob = un64_blob;
+								un64_blob = tun64_blob;
+							}
+						}
+
+						{
+							MPARC_blob_store store = {
+								bsize,
+								un64_blob,
+								crc3
+							};
+
+							#ifdef MPARC_MEM_DEBUG_VERBOSE
+							{
+								fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Printing unb64 blob after parsing of %s with size of %"PRIuFAST64":\n", filename, store.binary_size);
+								for(MXPSQL_MPARC_uint_repr_t i = 0; i < store.binary_size; i++){
+									fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "%c", store.binary_blob[i]);
+								}
+								printf("\n");
+							}
+							#endif
+
+							crc_t crc = crc_init();
+							crc = crc_update(crc, store.binary_blob, store.binary_size);
+							crc = crc_finalize(crc);
+
+							/* printf("%"PRIuFAST32" %"PRIuFAST32"\n", crc, crc3); */
+							if(crc != crc3){
+								// errno = EILSEQ;
+								// err = MPARC_CHKSUM;
+								// structure->my_err = err;
+								// goto errhandler;
+							}
+							store.binary_crc = crc;
+
+							// map_set(&structure->globby, filename, store);
+							err = MPARC_i_push_ufilestr_advancea(structure, filename, 0, erronduplicate, store.binary_blob, store.binary_size, store.binary_crc);
+							if(err != MPARC_OK){
+								structure->my_err = err;
+								goto errhandler;
+							}
 						}
 					}
 				}
@@ -4669,9 +4848,51 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 
 
+		MXPSQL_MPARC_err MPARC_cipher(MXPSQL_MPARC_t* structure, 
+    	int SetXOR, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,
+    	int SetROT, int* ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int** ROTKeyOut, MXPSQL_MPARC_uint_repr_t* ROTKeyLengthOut){
+			if(!structure) return MPARC_NULL;
+			bool fleg = false;
+			{
+				// DO XOR
+				{
+					// Set out
+					if(XORKeyOut) *XORKeyOut = structure->XORKey;
+					if(XORKeyLengthOut) *XORKeyLengthOut = structure->XORKeyLength;
+				}
+
+				if(SetXOR != 0){
+					// Set in
+
+					structure->XORKey = MPARC_memdup(XORKeyIn, XORKeyLengthIn);
+					structure->XORKeyLength = XORKeyLengthIn;
+					fleg = true;
+				}
+			}
+			{
+				// DO ROT
+				{
+					// Set Out
+					if(ROTKeyOut) *ROTKeyOut = structure->ROTKey;
+					if(ROTKeyLengthOut) *ROTKeyLengthOut = structure->ROTKeyLength;
+				}
+
+				if(SetROT != 0){
+					// Set in
+					structure->ROTKey = MPARC_memdup(ROTKeyIn, ROTKeyLengthIn);
+					structure->ROTKeyLength = XORKeyLengthIn;
+					fleg = true;
+				}
+			}
+
+			return (fleg ? MPARC_OK : MPARC_NOCRYPT);
+		}
+
+
+
 		MXPSQL_MPARC_err MPARC_list_array(MXPSQL_MPARC_t* structure, char*** listout,	MXPSQL_MPARC_uint_repr_t* length){
 				if(structure == NULL) {
-						return MPARC_IVAL;
+						return MPARC_NULL;
 				}
 
 				typedef struct anystruct {
@@ -4775,7 +4996,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		MXPSQL_MPARC_err MPARC_list_array_free(char*** list){
-			if(list == NULL || *list == NULL) return MPARC_IVAL;
+			if(list == NULL || *list == NULL) return MPARC_NULL;
 			char** l = *list;
 			for(MXPSQL_MPARC_uint_repr_t i = 0; l[i] != NULL; i++){
 				MPARC_free(l[i]);
@@ -4785,7 +5006,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		MXPSQL_MPARC_err MPARC_list_iterator_init(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_iter_t** iterator){
-			if(!(structure == NULL || *structure == NULL || iterator == NULL || *iterator == NULL)) return MPARC_IVAL;
+			if(!(structure == NULL || *structure == NULL || iterator == NULL || *iterator == NULL)) return MPARC_NULL;
 
 			void* memalloc = MPARC_calloc(1, sizeof(MXPSQL_MPARC_iter_t));
 			CHECK_LEAKS();
@@ -4804,7 +5025,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		MXPSQL_MPARC_err MPARC_list_iterator_next(MXPSQL_MPARC_iter_t** iterator, const char** outnam){
-			if(iterator == NULL || *iterator == NULL) return MPARC_IVAL;
+			if(iterator == NULL || *iterator == NULL) return MPARC_NULL;
 
 			MXPSQL_MPARC_iter_t* iterye = *iterator;
 
@@ -4821,7 +5042,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		MXPSQL_MPARC_err MPARC_list_iterator_destroy(MXPSQL_MPARC_iter_t** iterator){
-			if(iterator == NULL || *iterator == NULL) return MPARC_IVAL;
+			if(iterator == NULL || *iterator == NULL) return MPARC_NULL;
 			if(*iterator) MPARC_free(*iterator);
 			return MPARC_OK;
 		}
@@ -4870,7 +5091,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, const char* filename){
-				if(structure == NULL || filename == NULL) return MPARC_IVAL;
+				if(structure == NULL || filename == NULL) return MPARC_NULL;
 				switch(1){
 					case 1:
 					{
@@ -5176,17 +5397,17 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 		MXPSQL_MPARC_err MPARC_push_filename(MXPSQL_MPARC_t* structure, const char* filename){
 				if(structure == NULL) {
-					return MPARC_IVAL;
+					return MPARC_NULL;
 				}
 				if(filename == NULL) {
 					structure->my_err = MPARC_FERROR;
-					return MPARC_IVAL;
+					return structure->my_err;
 				}
 
 				FILE* fpstream = fopen(filename, "rb");
 				if(fpstream == NULL){
 					structure->my_err = MPARC_FERROR;
-					return MPARC_FERROR;
+					return structure->my_err;
 				}
 
 				MXPSQL_MPARC_err err = MPARC_push_filestream(structure, fpstream, filename);    
@@ -5199,12 +5420,12 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		MXPSQL_MPARC_err MPARC_push_filestream(MXPSQL_MPARC_t* structure, FILE* filestream, const char* filename){
 				if(filestream == NULL){
 					structure->my_err = MPARC_FERROR;
-					return MPARC_FERROR;
+					return structure->my_err;
 				}
 
 				if(filename == NULL){
 					structure->my_err = MPARC_IVAL;
-					return MPARC_IVAL;
+					return structure->my_err;
 				}
 				
 
@@ -5467,16 +5688,18 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		 * 		The '>' character works to indicate the start of entries
 		 * 		The newline is an anomaly though, but just put it in there
 		 * 		
-		 * 		JSON_WHATEV_METADATA can be implementation defined
-		 * 		This C implementation will ignore any extra metadata
+		 * 		JSON_WHATEV_METADATA have certain mandaroty parameters.  
+		 * 		There must be the "encrypt" field to indicate encryption provided.  
+		 * 		Standard encryption algorithm is XOR and ROT (ROT13 or anything else like ROT100 or whatever).  
+		 * 		Other field specific to each implementation are ignored.
 		 * 		
 		 * 		Construction note:
 		 * 		Make sure to base64 your metadata entries to prevent issues with parsing.
 		 * 		
 		 * 		Parsing tips:
-		 * 		Split ';' from the whole archive to get the magic number first
-		 * 		Then split '>' from to get the special info header
-		 * 		The split '$' from the special info header to get the version and extra metadata
+		 * 			Split ';' from the whole archive to get the magic number first  
+		 * 			Then split '>' from to get the special info header  
+		 * 			The split '$' from the special info header to get the version and extra metadata.
 		 * 
 		 * 
 		 * 2. Build the entries
@@ -5496,7 +5719,8 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		 * 		Repeat this as required (how many entries are there you repeat)
 		 * 		
 		 * 		Construction note:
-		 * 		The anomaly mention aboved is because the newline is added before the main content
+		 * 		The anomaly mention aboved is because the newline is added before the main content.  
+		 * 		XOR cipher is applied before ROT cipher, this sequencing is Mandatory for all implementations.
 		 * 		
 		 * 		Parsing note:
 		 * 			When parsing the entries, split from the begin '>' marker first, and then the end '@' marker.
@@ -5506,6 +5730,8 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		 * 			Then, foreach split '%' to get the crc and json.
 		 * 			Then compare the JSON to the crc.
 		 * 			Then parse the JSON as usual.
+		 * 
+		 * 			Each implementation shall decrypt with ROT before XOR because XOR is applied before ROT during construction, this sequencing is Mandatory. Be prepared to wrap your head with this.
 		 * 
 		 * 		You could parse extra info in your implementation, but this C Based implementation will ignore extra ones. I repeat this line again.
 		 * 
@@ -5534,13 +5760,13 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		 * 
 		 * A real single entried one:
 		 * 		
-		 * 	MXPSQL's Portable Archive;1${"WhatsThis": "MPARC Logo lmao-Hahahaha"}>  
+		 * 	MXPSQL's Portable Archive;1${"WhatsThis": "MPARC Logo lmao-Hahahaha", "encrypt": []}>  
 		 * 	134131812%{"filename":"./LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
 		 *
 		 * 
 		 * A real (much more real) multi entried one:
 		 * 		
-		 * 	MXPSQL's Portable Archive;1${}>  
+		 * 	MXPSQL's Portable Archive;1${"encrypt": []}>  
 		 * 	3601911152%{"filename":"LICENSE","blob":"U2VlIExJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgYW5kIGNob29zZSBvbmUgb2YgdGhlbS4KCkxJQ0VOU0UuTEdQTCBjb250YWlucyBMR1BMLTIuMS1vci1sYXRlciBsaWNlbnNlLgpMSUNFTlNFLk1JVCBjb250YWlucyBNSVQgbGljZW5zZS4KCkxJQ0VOU0UuTEdQTCBhbmQgTElDRU5TRS5NSVQgc2hvdWxkIGJlIGRpc3RyaWJ1dGVkIHRvZ2V0aGVyIHdpdGggeW91ciBjb3B5LCBpZiBub3QsIHNvbWV0aGluZyBpcyB3cm9uZy4=","crcsum":"404921597"}  
 		 * 	59879441%{"filename":"LICENSE.MIT","blob":"TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyMiBNWFBTUUwKClBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHkKb2YgdGhpcyBzb2Z0d2FyZSBhbmQgYXNzb2NpYXRlZCBkb2N1bWVudGF0aW9uIGZpbGVzICh0aGUgIlNvZnR3YXJlIiksIHRvIGRlYWwKaW4gdGhlIFNvZnR3YXJlIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cwp0byB1c2UsIGNvcHksIG1vZGlmeSwgbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsCmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcwpmdXJuaXNoZWQgdG8gZG8gc28sIHN1YmplY3QgdG8gdGhlIGZvbGxvd2luZyBjb25kaXRpb25zOgoKVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW4gYWxsCmNvcGllcyBvciBzdWJzdGFudGlhbCBwb3J0aW9ucyBvZiB0aGUgU29mdHdhcmUuCgpUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgIkFTIElTIiwgV0lUSE9VVCBXQVJSQU5UWSBPRiBBTlkgS0lORCwgRVhQUkVTUyBPUgpJTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSwKRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UgQU5EIE5PTklORlJJTkdFTUVOVC4gSU4gTk8gRVZFTlQgU0hBTEwgVEhFCkFVVEhPUlMgT1IgQ09QWVJJR0hUIEhPTERFUlMgQkUgTElBQkxFIEZPUiBBTlkgQ0xBSU0sIERBTUFHRVMgT1IgT1RIRVIKTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSwKT1VUIE9GIE9SIElOIENPTk5FQ1RJT04gV0lUSCBUSEUgU09GVFdBUkUgT1IgVEhFIFVTRSBPUiBPVEhFUiBERUFMSU5HUyBJTiBUSEUKU09GVFdBUkUu","crcsum":"15584406"}@~
 		*/
@@ -5633,7 +5859,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 		MXPSQL_MPARC_err MPARC_construct_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream){
 			if(fpstream == NULL){
-				return MPARC_IVAL;
+				return MPARC_NULL;
 			}
 
 			char* archive = NULL;
@@ -5672,7 +5898,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				MXPSQL_MPARC_uint_repr_t listys = 0;
 				if(MPARC_list_array(structure, &listy, &listys) != MPARC_OK){
 					structure->my_err = MPARC_IVAL;
-					return MPARC_IVAL;
+					return structure->my_err;
 				}
 
 				for(MXPSQL_MPARC_uint_repr_t i = 0; i < listys; i++){
@@ -5705,7 +5931,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 								if(fname) MPARC_free(fname);
 								if(listy) MPARC_free(listy);
 								structure->my_err = MPARC_IVAL;
-								return MPARC_IVAL;
+								return structure->my_err;
 							}
 						}
 						fps = fopen(fname, "wb+");
@@ -5742,7 +5968,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 							if(fname) MPARC_free(fname);
 							if(listy) MPARC_free(listy);
 							structure->my_err = MPARC_IVAL;
-							return MPARC_IVAL;
+							return structure->my_err;
 						}
 						{
 							unsigned char* bout = NULL;
@@ -5860,7 +6086,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 
 		MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, const char* srcdir, int recursive, int (*listdir)(const char*, int, char**)){
-			if(listdir == NULL) return MPARC_IVAL;
+			if(listdir == NULL) return MPARC_NULL;
 
 			char** flists = NULL;
 			MXPSQL_MPARC_err err = MPARC_OK;

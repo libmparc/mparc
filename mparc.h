@@ -176,23 +176,28 @@ extern "C"{
          * 
          */
         MPARC_CHKSUM=7,
+        /**
+         * @brief No encryption is set
+         * 
+         */
+        MPARC_NOCRYPT=8,
 
         /**
          * @brief Failure to construct archive
         */
-        MPARC_CONSTRUCT_FAIL=8,
+        MPARC_CONSTRUCT_FAIL=9,
 
         /**
          * @brief Operation not complete
          * 
          */
-        MPARC_OPPART=9,
+        MPARC_OPPART=10,
 
         /**
          * @brief FILE* seems to be having problems as ferror reports true or just that something is wrong with the archive itself
          * 
          */
-        MPARC_FERROR=10
+        MPARC_FERROR=11
     } MXPSQL_MPARC_err;
     /**
      * @brief Get last error from internally maintained state (If oen of your functions does not return MXPSQL_MPARC_err, how cruel of you to do that).
@@ -265,6 +270,35 @@ extern "C"{
      * @return MXPSQL_MPARC_err the status code
      */
     MXPSQL_MPARC_err MPARC_destroy(MXPSQL_MPARC_t** structure);
+
+    
+    /**
+     * @brief Control cipher encryption;One function to control two ciphers (horrible design)
+     * 
+     * @param structure the target structure
+     * @param SetXOR Indicate if you want to set XOR Encryption
+     * @param XORKeyIn XOR Key Input
+     * @param XORKeyLengthIn XOR Key Input Length
+     * @param XORKeyOut XOR Key Output
+     * @param XORKeyLengthOut XOR Key Output Length
+     * @param SetROT Indicate if you want to set ROT Encryption
+     * @param ROTKeyIn ROT Key Input
+     * @param ROTKeyLengthIn ROT Key Input Length
+     * @param ROTKeyOut ROT Key Output Length
+     * @param ROTKeyLengthOut ROT Key Output Length
+     * @return MXPSQL_MPARC_err the status code: MPARC_OK if any encryption is set, MPARC_NOCRYPT if no encryption is set
+     * 
+     * @details
+     * 
+     * To disable encryption set XORKeyIn or ROTKeyIn to NULL
+     * 
+     * Output is first put before setting the new key, so you can get the old key.
+     * 
+     * @note Having the wrong encryption key will cause garbage data.
+     */
+    MXPSQL_MPARC_err MPARC_cipher(MXPSQL_MPARC_t* structure, 
+    int SetXOR, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,
+    int SetROT, int* ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int** ROTKeyOut, MXPSQL_MPARC_uint_repr_t* ROTKeyLengthOut);
 
     /**
      * @brief List out the current files included as an array
