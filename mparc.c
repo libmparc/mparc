@@ -4341,9 +4341,9 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 											json_foreach(child_ecrypt, child_i) {
 
 												if(child_ecrypt->tag == JSON_STRING && child_ecrypt->key == NULL){
-													char* key = NULL;
+													char* key = child_ecrypt->store.string;
 													unsigned char* XORStat = NULL;
-													unsigned char* ROTStat = NULL;
+													int* ROTStat = NULL;
 
 													MPARC_cipher(structure,
 													0, NULL, 0, &XORStat, NULL,
@@ -4637,7 +4637,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 						unsigned char* un64_blob = MPARC_memdup(pun64_blob, bsize);
 						{
 							unsigned char* XORK = NULL;
-							unsigned char* ROTK = NULL;
+							int* ROTK = NULL;
 							MXPSQL_MPARC_uint_repr_t XORL = 0;
 							MXPSQL_MPARC_uint_repr_t ROTL = 0;
 
@@ -4652,8 +4652,9 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 									goto errhandler;
 								}
 
-								unsigned char* ou64_blob = un64_blob;
+								unsigned char* oun64_blob = un64_blob;
 								un64_blob = tun64_blob;
+								free(oun64_blob);
 							}
 
 							if(XORK){
@@ -4663,8 +4664,9 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 									goto errhandler;
 								}
 
-								unsigned char* ou64_blob = un64_blob;
+								unsigned char* oun64_blob = un64_blob;
 								un64_blob = tun64_blob;
+								free(oun64_blob);
 							}
 						}
 
