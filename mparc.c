@@ -3786,7 +3786,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				}
 
 				default: {
-					double difftimet = difftime(time(NULL), 0);
+					double difftimet = difftime(time(NULL), time(NULL));
 					srand((unsigned int) difftimet);
 					spress = (rand() % 30) - 15;
 					break;
