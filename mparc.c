@@ -3772,6 +3772,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 					}
 
 					spress = voidstrcmp(str1fnam, str2fnam);
+					// fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "FILENAME1(%s)<=>FILENAME2(%s):%d\n", str1fnam, str2fnam, spress);
 
 					goto me_my_errhandler;
 
