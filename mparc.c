@@ -4779,18 +4779,30 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 				map_init(&istructure->globby);
 
-				// shall not change this
-				istructure->magic_byte_sep = ';'; 
-				istructure->meta_sep = '$'; 
-				istructure->entry_sep_or_general_marker = '\n'; 
-				istructure->comment_marker = '#';
-				istructure->begin_entry_marker = '>';
-				istructure->entry_elem2_sep_marker_or_magic_sep_marker = MPARC_MAGIC_CHKSM_SEP;
-				istructure->end_entry_marker = '@';
-				istructure->end_file_marker = '~';
+				{
+					// shall not change this
+					istructure->magic_byte_sep = ';'; 
+					istructure->meta_sep = '$'; 
+					istructure->entry_sep_or_general_marker = '\n'; 
+					istructure->comment_marker = '#';
+					istructure->begin_entry_marker = '>';
+					istructure->entry_elem2_sep_marker_or_magic_sep_marker = MPARC_MAGIC_CHKSM_SEP;
+					istructure->end_entry_marker = '@';
+					istructure->end_file_marker = '~';
+				}
 
-				istructure->writerVersion = STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER;
-				istructure->loadedVersion = STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER; // default same
+				{
+					istructure->writerVersion = STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER;
+					istructure->loadedVersion = STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER; // default same
+				}
+
+				{
+					istructure->XORKey = NULL;
+					istructure->XORKeyLength = 0;
+
+					istructure->ROTKey = NULL;
+					istructure->ROTKeyLength = 0;
+				}
 
 				*structure = istructure;
 

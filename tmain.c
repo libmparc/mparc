@@ -76,9 +76,11 @@ int main(int argc, char* argv[]){
         printf("Init failed ok\n");
         abort();
     }
+    printf("Done initializing\n");
 	char* filen[] = {/*"mparc.h", */NULL};
     for(size_t i = 0; filen[i] != NULL; i++){
-    	if((err = MPARC_push_filename(archive, "mparc.h")) != MPARC_OK){
+        if(filen[i] == NULL) break;
+    	if((err = MPARC_push_filename(archive, filen[i])) != MPARC_OK){
     	    printf("A big no happened when trying to push files\n");
     	    MPARC_perror(err);
     	    printf("File push failed\n");
@@ -104,6 +106,7 @@ int main(int argc, char* argv[]){
     	    abort();
     	}
 		free(p);
+        printf("Pushed file 1\n");
 	}
 	{
 		if((err = MPARC_push_voidfile(archive, "mparc.struct", archive, sizeof(archive)))){
@@ -111,6 +114,7 @@ int main(int argc, char* argv[]){
     	    printf("File push failed\n");
     	    abort();
 		}
+        printf("Pushed file 2");
 	}
     {
         char* str = "strtok stinks, use strtok_r instead! Rip it from the Glibc Source!";
@@ -119,6 +123,7 @@ int main(int argc, char* argv[]){
             printf("File push failed\n");
             abort();
         }
+        printf("Pushed file 3");
     }
     /* {
         char** listprintf( NULL;
@@ -145,10 +150,13 @@ int main(int argc, char* argv[]){
     MPARC_cipher(archive, 
     1, (unsigned char*) "yes", strlen("yes"), NULL, NULL,
     0, NULL, 0, NULL, NULL);
+    printf("Cipher set (XOR)\n");
 
     MPARC_construct_filename(archive, "ck_chorder.mpar");
+    printf("Constructed archive\n");
     // printf("%s", PRIuFAST32);
 	MPARC_clear(archive);
+    printf("Cleared archive\n");
     {
         MXPSQL_MPARC_err err = MPARC_parse_filename(archive, "ck_chorder.mpar");
         if(err != MPARC_OK){
@@ -156,6 +164,7 @@ int main(int argc, char* argv[]){
             printf("Archive parsing failed\n");
             abort();
         }
+        printf("Parsed file\n");
     }
 	{
 		char** e = NULL;
@@ -165,9 +174,11 @@ int main(int argc, char* argv[]){
             printf("Archive listing failed\n");
             abort();
         }
+        printf("Got list from archive\n");
 		for(size_t i = 0; e[i] != NULL; i++){
 			printf(">%s\n", e[i]);
 		}
+        printf("Fully listed everything in archive\n");
 	}
 	/* {
 		FILE* fs = fopen("mparc.struct", "wb+");
@@ -179,7 +190,9 @@ int main(int argc, char* argv[]){
 	if((err =MPARC_extract(archive, ".", NULL)) != MPARC_OK){
 		MPARC_sfperror(err, stderr, "DFialed to extract archive");
 	}
+    printf("Extracted archive\n");
     MPARC_destroy(&archive);
+    printf("Destroyed archive\n");
     printf("Sizeof MXPSQL_MPARC_t: %zu\nSizeof MXPSQL_MPARC_iter_t: %zu", MPARC_MXPSQL_MPARC_t_sizeof(), MPARC_MXPSQL_MPARC_iter_t_sizeof());
     return 0;
 }
