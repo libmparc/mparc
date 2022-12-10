@@ -128,7 +128,7 @@ extern "C"{
          */
         MPARC_IDK = -1,
         /**
-         * @brief Internal problem, not used.
+         * @brief Internal problem, should never see this. If you see this, it is a serious error and you should abort.
          * 
          */
         MPARC_INTERNAL = -2,
@@ -200,7 +200,7 @@ extern "C"{
         MPARC_FERROR=11
     } MXPSQL_MPARC_err;
     /**
-     * @brief Get last error from internally maintained state (If oen of your functions does not return MXPSQL_MPARC_err, how cruel of you to do that).
+     * @brief Get last error from internally maintained state (If one of your functions does not return MXPSQL_MPARC_err, how cruel of you to do that by forcing users to resort to this function).
      * 
      * @param structure the target structure
      * @param out Get your error state here
@@ -212,7 +212,7 @@ extern "C"{
      * 
      * @param err error code
      * @param out output error string, can be NULL if an error occured
-     * @return int Level of error
+     * @return int Level of error (-1 for invalid, 0 for normal, 1 for special, 2 for serious conditions)
      */
     int MPARC_strerror(MXPSQL_MPARC_err err, char** out);
     /**

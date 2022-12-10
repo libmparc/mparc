@@ -19,6 +19,12 @@ jobs:
 
     - name: Build
       run: make -f ./[Mm]akefile.dumb DMALLOC_PATH= LDLIBS= all
+
+    - name: Test the test executable
+      run: ./tmparc.exe || false
+    
+    - name: Test the editor utility
+      run: make -f ./[Mm]akefile.dumb mkar
       
     - name: Clean
       run: make -f ./[Mm]akefile.dumb clean

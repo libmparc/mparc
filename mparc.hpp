@@ -154,6 +154,7 @@ namespace MXPSQL{
         /**
          * @brief The C++ Object Oriented wrapper for MXPSQL_MPARC_iter_t*
          * 
+         * @note You can only go forward, not backwards. This is a limitation of the underlying iterator, not being lazy.
          */
         class MPARC_Iter{
             private:
@@ -193,9 +194,32 @@ namespace MXPSQL{
                 const char* nam = NULL;
 
                 err = MPARC_list_iterator_next(&handle, &nam);
-                out = std::string(nam);
+
+                if(err == MPARC_OK) {
+                    out = std::string(nam);
+                }
 
                 return MPARC_Error(err);
+            }
+
+            /**
+             * @brief Prefix increment operator to advance state
+             * 
+             * @return std::string Current file, empty if reached the end
+             */
+            std::string operator++(){
+                std::string str = "";
+                next(str);
+                return str;
+            }
+
+            /**
+             * @brief Postfix increment operator to advance state
+             * 
+             * @return std::string Current file, empty if reached the end
+             */
+            std::string operator++(int){
+                return operator++();
             }
         };
 
@@ -260,6 +284,20 @@ namespace MXPSQL{
 
 
             /**
+             * @brief Get the Last Error condition
+             * 
+             * @return MPARC_Error Last error condition
+             */
+            MPARC_Error getLastError(){
+                MXPSQL_MPARC_err err = MPARC_OK;
+                MXPSQL_MPARC_t* Ptr = this->getInstance();
+                MPARC_get_last_error(&Ptr, &err);
+                return MPARC_Error(err);
+            }
+
+
+
+            /**
              * @brief Get the internal MXPSQL_MPARC_t instance. Use this if you use with the C Functions or you need to leverage the power of pointers.
              * 
              * @return MXPSQL_MPARC_t* pointer to the internal instance
@@ -268,6 +306,44 @@ namespace MXPSQL{
              */
             MXPSQL_MPARC_t* getInstance(){
                 return archive;
+            }
+
+
+
+            /**
+            * @brief Plagiarised from mparc.h: Control cipher encryption;One function to control two ciphers (horrible design)
+            * 
+            * @param structure the target structure
+            * @param SetXOR Indicate if you want to set XOR Encryption
+            * @param XORKeyIn XOR Key Input
+            * @param XORKeyLengthIn XOR Key Input Length
+            * @param XORKeyOut XOR Key Output
+            * @param XORKeyLengthOut XOR Key Output Length
+            * @param SetROT Indicate if you want to set ROT Encryption
+            * @param ROTKeyIn ROT Key Input
+            * @param ROTKeyLengthIn ROT Key Input Length
+            * @param ROTKeyOut ROT Key Output Length
+            * @param ROTKeyLengthOut ROT Key Output Length
+            * @return MPARC_Error Success?
+            * 
+            * @details
+            * 
+            * To disable encryption set XORKeyIn or ROTKeyIn to NULL
+            * 
+            * Output is first put before setting the new key, so you can get the old key.
+            * 
+            * @note Having the wrong encryption key will cause garbage data.
+            */
+            MPARC_Error cipher(
+                int SetXORCipher, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,
+                int SetROTCipher, int* ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int** ROTKeyOut, MXPSQL_MPARC_uint_repr_t* ROTKeyLengthOut
+            ){
+                return MPARC_Error(
+                    MPARC_cipher(this->getInstance(),
+                        (SetXORCipher ? 1 : 0), XORKeyIn, XORKeyLengthIn, XORKeyOut, XORKeyLengthOut,
+                        (SetROTCipher ? 1 : 0), ROTKeyIn, ROTKeyLengthIn, ROTKeyOut, ROTKeyLengthOut
+                    )
+                );
             }
 
 
@@ -441,9 +517,10 @@ namespace MXPSQL{
              * @return MPARC_Error Success?
              */
             MPARC_Error construct(std::string& out, bool interpretation_mode){
-                char* chout = NULL;
-                MXPSQL_MPARC_err err = MPARC_construct_str(this->getInstance(), &chout);
+                MXPSQL_MPARC_err err = MPARC_OK;
                 if(interpretation_mode){
+                    char* chout = NULL;
+                    err = MPARC_construct_str(this->getInstance(), &chout);
                     out = std::string(chout);
                     MPARC_free(chout);
                 }

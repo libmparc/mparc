@@ -75,26 +75,40 @@
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #ifdef MPARC_DEBUG
-#define MPARC_MEM_DEBUG 1
+	#define MPARC_MEM_DEBUG 1
 
-// verbosity
-#ifdef MPARC_DEBUG_VERBOSE
-#define MPARC_MEM_DEBUG_VERBOSE 1
+	// verbosity
+	#ifdef MPARC_DEBUG_VERBOSE
+		// You want verbosity?
+		#define MPARC_MEM_DEBUG_VERBOSE 1
+	#endif
 #endif
-#endif
+
+// VS Code Special debugs
+// #define MPARC_MEM_DEBUG
+// #ifndef MPARC_USE_DMALLOC
+// 	/// debug for VS CODE
+// 	#define MPARC_USE_DMALLOC
+// #endif
 
 #ifdef MPARC_MEM_DEBUG
-#define GC_DEBUG
-#include <gc/gc.h>
-#define malloc(n) GC_MALLOC(n)
-#define calloc(m,n) GC_MALLOC((m)*(n))
-#define free(p) GC_FREE(p)
-#define realloc(p,n) GC_REALLOC((p),(n))
-/// @brief Check yo mem leaks rn
-#define CHECK_LEAKS() GC_gcollect()
+	#ifdef MPARC_USE_DMALLOC
+		#include <dmalloc.h>
+		/// @ Check yo mem leaks rn
+		#define CHECK_LEAKS()
+	#else
+	#define GC_DEBUG
+		#include <gc/gc.h>
+		#define malloc(n) GC_MALLOC(n)
+		#define calloc(m,n) GC_MALLOC((m)*(n))
+		#define free(p) GC_FREE(p)
+		#define realloc(p,n) GC_REALLOC((p),(n))
+		/// @brief Check yo mem leaks rn
+		#define CHECK_LEAKS() GC_gcollect()
+	#endif
 #else
-/// @brief Check yo mem leaks rn
-#define CHECK_LEAKS()
+	/// @brief Check yo mem leaks rn
+	#define CHECK_LEAKS()
 #endif
 
 #endif
@@ -2845,6 +2859,7 @@ static void map_addnode(map_base_t *m, map_node_t *node) {
 	m->buckets[n] = node;
 	#ifdef MPARC_MEM_DEBUG_VERBOSE
 	{
+		// unsafe magic
 		MPARC_blob_store* storeptr = m->buckets[n]->value;
 		fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of data after map node is added with size of %"PRIuFAST64" and bucket index of %i.\n", storeptr->binary_size, n);
 		for(MXPSQL_MPARC_uint_repr_t i = 0; i < storeptr->binary_size; i++){
@@ -2902,6 +2917,7 @@ static map_node_t **map_getref(map_base_t *m, const char *key) {
 		while (*next) {
 			#ifdef MPARC_MEM_DEBUG_VERBOSE
 			{
+				// unsafe magic
 				MPARC_blob_store* storeptr = (MPARC_blob_store*) (*next)->value;
 				fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of unfiltered entry while getting reference to the hashmap bucket with size of %"PRIuFAST64".\n", storeptr->binary_size);
 				for(MXPSQL_MPARC_uint_repr_t i = 0; i < storeptr->binary_size; i++){
@@ -2913,6 +2929,7 @@ static map_node_t **map_getref(map_base_t *m, const char *key) {
 			if ((*next)->hash == hash && !strcmp((char*) (*next + 1), key)) {
 				#ifdef MPARC_MEM_DEBUG_VERBOSE
 				{
+					// unsafe magic
 					MPARC_blob_store* storeptr = (MPARC_blob_store*) m->buckets[map_bucketidx(m, hash)]->value;
 					fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "Byte view of filtered %s while getting reference to the hashmap bucket with size of %"PRIuFAST64" and bucket index of %i.\n", key, storeptr->binary_size, map_bucketidx(m, hash));
 					for(MXPSQL_MPARC_uint_repr_t i = 0; i < storeptr->binary_size; i++){
@@ -2972,6 +2989,7 @@ static int map_set_(map_base_t *m, const char *key, void *value, int vsize) {
 	}
     #ifdef MPARC_MEM_DEBUG_VERBOSE
     {
+		// unsafe magic
 		MPARC_blob_store* storeptr = (MPARC_blob_store*) value;
 		MPARC_blob_store store = *storeptr;
         fprintf(MPARC_DEBUG_CONF_PRINTF_FILE, "View of %s after being added to map with sizeof %"PRIuFAST64":\n", key, store.binary_size);
@@ -3586,40 +3604,43 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		int MPARC_strerror(MXPSQL_MPARC_err err, char** out){
 			switch(err){
 				case MPARC_OK:
-				*out = MPARC_strdup("it fine, no error");
+				*out = MPARC_strdup("it fine, no error.");
 				break;
 
 				case MPARC_IDK:
-				*out = MPARC_strdup("it fine cause idk, unknown error");
+				*out = MPARC_strdup("it fine cause idk, unknown error.");
 				return 1;
 				case MPARC_INTERNAL:
-				*out = MPARC_strdup("Internal error detected");
-				return 1;
+				*out = MPARC_strdup("Internal error detected. It is a serious error to see this, because that means MPARC has a bug. You should consider aborting the program.");
+				return 2;
 
 
 				case MPARC_IVAL:
-				*out = MPARC_strdup("Bad vals or just generic but less generic than MPARC_IDK");
+				*out = MPARC_strdup("Bad vals or just generic but less generic than MPARC_IDK.");
 				break;
 
 				case MPARC_KNOEXIST:
-				*out = MPARC_strdup("It does not exist you dumb dumb, basically that key does not exist");
+				*out = MPARC_strdup("It does not exist you dumb dumb, basically that key does not exist.");
 				break;
 				case MPARC_KEXISTS:
-				*out = MPARC_strdup("Key exists");
+				*out = MPARC_strdup("Key exists.");
 				break;
 
 				case MPARC_OOM:
-				*out = MPARC_strdup("Oh noes I run out of memory, you need to deal with your ram cause there is a problem with your memory due to encountering out of memory condition");
+				*out = MPARC_strdup("Oh noes I run out of memory, you need to deal with your ram cause there is a problem with your memory due to encountering out of memory condition.");
 				break;
 
 				case MPARC_NOTARCHIVE:
-				*out = MPARC_strdup("You dumb person what you put in is not an archive by the 25 character long magic number it has or maybe we find out it is not a valid archive by the json or anything else");
+				*out = MPARC_strdup("You dumb person what you put in is not an archive by the 25 character long magic number it has or maybe we find out it is not a valid archive by the json or anything else.");
 				break;
 				case MPARC_ARCHIVETOOSHINY:
 				*out = MPARC_strdup("You dumb person the valid archive you put in me is too new for me to process. This archive processor may be version 1, but the archive is version 2, maybe.");
 				break;
 				case MPARC_CHKSUM:
 				*out = MPARC_strdup("My content is gone or I can't write my content properly because it failed the CRC32 test :P");
+				break;
+				case MPARC_NOCRYPT:
+				*out = MPARC_strdup("Haha, you would got garbage data if I did not stop you. You did not set encryption.");
 				break;
 
 				case MPARC_CONSTRUCT_FAIL:
@@ -3631,12 +3652,12 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				break;
 
 				case MPARC_FERROR:
-				*out = MPARC_strdup("FILE.exe has stopped responding as there is a problem with the FILE IO operation");
+				*out = MPARC_strdup("FILE.exe has stopped responding as there is a problem with the FILE IO operation.");
 				break;
 
 				default:
-				*out = MPARC_strdup("Man what happened here that was not a valid code");
-				return 1;
+				*out = MPARC_strdup("Man what happened here that was not a valid code.");
+				return -1;
 			}
 			return 0;
 		}
@@ -3649,7 +3670,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				fprintf(filepstream, "%sFailed to get error message. (%d)\n", emsg, err);
 				return r;
 			}
-			fprintf(filepstream, "%s%s (%d)\n", emsg, s, err);
+			// fprintf(filepstream, "%s%s (%d)\n", emsg, s, err);
 			// MPARC_free(s);
 			return r;
 		}
@@ -3928,7 +3949,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 						unsigned char* btob = NULL;
 						MXPSQL_MPARC_uint_repr_t sizey = 0;
 						{
-							unsigned char* blobg = bob_the_blob.binary_blob;
+							unsigned char* blobg = MPARC_memdup(bob_the_blob.binary_blob, bob_the_blob.binary_size);
 							{
 								// crypt blob
 								unsigned char* XORK = NULL;
@@ -3945,7 +3966,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 									if(!tblobg) return NULL;
 									unsigned char* oblobg = blobg;
 									blobg = tblobg;
-									free(oblobg);
+									MPARC_free(oblobg);
 								}
 
 								if(ROTK){
@@ -3953,7 +3974,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 									if(!tblobg) return NULL;
 									unsigned char* oblobg = blobg;
 									blobg = tblobg;
-									free(oblobg);
+									MPARC_free(oblobg);
 								}
 							}
 
@@ -4088,6 +4109,18 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 				{
 						MXPSQL_MPARC_uint_repr_t iacrurate_snprintf_len = 1;
+
+						for(MXPSQL_MPARC_uint_repr_t i = 0; i < jsonentries; i++){
+							if(!jsonry[i]){ // DODGY BODGE
+								MPARC_free(jsonry[i]);
+								jsonry[i] = MPARC_strdup("");
+								if(!jsonry[i]){
+									if(eout) *eout = MPARC_OOM;
+									goto errhandler;
+								}
+							}
+						}
+
 						for(MXPSQL_MPARC_uint_repr_t i = 0; i < jsonentries; i++){
 							iacrurate_snprintf_len += strlen(jsonry[i])+10;
 						}
@@ -4381,7 +4414,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 						goto pebxit; // redundant IK, but the POWER OF GOTO STATEMENTS WE YOLO AND LEROY THIS ERROR HANDLING
 
 						pebxit:
-						free(peb);
+						MPARC_free(peb);
 						if(status != MPARC_OK) return status;
 					}
 
@@ -4655,7 +4688,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 								unsigned char* oun64_blob = un64_blob;
 								un64_blob = tun64_blob;
-								free(oun64_blob);
+								MPARC_free(oun64_blob);
 							}
 
 							if(XORK){
@@ -4667,7 +4700,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 								unsigned char* oun64_blob = un64_blob;
 								un64_blob = tun64_blob;
-								free(oun64_blob);
+								MPARC_free(oun64_blob);
 							}
 						}
 
@@ -4812,6 +4845,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				if(structure == NULL || *structure == NULL) return MPARC_IVAL;
 
 				{
+					// destroy objects
 					MXPSQL_MPARC_err err = MPARC_OK;
 
 					MXPSQL_MPARC_iter_t* iterator = NULL;
@@ -4834,17 +4868,28 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 						MPARC_list_iterator_destroy(&iterator);
 
-						if(err != MPARC_KNOEXIST){
-							return err;
+						if(err != MPARC_KNOEXIST){ // failure conditions
+							// return err;
+							(*structure)->my_err = MPARC_INTERNAL;
+							return MPARC_INTERNAL; // Should never see this;If you see this, the iterator functionality is bugged
 						}
 					}
 				}
+				
+				{
+					// deinit encryption
+					if((*structure)->XORKey) free((*structure)->XORKey); // Free XOR encryption keys
+					if((*structure)->ROTKey) free((*structure)->ROTKey); // Free ROT encryption keys
+				}
 
-				map_deinit(&(*structure)->globby);
+				{
+					// destroy structure and storage
+					map_deinit(&(*structure)->globby);
 
-				if(*structure) MPARC_free(*structure);
+					if(*structure) MPARC_free(*structure);
 
-				*structure = NULL; // invalidation for security
+					*structure = NULL; // invalidation for security
+				}
 				
 				return MPARC_OK;
 		}
@@ -5670,7 +5715,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		/**
-		 * @brief How to construct and parse MPAR archives.
+		 * @brief How to construct and parse MPAR archives. No EBNF provided cause I don't know how to represent it.
 		 * 
 		 * @details
 		 * 
@@ -5715,9 +5760,11 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		 * 		You can add other metadata like date of creation, but there must be the entries "filename", "blob" and "crcsum" in the JSON
 		 * 		This C implementation will ignore any extra metadata.
 		 * 		
-		 * 		"filename" should contain the filename. (don't do any effects and magic on this field called "filename")
+		 * 		"filename" should contain the filename. It should be a simple null terminated string (don't do any effects and magic on this field called "filename"). It should conform to the environment's valid filename characters (no backslashes or filename called "CON" and "AUX").
 		 * 		"blob" should contain the base64 of the binary or text file. (base64 to make it a text file and not binary)
 		 * 		"crcsum" should contain the CRC32 checksum of the content of "blob" after converting it back to it's original form. ("blob" but wihtout base64). If encryption is set, the "crcsum" should be the non base64 encoded and unencrypted "blob" ("blob" with no base64 encoding and encruption)
+		 * 
+		 * 		[NEWLINE] should be EXACTLY '\n' (LF), not '\r\n' (CRLF) or other newlines.
 		 * 		
 		 * 		Repeat this as required (how many entries are there you repeat)
 		 * 		
@@ -5753,7 +5800,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		 * 
 		 * Final note:
 		 * 		This file should not have binary characters.
-		 * 		Parsing should fail if BOM or non ASCII character is found.
+		 * 		Parsing should fail if BOM or non ASCII character is found. This means MPARC archives should be valid ASCII files, not valid UTF files (No UTF8 and UTF16).
 		 * 		Encryption is optional;XOR and ROT (the standard encryption) can be disabled (by default it is disabled).
 		 * 
 		 * 		 
