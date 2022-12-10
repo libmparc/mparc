@@ -62,6 +62,7 @@
 int main(int argc, char* argv[]){
 	((void)argc);
 	((void)argv);
+    printf("I am alive\n");
 
     MXPSQL_MPARC_t* archive = NULL;
     MXPSQL_MPARC_err err = MPARC_OK;
