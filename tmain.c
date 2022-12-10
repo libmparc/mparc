@@ -115,7 +115,7 @@ int main(int argc, char* argv[]){
     	    printf("File push failed\n");
     	    abort();
 		}
-        printf("Pushed file 2");
+        printf("Pushed file 2\n");
 	}
     {
         char* str = "strtok stinks, use strtok_r instead! Rip it from the Glibc Source!";
@@ -124,7 +124,7 @@ int main(int argc, char* argv[]){
             printf("File push failed\n");
             abort();
         }
-        printf("Pushed file 3");
+        printf("Pushed file 3\n");
     }
     /* {
         char** listprintf( NULL;
