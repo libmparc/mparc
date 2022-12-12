@@ -632,7 +632,7 @@ namespace MXPSQL{
                 std::stringstream ss;
                 ss << strem.rdbuf();
                 str = ss.str();
-                return this->parse(str, false, false);
+                return this->parse(str, false, false, false);
             }
         };
     }
