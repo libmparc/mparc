@@ -4207,7 +4207,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 
-		static MXPSQL_MPARC_err MPARC_i_verify_ender(MXPSQL_MPARC_t* structure, char* stringy){
+		static MXPSQL_MPARC_err MPARC_i_verify_ender(MXPSQL_MPARC_t* structure, char* stringy, bool sensitive)  {
 			char* movend = strrchr(stringy, structure->end_entry_marker); // less hacky
 
 			if(movend == NULL){
@@ -4226,7 +4226,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 					return MPARC_NOTARCHIVE;
 				}
 
-				{
+				if(sensitive){
 					char* movnulend = movfend+1;
 					if(*movnulend != '\0'){
 						return MPARC_NOTARCHIVE;
@@ -4452,7 +4452,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 			return MPARC_OK;
 		}
 
-		static MXPSQL_MPARC_err MPARC_i_parse_entries(MXPSQL_MPARC_t* structure, char* Stringy, int erronduplicate){
+		static MXPSQL_MPARC_err MPARC_i_parse_entries(MXPSQL_MPARC_t* structure, char* Stringy, int erronduplicate, bool sensitive) {
 			char** entries = NULL;
 			char** json_entries = NULL;
 			MXPSQL_MPARC_err err = MPARC_OK;
@@ -4472,7 +4472,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 					if(endp == NULL) return MPARC_NOTARCHIVE;
 
-					if((err = MPARC_i_verify_ender(structure, endp)) != MPARC_OK){
+					if((err = MPARC_i_verify_ender(structure, endp, sensitive)) != MPARC_OK){
 						structure->my_err = err;
 						return err;
 					}
@@ -4758,8 +4758,8 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 			return err;
 		}
 
-		static MXPSQL_MPARC_err MPARC_i_parse_ender(MXPSQL_MPARC_t* structure, char* Stringy){
-			return MPARC_i_verify_ender(structure, Stringy);
+		static MXPSQL_MPARC_err MPARC_i_parse_ender(MXPSQL_MPARC_t* structure, char* Stringy, bool sensitive){
+			return MPARC_i_verify_ender(structure, Stringy, sensitive);
 		}
 		
 
@@ -6181,7 +6181,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 
-		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* Stringy, int erronduplicate){
+		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* Stringy, int erronduplicate, bool sensitive){
 			MXPSQL_MPARC_err err = MPARC_OK;
 			{
 				char* s3 = MPARC_strdup(Stringy);
@@ -6201,7 +6201,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 					err = MPARC_OOM;
 					goto endy;
 				}
-				err = MPARC_i_parse_entries(structure, s3, erronduplicate);
+				err = MPARC_i_parse_entries(structure, s3, erronduplicate, sensitive);
 				if(s3) MPARC_free(s3);
 				if(err != MPARC_OK) {
 					goto endy;
@@ -6213,7 +6213,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 					err = MPARC_OOM;
 					goto endy;
 				}
-				err = MPARC_i_parse_ender(structure, s3);
+				err = MPARC_i_parse_ender(structure, s3, sensitive);
 				if(s3) MPARC_free(s3);
 				if(err != MPARC_OK) {
 					goto endy;
@@ -6228,7 +6228,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		MXPSQL_MPARC_err MPARC_parse_str(MXPSQL_MPARC_t* structure, const char* stringy){
-			return MPARC_parse_str_advance(structure, stringy, 0);
+			return MPARC_parse_str_advance(structure, stringy, 0, false);
 		}
 
 		MXPSQL_MPARC_err MPARC_parse_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream){

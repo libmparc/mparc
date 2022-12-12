@@ -64,12 +64,14 @@
 #include <cstdarg>
 #include <cstdint>
 #include <cstddef>
+#include <cstdbool>
 extern "C"{
 #else
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
-#include <stddef.h>
+#include <stddef.h> 
+#include <stdbool.h>
 #endif
 
 
@@ -639,9 +641,10 @@ extern "C"{
      * @param structure the target structure
      * @param stringy the string to be parsed to
      * @param erronduplicate error with returning MPARC_KEXISTS if the key exists, activated by not setting it to 0.
+     * @param sensitive should it be standalone or can it be a polyglot? Allows steganography.
      * @return MXPSQL_MPARC_err Did it parse well or did not
      */
-    MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* stringy, int erronduplicate);
+    MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* stringy, int erronduplicate, bool sensitive);
     /**
      * @brief Parse the archive into the structure, a simpler version of MPARC_parse_str_advance
      * 
