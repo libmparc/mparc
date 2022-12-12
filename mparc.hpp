@@ -605,13 +605,13 @@ namespace MXPSQL{
              * 
              * @param str Content of the archive or filename
              * @param interpretation_mode How to interpret the archive, true to interpretet as the archive content, false to interpret as a filename
-             * @param erroronduplicate Error out if a duplicate is found
+             * @param erroronduplicate Error out if a duplicate is found.
              * @return MPARC_Error Success?
              */
-            MPARC_Error parse(std::string str, bool interpretation_mode, bool erroronduplicate){
+            MPARC_Error parse(std::string str, bool interpretation_mode, bool erroronduplicate, bool sensitive){
                 MXPSQL_MPARC_err err = MPARC_OK;
                 if(interpretation_mode){
-                    err = MPARC_parse_str_advance(this->getInstance(), str.c_str(), (erroronduplicate ? 1 : 0));
+                    err = MPARC_parse_str_advance(this->getInstance(), str.c_str(), (erroronduplicate ? 1 : 0), sensitive);
                 }
                 else{
                     std::ifstream strem(str, std::ios::binary);
