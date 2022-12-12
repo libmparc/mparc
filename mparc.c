@@ -6165,7 +6165,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 					goto main_errhandler;
 				}
 			}
-
+ 
 
 			goto main_errhandler;
 			main_errhandler:
@@ -6183,12 +6183,10 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* StegoStringy, int erronduplicate, bool sensitive){
 			MXPSQL_MPARC_err err = MPARC_OK;
-			char* Stringy = StegoStringy;
+			char* Stringy = (char*) StegoStringy;
 			if(sensitive){
-				Stringy = strstr(Stringy, STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25);
-				if(!Stringy){
-					return MPARC_NOTARCHIVE;
-				}
+				Stringy = strstr(Stringy, STANKY_MPAR_FORMAT_MAGIC_NUMBER_25);
+				if(!Stringy) return MPARC_NOTARCHIVE;
 			}
 			{
 				char* s3 = MPARC_strdup(Stringy);
