@@ -6185,7 +6185,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 			MXPSQL_MPARC_err err = MPARC_OK;
 			char* Stringy = (char*) StegoStringy;
 			if(sensitive){
-				Stringy = strstr(Stringy, STANKY_MPAR_FORMAT_MAGIC_NUMBER_25);
+				Stringy = strstr(Stringy, STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25);
 				if(!Stringy) return MPARC_NOTARCHIVE;
 			}
 			{
