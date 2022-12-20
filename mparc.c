@@ -135,6 +135,9 @@
 /// @brief Where to print to if you want send a message with fprintf debugging
 #define MPARC_DEBUG_CONF_PRINTF_FILE stderr
 
+// sort stuff
+// broken, diagnosed to the sorting comparator. Fix not found, sort disabled
+// #define MPARC_QSORT
 // sorting mode setups
 #ifndef MPARC_QSORT_MODE
 /** 
@@ -152,6 +155,7 @@
  * That description for mode 0 was actually false (sort of), normally the checksum will sort itself, but if it fails, then the json will sort it
  */
 #define MPARC_QSORT_MODE 1
+// KLUDGE: sortcmp is sort of broken
 #endif
 
 #ifndef MPARC_DIRECTF_MINIMUM
@@ -3457,12 +3461,55 @@ char* MPARC_get_extension(const char* fnp, int full_or_not){
 	return epos;
 }
 
+static int MPARC_strncmp (const char *s1, const char *s2, size_t n)
+{
+	unsigned char c1 = '\0';
+	unsigned char c2 = '\0';
+
+  if (n >= 4)
+    {
+      size_t n4 = n >> 2;
+      do
+	{
+	  c1 = (unsigned char) *s1++;
+	  c2 = (unsigned char) *s2++;
+	  if (c1 == '\0' || c1 != c2)
+	    return c1 - c2;
+	  c1 = (unsigned char) *s1++;
+	  c2 = (unsigned char) *s2++;
+	  if (c1 == '\0' || c1 != c2)
+	    return c1 - c2;
+	  c1 = (unsigned char) *s1++;
+	  c2 = (unsigned char) *s2++;
+	  if (c1 == '\0' || c1 != c2)
+	    return c1 - c2;
+	  c1 = (unsigned char) *s1++;
+	  c2 = (unsigned char) *s2++;
+	  if (c1 == '\0' || c1 != c2)
+	    return c1 - c2;
+	} while (--n4 > 0);
+      n &= 3;
+    }
+
+  while (n > 0)
+    {
+      c1 = (unsigned char) *s1++;
+      c2 = (unsigned char) *s2++;
+      if (c1 == '\0' || c1 != c2)
+	return c1 - c2;
+      n--;
+    }
+
+  return c1 - c2;
+}
+
 // bsearch and strcmp
+// a lie, it does nto use strcmp, it uses memcmp
 static int voidstrcmp(const void* str1, const void* str2){
 	if(!str1 || !str2){
 		return 0;
 	}
-	return strcmp((const char*) str1, (const char*) str2);
+	return MPARC_strncmp((const char*) str1, (const char*) str2, 5);
 }
 
 // future, may not be used
@@ -3721,8 +3768,14 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		static int MPARC_i_sortcmp(const void* p1, const void* p2){
-			const char* str1 = *((const char**) p1);
-			const char* str2 = *((const char**) p2);
+			if(!p1 || !p2) return 0;
+			const char* str1 = NULL;
+			const char* str2 = NULL;
+
+			// str1 = *((const char**) p1);
+			// str2 = *((const char**) p2);
+			str1 = (const char*) p1;
+			str2 = (const char*) p2;
 
 			int spress = 0;
 
@@ -3832,11 +3885,15 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 					#endif
 				}
 				counter = i-1;
-                                if(counter < 1) counter = 1;
+                if(counter < 1) counter = 1;
 			}
 			{
-			qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp);
+				#ifdef MPARC_QSORT
+				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp);
 				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp); // double for the fun (and redundancy)
+				#else
+				((void)MPARC_i_sortcmp);
+				#endif
 			}
 			/* { // I forgot this piece, is this insertion sort? Or is it bubble sort?
 				MXPSQL_MPARC_uint_repr_t i = 0, j = 0;
@@ -6182,7 +6239,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 
-		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* StegoStringy, int erronduplicate, bool sensitive){
+		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* StegoStringy, bool erronduplicate, bool sensitive){
 			MXPSQL_MPARC_err err = MPARC_OK;
 			char* Stringy = (char*) StegoStringy;
 			if(sensitive){
@@ -6234,7 +6291,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		MXPSQL_MPARC_err MPARC_parse_str(MXPSQL_MPARC_t* structure, const char* stringy){
-			return MPARC_parse_str_advance(structure, stringy, 0, false);
+			return MPARC_parse_str_advance(structure, stringy, false, false);
 		}
 
 		MXPSQL_MPARC_err MPARC_parse_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream){
