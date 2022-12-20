@@ -3831,10 +3831,11 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 					printf("sort %"PRIuFAST64"> %p (NULL: %d)\n", i, sortedstr[i], (sortedstr[i] == NULL) ? 1 : 0);
 					#endif
 				}
-				counter = i;
+				counter = i-1;
+                                if(counter < 1) counter = 1;
 			}
 			{
-				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp);
+			qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp);
 				qsort(sortedstr, counter, sizeof(*sortedstr), MPARC_i_sortcmp); // double for the fun (and redundancy)
 			}
 			/* { // I forgot this piece, is this insertion sort? Or is it bubble sort?
