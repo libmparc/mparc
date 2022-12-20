@@ -3509,7 +3509,15 @@ static int voidstrcmp(const void* str1, const void* str2){
 	if(!str1 || !str2){
 		return 0;
 	}
+	#ifdef MPARC_QSORT
 	return MPARC_strncmp((const char*) str1, (const char*) str2, 5);
+	#else
+	// bodging
+	((void)str1);
+	((void)str2);
+	((void)MPARC_strncmp);
+	return 0; // bodge
+	#endif
 }
 
 // future, may not be used
@@ -5094,7 +5102,10 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 						listout_structure[index] = NULL;
 				}
 
+				#ifdef MPARC_QSORT 
+				// bodging if disabled
 				qsort(listout_structure, lentracker, sizeof(*listout_structure), voidstrcmp);
+				#endif
 
 				if(listout != NULL){
 						*listout = listout_structure;
@@ -5217,27 +5228,6 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 							structure->my_err = MPARC_KNOEXIST;
 							return MPARC_KNOEXIST;
 						}
-						break;
-					}
-
-					case 2:
-					{
-						char** listy_out = NULL;
-						MXPSQL_MPARC_uint_repr_t listy_size = 0;
-						{
-							MXPSQL_MPARC_err err = MPARC_list_array(structure, &listy_out, &listy_size);
-							structure->my_err = err;
-							if(err != MPARC_OK) return err;
-						}
-						{
-							char* p = bsearch(filename, listy_out, listy_size, sizeof(*listy_out), voidstrcmp);
-							MPARC_list_array_free(&listy_out);
-							if( p == NULL && map_get(&structure->globby, filename) == NULL) {
-								structure->my_err = MPARC_KNOEXIST;
-								return MPARC_KNOEXIST;
-							}
-						}
-
 						break;
 					}
 

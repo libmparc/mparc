@@ -296,7 +296,7 @@ extern "C"{
      * 
      * Output is first put before setting the new key, so you can get the old key.
      * 
-     * @note Having the wrong encryption key will cause garbage data.
+     * @note Having the wrong encryption key will cause garbage data or a checksum failure.
      */
     MXPSQL_MPARC_err MPARC_cipher(MXPSQL_MPARC_t* structure, 
     int SetXOR, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,
