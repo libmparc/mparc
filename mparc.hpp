@@ -163,6 +163,8 @@ namespace MXPSQL{
              * 
              */
             MXPSQL_MPARC_iter_t* handle = NULL;
+            /// @brief Internal storage for the dereference operator
+            std::string internal_nam = "";
 
             public:
             /**
@@ -196,7 +198,8 @@ namespace MXPSQL{
                 err = MPARC_list_iterator_next(&handle, &nam);
 
                 if(err == MPARC_OK) {
-                    out = std::string(nam);
+                    internal_nam = std::string(nam);
+                    out = internal_nam;
                 }
 
                 return MPARC_Error(err);
@@ -220,6 +223,14 @@ namespace MXPSQL{
              */
             std::string operator++(int){
                 return operator++();
+            }
+
+            /**
+             * @brief Dereference operator to get current state
+             * 
+             */
+            std::string& operator*() {
+                return internal_nam;
             }
         };
 
