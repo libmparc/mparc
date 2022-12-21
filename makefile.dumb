@@ -70,7 +70,7 @@ clean:
 
 
 mkar:
-	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./my.mpar -c ./*.c ./*.h ./Makefile.dumb ./configure.ac ./Makefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
+	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./my.mpar -c ./*.c ./*.h ./[Mm]akefile.dumb ./configure.ac ./[Mm]akefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
 	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./mini.mpar -c ./misc/lsarah.txt ./misc/logobase.txt
 	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./tiny.mpar -c ./misc/lsarah.txt
 

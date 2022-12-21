@@ -3725,8 +3725,10 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				fprintf(filepstream, "%sFailed to get error message. (%d)\n", emsg, err);
 				return r;
 			}
-			// fprintf(filepstream, "%s%s (%d)\n", emsg, s, err);
-			// MPARC_free(s);
+			else{
+				fprintf(filepstream, "%s%s (%d)\n", emsg, s, err);
+				MPARC_free(s);
+			}
 			return r;
 		}
 

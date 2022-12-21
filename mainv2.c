@@ -572,11 +572,14 @@ int cmdline_main(int argc, char* exe, char** argv){
     }
 
     #define MPARC_CHECKXIT(err) \
-    if(err != MPARC_OK){ \
-        MPARC_perror(err); \
-        ex = EXIT_FAILURE; \
-        goto exit_handler; \
-    }
+    do{ \
+        if(err != MPARC_OK){ \
+            ; /* printf("An error occured ok: %d\n", err); */ \
+            MPARC_perror(err); \
+            ex = EXIT_FAILURE; \
+            goto exit_handler; \
+        } \
+    } while(0)
 
     MXPSQL_MPARC_err err = MPARC_init(&archive);
     int ex = EXIT_SUCCESS;
