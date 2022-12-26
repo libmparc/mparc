@@ -3228,6 +3228,69 @@ void *llist_pop(llist *list)
 
 /* end of LZ77 Section: FastL7 */
 
+/* perfect dynamic list by Attractive Chaos at https://github.com/attractivechaos/klib/blob/master/kvec.h */
+/* The MIT License
+   Copyright (c) 2008, by Attractive Chaos <attractor@live.co.uk>
+   Permission is hereby granted, free of charge, to any person obtaining
+   a copy of this software and associated documentation files (the
+   "Software"), to deal in the Software without restriction, including
+   without limitation the rights to use, copy, modify, merge, publish,
+   distribute, sublicense, and/or sell copies of the Software, and to
+   permit persons to whom the Software is furnished to do so, subject to
+   the following conditions:
+   The above copyright notice and this permission notice shall be
+   included in all copies or substantial portions of the Software.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+   BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+*/
+#define kv_roundup32(x) (--(x), (x) |= (x) >> 1, (x) |= (x) >> 2, (x) |= (x) >> 4, (x) |= (x) >> 8, (x) |= (x) >> 16, ++(x))
+
+#define kvec_t(type) \
+	struct           \
+	{                \
+		size_t n, m; \
+		type *a;     \
+	}
+#define kv_init(v) ((v).n = (v).m = 0, (v).a = 0)
+#define kv_destroy(v) free((v).a)
+#define kv_A(v, i) ((v).a[(i)])
+#define kv_pop(v) ((v).a[--(v).n])
+#define kv_size(v) ((v).n)
+#define kv_max(v) ((v).m)
+
+#define kv_resize(type, v, s) ((v).m = (s), (v).a = (type *)realloc((v).a, sizeof(type) * (v).m))
+
+#define kv_copy(type, v1, v0)                          \
+	do                                                 \
+	{                                                  \
+		if ((v1).m < (v0).n)                           \
+			kv_resize(type, v1, (v0).n);               \
+		(v1).n = (v0).n;                               \
+		memcpy((v1).a, (v0).a, sizeof(type) * (v0).n); \
+	} while (0)
+
+#define kv_push(type, v, x)                                       \
+	do                                                            \
+	{                                                             \
+		if ((v).n == (v).m)                                       \
+		{                                                         \
+			(v).m = (v).m ? (v).m << 1 : 2;                       \
+			(v).a = (type *)realloc((v).a, sizeof(type) * (v).m); \
+		}                                                         \
+		(v).a[(v).n++] = (x);                                     \
+	} while (0)
+
+#define kv_pushp(type, v) (((v).n == (v).m) ? ((v).m = ((v).m ? (v).m << 1 : 2),                        \
+											   (v).a = (type *)realloc((v).a, sizeof(type) * (v).m), 0) \
+											: 0),                                                       \
+						  ((v).a + ((v).n++))
+
 /* TINY SNIPPETS THAT WILL BE VERY USEFUL LATER ON OK SECTION */
 
 
@@ -3586,7 +3649,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		// 	/// type in the list
 		// 	char* type;
 		// } llist;
-
+ 
 
 		// MXPSQL_MPARC_err llist_make(llist** list, char* type){
 		// 	if(!list) return MPARC_IVAL;
@@ -3609,6 +3672,38 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		// 	return MPARC_OK;
 		// }
 
+		// MXPSQL_MPARC_err llist_traverse(llist_iterator restrict iterator, llist_iterator restrict next){
+		// 	*next = (*iterator)->next;
+		// 	return MPARC_OK;
+		// }
+
+		// MXPSQL_MPARC_err llist_len(llist* list, int* out){
+		// 	return MPARC_OK;	
+		// }
+
+		// MXPSQL_MPARC_err llist_insert(llist* list, int idx, void* value, char* type){
+		// 	if(strcmp(list->type, type) != 0) return MPARC_IVAL;
+
+		// 	struct llist_node* node = calloc(1, sizeof(struct llist_node));
+		// 	if(!node) return MPARC_OOM;
+
+		// 	node->value = value;
+
+		// 	{
+		// 		llist_iterator iterator;
+		// 		llist_iterate(list, &iterator);
+
+		// 		for(int ix = 0; ix >= idx && iterator != NULL; ix++){
+
+ 
+		// 			llist_iterator next;
+		// 			llist_traverse(iterator, next);
+		// 			iterator = next;
+		// 		}
+		// 	}
+		// 	return MPARC_OK;
+		// }
+
 		// MXPSQL_MPARC_err llist_destroy(llist** list){
 		// 	llist_iterator i = NULL;
 		// 	llist_iterator tmp = NULL;
@@ -3625,10 +3720,13 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		
 
 		/* MAIN CODE OK */
-
+		/// Backend storage
 		typedef map_t(MPARC_blob_store) map_blob_t;
 
-		#endif
+		/// List for preprocessor
+		typedef kvec_t(MXPSQL_MPARC_preprocessor_func_t) MXPSQL_MPARC_preprocessor_list;
+
+#endif
 
 		/// @brief Not the best place to find documentation for this struct, see mparc.h for better info. This however tells you about the members.
 		struct MXPSQL_MPARC_t {
@@ -3658,6 +3756,9 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 				/// storage actually
 				map_blob_t globby;
+
+				/// Preprocessors for processing entry (unused)
+				MXPSQL_MPARC_preprocessor_list entry_content_preprocessor;
 
 				/// Internal error reporting
 				MXPSQL_MPARC_err my_err;
@@ -3690,10 +3791,12 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 			map_iter_t itery;
 		};
 
+
 		MXPSQL_MPARC_err MPARC_get_last_error(MXPSQL_MPARC_t** structure, MXPSQL_MPARC_err* out){
 			if(!structure || !*structure || !out) return MPARC_NULL;
 			MXPSQL_MPARC_err err = (*structure)->my_err;
 			*out = err;
+
 			if(err < MPARC_OK) return MPARC_IVAL;
 			else return MPARC_OK;
 		}
