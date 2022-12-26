@@ -148,10 +148,11 @@ int main(int argc, char* argv[]){
     } */
 
     // test encryption
+    int ROTKey[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     MPARC_cipher(archive, 
     1, (unsigned char*) "yes", strlen("yes"), NULL, NULL,
-    0, NULL, 0, NULL, NULL);
-    printf("Cipher set (XOR)\n");
+    1, ROTKey, sizeof(ROTKey)/sizeof(ROTKey[0]), NULL, NULL);
+    printf("Cipher set (XOR+ROT)\n");
 
     MPARC_construct_filename(archive, "ck_chorder.mpar");
     printf("Constructed archive\n");

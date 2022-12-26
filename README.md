@@ -28,6 +28,7 @@ MPAR archive reimplemented in C instead of C++, more advanced than before.
 - This code pulls in libc and uses dynamic allocation.  
 - Calloc hater? Not for you, this library is proliferated with calloc calls.  
 - Memory leaks, probably.
+- Bloated library.
 - Oh also the archives are bigger than zip or tar as they are binary based and this format is plain text based and plain text files are larger than binary files.
 - Encryption is basic (XOR and ROT13 or ROT??)
 - Difficult to work with once encryption is set;  

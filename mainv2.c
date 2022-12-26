@@ -473,13 +473,15 @@ optparse_long(struct optparse *options,
 
 /// Print out magic stuff
 /// @param key print this key with magic print
-void xhandler(const char* key){
+void xhandler(const char* key, void* ctx){
+    ((void)ctx);
     printf("x> %s\n", key);
 }
 
 /// Sudo make me a directory
 /// @param dir directory to make
-int mkdirer(char* dir){
+int mkdirer(char* dir, void* ctx){
+    ((void)ctx);
     #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
     return !CreateDirectoryA(dir, NULL);
     #else
@@ -650,7 +652,7 @@ int cmdline_main(int argc, char* exe, char** argv){
             goto exit_handler;
         }
 
-        err = MPARC_extract_advance(archive, arg, NULL, xhandler, mkdirer);
+        err = MPARC_extract_advance(archive, arg, NULL, xhandler, mkdirer, NULL, NULL);
         MPARC_CHECKXIT(err);
     }
     else if(mode == 'd'){

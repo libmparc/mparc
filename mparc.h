@@ -110,6 +110,16 @@ extern "C"{
      * This is currently typedef'd to uint_fast64_t, but we can switch to unsigned long long or size_t
      */
     typedef uint_fast64_t MXPSQL_MPARC_uint_repr_t;
+    /**
+     * @brief A function that performs preprocessing for the archive on its file
+     * 
+     * @details
+     * 
+     * The first parameter is the input
+     * 
+     * The second parameter is the output
+     */
+    typedef int (*MXPSQL_MPARC_preprocessor_func_t)(char*, char**);
 
 
     // Error reporting
@@ -150,12 +160,12 @@ extern "C"{
          * @brief Key does not exist
          * 
          */
-        MPARC_KNOEXIST=2,
+        MPARC_KNOEXIST,
         /**
          * @brief Key exists
          * 
          */
-        MPARC_KEXISTS=3,
+        MPARC_KEXISTS,
 
         /**
          * @brief Out Of Memory!
@@ -167,39 +177,39 @@ extern "C"{
          * @brief The archive you provided is actually not an archive determined by the 25 character long MAGIC NUMBER or some other factor, but most likely the magic number.
          * 
          */
-        MPARC_NOTARCHIVE=5,
+        MPARC_NOTARCHIVE = 5,
         /**
          * @brief The format version of the archive is too new to be digested
          * 
          */
-        MPARC_ARCHIVETOOSHINY=6,
+        MPARC_ARCHIVETOOSHINY,
         /**
          * @brief CRC checksum check and comparison failed.
          * 
          */
-        MPARC_CHKSUM=7,
+        MPARC_CHKSUM = 7,
         /**
          * @brief No encryption is set
          * 
          */
-        MPARC_NOCRYPT=8,
+        MPARC_NOCRYPT  =8,
 
         /**
          * @brief Failure to construct archive
         */
-        MPARC_CONSTRUCT_FAIL=9,
+        MPARC_CONSTRUCT_FAIL,
 
         /**
          * @brief Operation not complete
          * 
          */
-        MPARC_OPPART=10,
+        MPARC_OPPART = 10,
 
         /**
          * @brief FILE* seems to be having problems as ferror reports true or just that something is wrong with the archive itself
          * 
          */
-        MPARC_FERROR=11
+        MPARC_FERROR = 11
     } MXPSQL_MPARC_err;
     /**
      * @brief Get last error from internally maintained state (If one of your functions does not return MXPSQL_MPARC_err, how cruel of you to do that by forcing users to resort to this function).
@@ -299,8 +309,8 @@ extern "C"{
      * @note Having the wrong encryption key will cause garbage data or a checksum failure.
      */
     MXPSQL_MPARC_err MPARC_cipher(MXPSQL_MPARC_t* structure, 
-    int SetXOR, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,
-    int SetROT, int* ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int** ROTKeyOut, MXPSQL_MPARC_uint_repr_t* ROTKeyLengthOut);
+    bool SetXOR, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,
+    bool SetROT, int* ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int** ROTKeyOut, MXPSQL_MPARC_uint_repr_t* ROTKeyLengthOut);
 
     /**
      * @brief List out the current files included as an array
@@ -355,8 +365,9 @@ extern "C"{
      * @brief Foreach, with call backs
      * 
      * @param structure the target structure
-     * @param cb_aborted a flag that indicated if an error code resulted from abortion request or an internal error. Can be NULL.
-     * @param callback callback function that gets called on every iteration
+     * @param cb_aborted a flag that indicated if an error code resulted from abortion request (true) or an internal error (false). Can be NULL.
+     * @param callback callback function that gets called on every iteration, a void parameter is provided for context
+     * @param cb_ctx context value that is passed to the void* parameter of callback
      * @return MXPSQL_MPARC_err the status code if successfully done. MPARC_OK if successfull, other error codes if aborted (dependent on callback).
      * 
      * @details
@@ -371,7 +382,7 @@ extern "C"{
      * 
      * If an internal error occurs, the error code corresponding to the error is returned, but cb_aborted is set to 0.
      */
-    MXPSQL_MPARC_err MPARC_list_foreach(MXPSQL_MPARC_t* structure, int* cb_aborted, MXPSQL_MPARC_err (*callback)(MXPSQL_MPARC_t*, const char*));
+    MXPSQL_MPARC_err MPARC_list_foreach(MXPSQL_MPARC_t* structure, bool* cb_aborted, MXPSQL_MPARC_err (*callback)(MXPSQL_MPARC_t*, const char*, void*), void* cb_ctx);
     /**
      * @brief Check if file entry exists
      * 
@@ -380,60 +391,21 @@ extern "C"{
      * @return MXPSQL_MPARC_err the status code if successfully done or errors out
      */
     MXPSQL_MPARC_err MPARC_exists(MXPSQL_MPARC_t* structure, const char* filename);
-    /**
-     * @brief Query the structre for files that match a specific criteria
-     * 
-     * @param structure the target structure
-     * @param output The files that match a specific criteria.
-     * @param command The criteria to look for
-     * @param ... Vaargs that depend on the command arg
-     * @return MXPSQL_MPARC_err Success or a failure (MPARC_SUCCESS if yes, MPARC_KNOEXIST if the command is invalid, MPARC_IVAL if a problem occured)
-     * 
-     * @details
-     * 
-     * There are multiple commands available in this query function.
-     * This list is formated as the following: [command] - [description] - [required vaargs]
-     * Available commands (case sensitive):
-     * size_bigger - List all files that is bigger than the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
-     * size_equal - List all files that is equal to the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
-     * size_smaller - List all files that is small than the specified size - [number, preferably MXPSQL_MPARC_uint_repr_t, a 1 is equal to a single byte (2 means two bytes, 3 means three bytes, etc...)]
-     * extension - Get the file extension based from the first dot - [a string of the file extension, do not include the first dot in the parameter]
-     * rextension - Get the file extension based from the last dot - [a string of the file extension, do not include the first dot in the parameter]
-     * 
-     * The output parameter is always terminated with NULL. It itself and its content is also dynamically allocated, so you must deallocate it manually using 'MPARC_free', not 'free' and 'delete[]' for forward compatibility.
-     * 
-     * Passing the wrong vaargs will lead to undefined behavior, I cannot defend you from against that unless you cooperate with me. C Standard Library says so to do undefined behaviour in vaargs implementation.
-     */
-    MXPSQL_MPARC_err MPARC_query(MXPSQL_MPARC_t* structure, char*** output, const char* command, ...);
-    /**
-     * @brief A version of MPARC_query that accepts a va_list instead
-     * 
-     * @param structure the target structure
-     * @param output The files that match a specific criteria
-     * @param command The criteria to look for
-     * @param vlist A list that is suppoused to be a vaargs that depend on the command arg
-     * @return MXPSQL_MPARC_err Success or a failure (MPARC_SUCCESS if yes, MPARC_KNOEXIST if the command is invalid, MPARC_IVAL if a problem occured)
-     * 
-     * @see MPARC_query
-     * 
-     * @note You are responsible for starting and ending vlist. Also look at MPARC_query for more bad things that could happen.
-     */
-    MXPSQL_MPARC_err MPARC_query_vlist(MXPSQL_MPARC_t* structure, char*** output, const char* command, va_list vlist);
     
     /**
      * @brief Push an unsigned string as a file
      * 
      * @param structure the target structure
      * @param filename the filename to assign
-     * @param stripdir strip the directory from the filename, set to 0 to disable
-     * @param overwrite if set to anything other than a 0, overwrites the entry if it exists. if set to 0, prevents you from overwriting it if it exists. set to 0 to disable ability to overwrite (already explained)
+     * @param stripdir strip the directory from the filename
+     * @param overwrite overwrites the entry if it exists
      * @param ustringc the bytes of string
      * @param sizy the size of ustringc
      * @return MXPSQL_MPARC_err the status code if successfully done
      * 
      * @note Filename only works on forward slash if stripdir is set due to basename only supporting that operation.
      */
-    MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, const char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy);
+    MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, const char* filename, bool stripdir, bool overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy);
     /**
      * @brief Simple version of MPARC_push_ufilestr_advance that does not strip the directory name
      * 
@@ -490,7 +462,7 @@ extern "C"{
      * @brief Rename an entry
      * 
      * @param structure the target structure
-     * @param overwrite you want to overwrite? set to a non zero value. No overwrite? then set to 0
+     * @param overwrite Overwrite an entry?
      * @param oldname the file you want to change name
      * @param newname the new name
      * @return MXPSQL_MPARC_err the sttaus code if successfully done. MPARC_KNOEXIST if oldname is not there and more...
@@ -499,12 +471,12 @@ extern "C"{
      * 
      * Internally implemented with MPARC_push_ufilestr, MPARC_pop_file and MPARC_peek_file
      */
-    MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, int overwrite, const char* oldname, const char* newname);
+    MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, bool overwrite, const char* oldname, const char* newname);
     /**
      * @brief Duplicate an entry
      * 
      * @param structure the target structure
-     * @param overwrite you want to overwrite? set to a non zero value. No overwrite? then set to 0
+     * @param overwrite Overwrite an entry?
      * @param srcfile the source file to duplicate from.
      * @param destfile the destination file
      * @return MXPSQL_MPARC_err Yes.
@@ -513,7 +485,7 @@ extern "C"{
      * 
      * Internally implemented with MPARC_push_ufilestr and MPARC_peek_file
      */
-    MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, int overwrite, const char* srcfile, const char* destfile);
+    MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, bool overwrite, const char* srcfile, const char* destfile);
     /**
      * @brief Swap 2 entries
      * 
@@ -584,22 +556,34 @@ extern "C"{
      */
     MXPSQL_MPARC_err MPARC_construct_filestream(MXPSQL_MPARC_t* structure, FILE* fpstream);
 
-
     /**
      * @brief Advanced extraction function
-     * 
+     *
      * @param structure the target structure
      * @param destdir the destination directory
      * @param dir2make NULL if there is no directory to make, not NULL if it needs you to make a directory
      * @param on_item invoked everytime a new item is iterated over
      * @param mk_dir invoked when directory is needed to be created, return 0 on success, non-zero on error. Overrides dir2make.
+     * @param on_item_ctx context value that is passed to on_item
+     * @param mk_dir_ctx context value that is passed to mk_dir
      * @return MXPSQL_MPARC_err error status, some code are special, see details
-     * 
+     *
      * @details
-     * 
-     * if the error code returns MPARC_OPPART, check dir2make to see if it needs you to make a new directory
+     *
+     * if the error code returns MPARC_OPPART, check dir2make to see if it needs you to make a new directory.
+     *
+     *
+     * Example of the mk_dir function:  
+     *      int mkdirer(char* dir, void* ctx){
+     *          ((void)ctx);
+     *          #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
+     *          return !CreateDirectoryA(dir, NULL);
+     *          #else
+     *          return mkdir(dir, 0777);
+     *          #endif
+     *      }
      */
-    MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, const char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*));
+    MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, const char* destdir, char** dir2make, void (*on_item)(const char*, void*), int (*mk_dir)(char*, void*), void* on_item_ctx, void* mk_dir_ctx);
     /**
      * @brief Simple version of MPARC_extract_advance
      * 
@@ -617,8 +601,9 @@ extern "C"{
      * 
      * @param structure the target structure
      * @param srcdir the source directory to read from
-     * @param recursive read from subdirectories if not set to 0
+     * @param recursive read from subdirectories if given true
      * @param listdir function to list a directory, shall not be NULL or else it returns an error. This is the function that handles listing the file and recursion.
+     * @param listdir_ctx context value that is passed to the void* parameter of listdir
      * @return MXPSQL_MPARC_err error status of reading
      * 
      * @details
@@ -627,13 +612,46 @@ extern "C"{
      * 
      * the first parameter of the listdir function is the current directory that should be read from
      * 
-     * the second parameter indicates if it should be recursive, its set to 0 if not, set to a non zero value (this implementation sets it to 1) if not
+     * the second parameter indicates if it should be recursive, its a boolean
      * 
      * the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc'ed or Malloc'ed (pls Calloc it) (Also please use the MPARC allocation functions instead of the standard libc ones) as it relies on finding NULL and the array getting freed
      * 
+     * the fourth parameter is context, it's user defined, is set by putting a value in the listdir_ctx parameter
+     * 
      * the return value should always be 0 for success, other values indicate failure
+     * 
+     * 
+     * Example for listdir (POSIX only for now, also to be continued):
+     *      int list_me_dir_recur(const char* path, bool recursive, char** output, void* ctx, size_t block_size){
+     *          ((void)ctx);
+     *          DIR* dir;
+     *          struct dirent* entry;
+     *          
+     *          if(!(dir = opendir(path))) return 1;
+     *          
+     *          while((entry = readdir(dir))){
+     *              if(recursive){
+     *                  struct stat stet;
+     *                  if(stat(entry->d_name, &statbuf) != 0) return 1;
+     *                  if(S_ISDIR(stet.st_mode)){
+     *                      // TBA
+     *                  }
+     *              }
+     *          }
+     *          
+     *          closedir(dir);
+     * 
+     *          return 0;
+     *      }
+     *      
+     *      int list_me_dir(const char* path, bool recursive, char*** output, void* ctx){
+     *          static size_t bloc_size = 5;
+     *          char** buff = MPARC_calloc(5, sizeof(char*));
+     *          *output
+     *          return list_me_dir_recur(path, recursive, buff, ctx);
+     *      }
      */
-    MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, const char* srcdir, int recursive, int (*listdir)(const char*, int, char**));
+    MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, const char* srcdir, bool recursive, int (*listdir)(const char*, bool, char***, void*), void* listdir_ctx);
 
     /**
      * @brief Parse the archive into the structure with extra flags

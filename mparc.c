@@ -3195,6 +3195,7 @@ void *llist_pop(llist *list)
 
 /* end of llist.h and llist.c section */
 
+
 /* start of LZ77 Section: FastL7 */
 /* https://github.com/ariya/FastLZ source */
 /* 
@@ -3559,27 +3560,68 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 
 
-		/* MY LINKED LIST IMPL OK, UNUSED OK, NOW DONT SPEAK WE DONT SPEAKE ABOUT llist OOK */
+		/* MY LINKED LIST IMPL OK, UNUSED OK */
 
-		/**
-		 * @brief Hot garbage linked list node
-		 * 
-		 */
-		struct _llist_node {
-			/// value
-			char* val;
-			/// next node
-			struct _llist_node* next;
-		};
+		// /**
+		//  * @brief linked list node
+		//  * 
+		//  */
+		// struct llist_node {
+		// 	/// value
+		// 	void* value;
+		// 	/// next node
+		// 	struct llist_node* next;
+		// };
 
-		/**
-		 * @brief Hot garbage linked list
-		 * 
-		 */
-		typedef struct _llist {
-			/// top node
-			struct _llist_node* top;
-		} _llist;
+		// /// llist_node typedef'ed as an iterator
+		// typedef struct llist_node* llist_iterator;
+
+		// /**
+		//  * @brief The linked list entity
+		//  * 
+		//  */
+		// typedef struct {
+		// 	/// head pointer
+		// 	struct llist_node* head;
+		// 	/// type in the list
+		// 	char* type;
+		// } llist;
+
+
+		// MXPSQL_MPARC_err llist_make(llist** list, char* type){
+		// 	if(!list) return MPARC_IVAL;
+		// 	llist* ls = calloc(1, sizeof(llist));
+		// 	if(ls){
+		// 		ls->head = NULL;
+		// 		ls->type = type;
+		// 	}
+		// 	else{
+		// 		return MPARC_OOM;
+		// 	}
+		// 	*list = ls;
+		// 	return MPARC_OK;
+		// }
+
+		// MXPSQL_MPARC_err llist_iterate(llist* list, llist_iterator* iterator){
+		// 	if(!list->head) return MPARC_IVAL;
+		// 	if(!iterator) return MPARC_IVAL;
+		// 	*iterator = list->head;
+		// 	return MPARC_OK;
+		// }
+
+		// MXPSQL_MPARC_err llist_destroy(llist** list){
+		// 	llist_iterator i = NULL;
+		// 	llist_iterator tmp = NULL;
+		// 	for(llist_iterate(list, &i); i != NULL; i = tmp){
+		// 		tmp = i->next;
+		// 		free(i);
+		// 	}
+		// 	free(list);
+		// 	return MPARC_OK;
+		// }
+
+
+
 		
 
 		/* MAIN CODE OK */
@@ -3695,7 +3737,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				*out = MPARC_strdup("My content is gone or I can't write my content properly because it failed the CRC32 test :P");
 				break;
 				case MPARC_NOCRYPT:
-				*out = MPARC_strdup("Haha, you would got garbage data if I did not stop you. You did not set encryption.");
+				*out = MPARC_strdup("Haha, you would got garbage data or more likely, checksum errors if I did not stop you. You did not set encryption.");
 				break;
 
 				case MPARC_CONSTRUCT_FAIL:
@@ -3741,7 +3783,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 
-		static MXPSQL_MPARC_err MPARC_i_push_ufilestr_advancea(MXPSQL_MPARC_t* structure, const char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy, crc_t crc3){
+		static MXPSQL_MPARC_err MPARC_i_push_ufilestr_advancea(MXPSQL_MPARC_t* structure, const char* filename, bool stripdir, bool overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy, crc_t crc3){
 			MPARC_blob_store blob = {
 				sizy,
 				ustringc,
@@ -3749,14 +3791,14 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 			};
 
 			const char* pfilename = NULL;
-			if(stripdir != 0){
+			if(stripdir){
 				pfilename = MPARC_basename(pfilename);
 			}
 			else{
 				pfilename = filename;
 			}
 
-			if(overwrite == 0 && MPARC_exists(structure, pfilename) != MPARC_KNOEXIST){
+			if(!overwrite && MPARC_exists(structure, pfilename) != MPARC_KNOEXIST){
 				return MPARC_KEXISTS;
 			}
 
@@ -4748,7 +4790,16 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 							0, NULL, 0, &ROTK, &ROTL);
 
 							if(ROTK){
-								unsigned char* tun64_blob = ROTCipher(un64_blob, bsize, ROTK, ROTL);
+								// VLAs (No C++ Compilation for this :/)
+								int RROTK[ROTL]; // Reverse ROT Key
+
+								{
+									for(MXPSQL_MPARC_uint_repr_t i = 0; i < ROTL; i++){
+										RROTK[i] = (ROTK[i] * -1); // make value negative
+									}
+								}
+
+								unsigned char* tun64_blob = ROTCipher(un64_blob, bsize, RROTK, ROTL);
 								if(!tun64_blob) {
 									err = MPARC_OOM;
 									goto errhandler;
@@ -4977,8 +5028,8 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 
 		MXPSQL_MPARC_err MPARC_cipher(MXPSQL_MPARC_t* structure, 
-    	int SetXOR, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,
-    	int SetROT, int* ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int** ROTKeyOut, MXPSQL_MPARC_uint_repr_t* ROTKeyLengthOut){
+    	bool SetXOR, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,
+    	bool SetROT, int* ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int** ROTKeyOut, MXPSQL_MPARC_uint_repr_t* ROTKeyLengthOut){
 			if(!structure) return MPARC_NULL;
 			bool fleg = false;
 			{
@@ -4989,12 +5040,16 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 					if(XORKeyLengthOut) *XORKeyLengthOut = structure->XORKeyLength;
 				}
 
-				if(SetXOR != 0){
+				if(SetXOR){
 					// Set in
 
 					structure->XORKey = MPARC_memdup(XORKeyIn, XORKeyLengthIn);
 					structure->XORKeyLength = XORKeyLengthIn;
 					fleg = true;
+				}
+				else{
+					if(!ROTKeyOut) free(structure->XORKey);
+					if(!XORKeyLengthOut) structure->XORKeyLength = 0;
 				}
 			}
 			{
@@ -5005,11 +5060,15 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 					if(ROTKeyLengthOut) *ROTKeyLengthOut = structure->ROTKeyLength;
 				}
 
-				if(SetROT != 0){
+				if(SetROT){
 					// Set in
-					structure->ROTKey = MPARC_memdup(ROTKeyIn, ROTKeyLengthIn);
+					structure->ROTKey = MPARC_memdup(ROTKeyIn, ROTKeyLengthIn*sizeof(int));
 					structure->ROTKeyLength = XORKeyLengthIn;
 					fleg = true;
+				}
+				else{
+					if(!XORKeyOut) free(structure->ROTKey);
+					if(!ROTKeyLengthOut) structure->ROTKeyLength = 0;
 				}
 			}
 
@@ -5178,9 +5237,9 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 			return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_list_foreach(MXPSQL_MPARC_t* structure, int* cb_aborted, MXPSQL_MPARC_err (*callback)(MXPSQL_MPARC_t*, const char*)){
+		MXPSQL_MPARC_err MPARC_list_foreach(MXPSQL_MPARC_t* structure, bool* cb_aborted, MXPSQL_MPARC_err (*callback)(MXPSQL_MPARC_t*, const char*, void*), void* cb_ctx){
 			MXPSQL_MPARC_err err = MPARC_OK;
-			int cb_status = 0;
+			bool cb_status = false;
 
 			MXPSQL_MPARC_iter_t* iterator = NULL;
 
@@ -5194,9 +5253,9 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				MXPSQL_MPARC_err err_l = MPARC_OK;
 				const char* key = NULL;
 				while((err = MPARC_list_iterator_next(&iterator, &key)) == MPARC_OK){
-					err_l = callback(structure, key);
+					err_l = callback(structure, key, cb_ctx);
 					if(err_l != MPARC_OK){
-						cb_status = 1;
+						cb_status = true;
 						goto atexit_handler;
 					}
 				}
@@ -5252,228 +5311,9 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				return MPARC_OK;
 		}
 
-		MXPSQL_MPARC_err MPARC_query(MXPSQL_MPARC_t* structure, char*** output, const char* command, ...){
-			MXPSQL_MPARC_err err = MPARC_OK;
-			va_list vaarg_list;
-
-			va_start(vaarg_list, command);
-			err = MPARC_query_vlist(structure, output, command, vaarg_list);
-			va_end(vaarg_list);
-
-			return err;
-		}
-
-		MXPSQL_MPARC_err MPARC_query_vlist(MXPSQL_MPARC_t* structure, char*** output, const char* command, va_list vlist){
-			MXPSQL_MPARC_err err = MPARC_OK;
-			char** flist = NULL;
-			MXPSQL_MPARC_uint_repr_t flist_len = 0;
-			char** smacklist = NULL;
-
-			if((err = MPARC_list_array(structure, &flist, &flist_len)) != MPARC_OK){
-				goto exit_handler;
-			}
-
-			{
-				bool extmode_final = true;
-
-				if(strcmp(command, "size_bigger") == 0){
-					goto q_size_big;
-				}else if(strcmp(command, "size_equal") == 0){
-					goto q_size_equal;
-				}else if(strcmp(command, "size_smaller") == 0){
-					goto q_size_small;
-				}
-				else if(strcmp(command, "extension") == 0){
-					extmode_final = true;
-					goto q_extension_twomode;
-				}else if(strcmp(command, "rextension") == 0){
-					extmode_final = false;
-					goto q_extension_twomode;
-				}
-				else{
-					err = MPARC_KNOEXIST;
-					goto exit_handler;
-				}
-
-				q_size_big:
-				{
-					MXPSQL_MPARC_uint_repr_t user_size = va_arg(vlist, MXPSQL_MPARC_uint_repr_t);
-
-					MXPSQL_MPARC_uint_repr_t hits = 0;
-
-					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
-						MXPSQL_MPARC_uint_repr_t file_size = 0;
-						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
-							goto exit_handler;
-						}
-
-						if(user_size > file_size){
-							hits++;
-						}
-					}
-
-					smacklist = MPARC_calloc(hits+1, sizeof(char*));
-					CHECK_LEAKS();
-					if(!smacklist){
-						err = MPARC_OOM;
-						goto exit_handler;
-					}
-
-					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
-						MXPSQL_MPARC_uint_repr_t file_size = 0;
-						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
-							goto exit_handler;
-						}
-
-						if(user_size > file_size){
-							smacklist[i] = MPARC_strdup(flist[i]);
-						}
-					}
-
-					smacklist[hits] = NULL;
-
-					goto exit_handler;
-				}
-
-				q_size_equal:
-				{
-					MXPSQL_MPARC_uint_repr_t user_size = va_arg(vlist, MXPSQL_MPARC_uint_repr_t);
-
-					MXPSQL_MPARC_uint_repr_t hits = 0;
-
-					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
-						MXPSQL_MPARC_uint_repr_t file_size = 0;
-						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
-							goto exit_handler;
-						}
-
-						if(user_size == file_size){
-							hits++;
-						}
-					}
-
-					smacklist = MPARC_calloc(hits+1, sizeof(char*));
-					CHECK_LEAKS();
-					if(smacklist){
-						err = MPARC_OOM;
-						goto exit_handler;
-					}
-
-					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
-						MXPSQL_MPARC_uint_repr_t file_size = 0;
-						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
-							goto exit_handler;
-						}
-
-						if(user_size == file_size){
-							smacklist[i] = MPARC_strdup(flist[i]);
-						}
-					}
-
-					smacklist[hits] = NULL;
-
-					goto exit_handler;	
-				}
-
-				q_size_small:
-				{
-					MXPSQL_MPARC_uint_repr_t user_size = va_arg(vlist, MXPSQL_MPARC_uint_repr_t);
-
-					MXPSQL_MPARC_uint_repr_t hits = 0;
-
-					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
-						MXPSQL_MPARC_uint_repr_t file_size = 0;
-						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
-							goto exit_handler;
-						}
-
-						if(user_size < file_size){
-							hits++;
-						}
-					}
-
-					smacklist = MPARC_calloc(hits+1, sizeof(char*));
-					CHECK_LEAKS();
-					if(smacklist){
-						err = MPARC_OOM;
-						goto exit_handler;
-					}
-
-					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
-						MXPSQL_MPARC_uint_repr_t file_size = 0;
-						if((err = MPARC_peek_file(structure, flist[i], NULL, &file_size)) != MPARC_OK){
-							goto exit_handler;
-						}
-
-						if(user_size < file_size){
-							smacklist[i] = MPARC_strdup(flist[i]);
-						}
-					}
-
-					smacklist[hits] = NULL;
-
-					goto exit_handler;
-				}
 
 
-				q_extension_twomode:
-				{
-					char* extension = va_arg(vlist, char*);
-
-					MXPSQL_MPARC_uint_repr_t hits = 0;
-
-					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
-						char* ext = MPARC_get_extension(flist[i], (int)extmode_final);
-						if(ext != NULL){
-							if(strcmp(ext, extension) == 0){
-								hits++;
-							}
-						}
-					}
-
-					smacklist = MPARC_calloc(hits+1, sizeof(char*));
-					CHECK_LEAKS();
-					if(smacklist){
-						err = MPARC_OOM;
-						goto exit_handler;
-					}
-
-					for(MXPSQL_MPARC_uint_repr_t i = 0; i < flist_len; i++){
-						char* ext = MPARC_get_extension(flist[i], (int)extmode_final);
-						if(ext != NULL){
-							if(strcmp(ext, extension) == 0){
-								smacklist[i] = MPARC_strdup(flist[i]);
-							}
-						}
-					}
-
-					smacklist[hits] = NULL;
-
-					goto exit_handler;
-				}
-			}
-
-
-			goto exit_handler; // never reached :P
-
-			exit_handler:
-
-			structure->my_err = err;
-
-			if(smacklist){
-				*output = smacklist;
-			}
-
-			if(flist) {
-				MPARC_list_array_free(&flist);
-			}
-
-			return err;
-		}
-
-
-
-		MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, const char* filename, int stripdir, int overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy){
+		MXPSQL_MPARC_err MPARC_push_ufilestr_advance(MXPSQL_MPARC_t* structure, const char* filename, bool stripdir, bool overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy){
 			crc_t crc3 = crc_init();
 			crc3 = crc_update(crc3, ustringc, sizy);
 			crc3 = crc_finalize(crc3);
@@ -5616,9 +5456,9 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 
-		MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, int overwrite, const char* oldname, const char* newname){
+		MXPSQL_MPARC_err MPARC_rename_file(MXPSQL_MPARC_t* structure, bool overwrite, const char* oldname, const char* newname){
 			MXPSQL_MPARC_err err = MPARC_OK;
-			if((err = MPARC_exists(structure, oldname)) == MPARC_KNOEXIST) {
+			if((err = MPARC_exists(structure, oldname)) == MPARC_KNOEXIST){
 				structure->my_err = err;
 				return err;
 			}
@@ -5634,7 +5474,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				}
 
 				{
-					if((err = MPARC_exists(structure, newname)) == MPARC_OK && overwrite == 0){
+					if(!overwrite && (err = MPARC_exists(structure, newname)) == MPARC_OK){
 						structure->my_err = MPARC_KEXISTS;
 						return MPARC_KEXISTS;
 					}
@@ -5657,7 +5497,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 			return err;
 		}
 
-		MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, int overwrite, const char* srcfile, const char* destfile){
+		MXPSQL_MPARC_err MPARC_duplicate_file(MXPSQL_MPARC_t* structure, bool overwrite, const char* srcfile, const char* destfile){
 			MXPSQL_MPARC_err err = MPARC_OK;
 			if((err = MPARC_exists(structure, srcfile)) == MPARC_KNOEXIST) {
 				structure->my_err = err;
@@ -5674,7 +5514,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				}
 
 				{
-					if((err = MPARC_exists(structure, destfile)) == MPARC_OK && overwrite == 0){
+					if(!overwrite && (err = MPARC_exists(structure, destfile)) == MPARC_OK){
 						structure->my_err = err;
 						return MPARC_KEXISTS;
 					}
@@ -6005,7 +5845,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		
-		MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, const char* destdir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*)){
+		MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, const char* destdir, char** dir2make, void (*on_item)(const char*, void*), int (*mk_dir)(char*, void*), void* on_item_ctx, void* mk_dir_ctx){
 			{
 				char** listy = NULL;
 				MXPSQL_MPARC_uint_repr_t listys = 0;
@@ -6019,7 +5859,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 					char* fname = NULL;
 					const char* nkey = listy[i];
 					FILE* fps = NULL;
-					if(on_item) (*on_item)(nkey);
+					if(on_item) (*on_item)(nkey, on_item_ctx);
 					rmkdir_goto_label_spot:
 					{
 						{
@@ -6054,7 +5894,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 							if(errno == ENOENT){
 								// this means "I request you to make me a directory and then call me when you are done so I can continue to do my own agenda which is to help you, basically I need your help for me to help you"
 								if(mk_dir){
-									if((*mk_dir)(dname) != 0){
+									if((*mk_dir)(dname, mk_dir_ctx) != 0){
 										if(fname) MPARC_free(fname);
 										if(listy) MPARC_free(listy);
 										structure->my_err = MPARC_FERROR;
@@ -6194,17 +6034,17 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		}
 
 		MXPSQL_MPARC_err MPARC_extract(MXPSQL_MPARC_t* structure, const char* destdir, char** dir2make){
-			return MPARC_extract_advance(structure, destdir, dir2make, NULL, NULL);
+			return MPARC_extract_advance(structure, destdir, dir2make, NULL, NULL, NULL, NULL);
 		}
 
 
-		MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, const char* srcdir, int recursive, int (*listdir)(const char*, int, char**)){
+		MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, const char* srcdir, bool recursive, int (*listdir)(const char*, bool, char***, void*), void* listdir_ctx){
 			if(listdir == NULL) return MPARC_NULL;
 
 			char** flists = NULL;
 			MXPSQL_MPARC_err err = MPARC_OK;
 
-			if(listdir(srcdir, recursive, flists) != 0){
+			if(listdir(srcdir, recursive, &flists, listdir_ctx) != 0){
 				err = MPARC_FERROR;
 				goto main_errhandler;
 			}

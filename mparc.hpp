@@ -566,8 +566,8 @@ namespace MXPSQL{
              * @param mk_dir Make me a directory function
              * @return MPARC_Error Success?
              */
-            MPARC_Error extract(std::string dest_dir, char** dir2make, void (*on_item)(const char*), int (*mk_dir)(char*)){
-                MXPSQL_MPARC_err err = MPARC_extract_advance(this->getInstance(), dest_dir.c_str(), dir2make, on_item, mk_dir);
+            MPARC_Error extract(std::string dest_dir, char** dir2make, void (*on_item)(const char*, void*), int (*mk_dir)(char*, void*), void* on_item_ctx, void* mk_dir_ctx){
+                MXPSQL_MPARC_err err = MPARC_extract_advance(this->getInstance(), dest_dir.c_str(), dir2make, on_item, mk_dir, on_item_ctx, mk_dir_ctx);
                 return MPARC_Error(err);
             }
 
@@ -579,7 +579,7 @@ namespace MXPSQL{
              * @return MPARC_Error Success?
              */
             MPARC_Error extract(std::string dest_dir, char** dir2make){
-                return this->extract(dest_dir, dir2make, NULL, NULL);
+                return this->extract(dest_dir, dir2make, NULL, NULL, NULL, NULL);
             }
 
 
@@ -590,6 +590,7 @@ namespace MXPSQL{
              * @param srcdir directory to read
              * @param recursive recursive read?
              * @param listdir function to deal with directory reading
+             * @param listdir_ctx
              * @return MPARC_Error Success?
              * 
              * @details
@@ -598,14 +599,16 @@ namespace MXPSQL{
              * 
              * the first parameter of the listdir function is the current directory that should be read from
              * 
-             * the second parameter indicates if it should be recursive, its set to 0 if not, set to a non zero value (this implementation sets it to 1) if not
+             * the second parameter indicates if it should be recursive, its a boolean
              * 
              * the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc'ed or Malloc'ed (pls Calloc it) (Also please use the MPARC allocation functions instead of the standard libc ones) as it relies on finding NULL and the array getting freed
              * 
+             * the fourth parameter is context, its user defined, pass a value to listdir_ctx to use it
+             * 
              * the return value should always be 0 for success, other values indicate failure
              */
-            MPARC_Error readdir(std::string srcdir, bool recursive, int (*listdir)(const char*, int, char**)){
-                MXPSQL_MPARC_err err = MPARC_readdir(this->getInstance(), srcdir.c_str(), (recursive ? 1 : 0), listdir);
+            MPARC_Error readdir(std::string srcdir, bool recursive, int (*listdir)(const char*, bool, char***, void*), void* listdir_ctx){
+                MXPSQL_MPARC_err err = MPARC_readdir(this->getInstance(), srcdir.c_str(), recursive, listdir, listdir_ctx);
                 return MPARC_Error(err);
             }
 

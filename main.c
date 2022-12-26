@@ -14,11 +14,13 @@
 
 #include "mparc.h"
 
-void xhandler(const char* key){
+void xhandler(const char* key, void* ctx){
+    ((void)ctx);
     printf("x> %s\n", key);
 }
 
-int mkdirer(char* dir){
+int mkdirer(char* dir, void* ctx){
+    ((void)ctx);
     #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
     return !CreateDirectoryA(dir, NULL);
     #else
@@ -181,7 +183,7 @@ int main(int argc, char** argv){
 
         if(1){ // use new extract, it is much user friendlier
             // new extract
-            err = MPARC_extract_advance(archive, argv[3], NULL, xhandler, mkdirer);
+            err = MPARC_extract_advance(archive, argv[3], NULL, xhandler, mkdirer, NULL, NULL);
             if(err != MPARC_OK){
                 MPARC_perror(err);
                 exit_c = EXIT_FAILURE;
@@ -196,7 +198,7 @@ int main(int argc, char** argv){
             while(run == 1){
                 errstat = MPARC_extract(archive, argv[3], &d2m);
                 if(errstat == MPARC_OPPART){
-                    if(mkdirer(d2m) != 0){
+                    if(mkdirer(d2m, NULL) != 0){
                         fprintf(stderr, "Failed to make directory\n");
                         exit_c = EXIT_FAILURE;
                         goto exit_handler;
