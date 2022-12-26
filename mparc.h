@@ -113,6 +113,8 @@ extern "C"{
     /**
      * @brief A function that performs preprocessing for the archive on its file
      * 
+     * @note unused
+     * 
      * @details
      * 
      * The first parameter is the input
