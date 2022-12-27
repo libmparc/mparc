@@ -661,7 +661,7 @@ extern "C"{
      * @param structure the target structure
      * @param stringy the string to be parsed to
      * @param erronduplicate error with returning MPARC_KEXISTS if the key exists
-     * @param sensitive should it be standalone or can it be a polyglot? Allows steganography and Unicode with BOM parsing.
+     * @param sensitive should it be standalone or can it be a polyglot? Allows steganography and Unicode with BOM parsing. Disclaimer: May possibly fail with a primitive lookup system (strrchr and strstr).
      * @return MXPSQL_MPARC_err Did it parse well or did not
      */
     MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* stringy, bool erronduplicate, bool sensitive);
