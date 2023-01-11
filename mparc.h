@@ -214,7 +214,8 @@ extern "C"{
         MPARC_FERROR = 11
     } MXPSQL_MPARC_err;
     /**
-     * @brief Get last error from internally maintained state (If one of your functions does not return MXPSQL_MPARC_err, how cruel of you to do that by forcing users to resort to this function).
+     * @brief Get last error from internally maintained state, the state is sticky.  
+     * (If one of your functions does not return MXPSQL_MPARC_err, how cruel of you to do that by forcing users to resort to this function).
      * 
      * @param structure the target structure
      * @param out Get your error state here
@@ -304,11 +305,13 @@ extern "C"{
      * 
      * @details
      * 
-     * To disable encryption set XORKeyIn or ROTKeyIn to NULL
+     * To disable encryption set XORKeyIn or ROTKeyIn to NULL.
      * 
-     * Output is first put before setting the new key, so you can get the old key.
+     * To check whether encryption is enabled, check if XORKeyOut or ROTKeyOut is NULL. If XORKeyOut is NULL, then XOR encryption is disabled, same thing applies to ROTKeyOut.
      * 
-     * @note Having the wrong encryption key will cause garbage data or a checksum failure.
+     * Output is first set before setting the new key, so you can get the old key.
+     * 
+     * @note Having the wrong encryption key will cause garbage data or (more likely) a checksum failure.
      */
     MXPSQL_MPARC_err MPARC_cipher(MXPSQL_MPARC_t* structure, 
     bool SetXOR, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,

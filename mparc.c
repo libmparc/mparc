@@ -136,7 +136,7 @@
 #define MPARC_DEBUG_CONF_PRINTF_FILE stderr
 
 // sort stuff
-// broken, diagnosed to the sorting comparator. Fix not found, sort disabled
+// broken, but not because of the sorter.
 // #define MPARC_QSORT
 // sorting mode setups
 #ifndef MPARC_QSORT_MODE
@@ -3598,7 +3598,12 @@ static unsigned char* XORCipher(const unsigned char* bytes_src, MXPSQL_MPARC_uin
 	unsigned char* bytes_out = MPARC_memdup(bytes_src, length);
 	if(bytes_out){
 		for(MXPSQL_MPARC_uint_repr_t i = 0; i < length; i++){
-			unsigned char byte = bytes_out[i] ^ keys[length % keylength];
+			// check for division by zero
+			unsigned char byte = bytes_out[i];
+			if(keylength != 0){
+				unsigned char tmpbyte = byte ^ keys[length % keylength];
+				byte = tmpbyte;
+			}
 			bytes_out[i] = byte;
 		}
 	}
@@ -3609,7 +3614,11 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 	unsigned char* bytes_out = MPARC_memdup(bytes_src, length);
 	if(bytes_out){
 		for(MXPSQL_MPARC_uint_repr_t i = 0; i < length; i++){
-			unsigned char byte = bytes_out[i] + (keys[length % keylength]);
+			unsigned char byte = bytes_out[i];
+			if(keylength != 0){
+				unsigned char tmpbyte = byte + (keys[length % keylength]);
+				byte = tmpbyte;
+			}
 			bytes_out[i] = byte;
 		}
 	}
@@ -3889,7 +3898,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		static MXPSQL_MPARC_err MPARC_i_push_ufilestr_advancea(MXPSQL_MPARC_t* structure, const char* filename, bool stripdir, bool overwrite, unsigned char* ustringc, MXPSQL_MPARC_uint_repr_t sizy, crc_t crc3){
 			MPARC_blob_store blob = {
 				sizy,
-				ustringc,
+				MPARC_memdup(ustringc, sizy),
 				crc3
 			};
 
@@ -4116,7 +4125,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 						return NULL;
 				}
 				else{
-						return alloc;
+					return alloc;
 				}
 			}
 		}
@@ -4127,9 +4136,12 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				char** jsonry = NULL;
 				MXPSQL_MPARC_uint_repr_t jsonentries;
 
-				if(MPARC_list_array(structure, NULL, &jsonentries) != MPARC_OK){
-					if(eout) *eout = MPARC_KNOEXIST;
-					return NULL;
+				{
+					MXPSQL_MPARC_err err = MPARC_OK;
+					if((err = MPARC_list_array(structure, NULL, &jsonentries)) != MPARC_OK){
+						if(eout) *eout = err;
+						return NULL;
+					}
 				}
 
 				jsonry = MPARC_calloc(jsonentries+1, sizeof(char*));
@@ -4152,6 +4164,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				}
 
 				while((MPARC_list_iterator_next(&itery, &nkey)) == MPARC_OK){
+					printf("%s\n", nkey);
 						MPARC_blob_store* bob_the_blob_raw = map_get(&structure->globby, nkey);
 						if(!bob_the_blob_raw){
 							continue;
@@ -5213,7 +5226,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 						const char* key2;
 						listout_structure = MPARC_calloc(lentracker+1, sizeof(char*));
 						CHECK_LEAKS();
-						if(!listout_structure) return MPARC_OOM;
+						if(!listout_structure || listout_structure == NULL) return MPARC_OOM;
 
 						/* map_iter_t iter2 = map_iter(&structure->globby);
 
@@ -5267,7 +5280,10 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				}
 
 				#ifdef MPARC_QSORT 
-				// bodging if disabled
+				if (listout_structure == NULL || listout_structure[lentracker] != NULL)
+				{
+					return MPARC_INTERNAL; // Something bad happened (listout_structure shouldn't be NULL and listout_structure[lentracker] should be NULL)
+				}
 				qsort(listout_structure, lentracker, sizeof(*listout_structure), voidstrcmp);
 				#endif
 
@@ -5839,8 +5855,8 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				if(mid == NULL) {
 					if(top) MPARC_free(top);
 					top = NULL;
-					structure->my_err = MPARC_CONSTRUCT_FAIL;
-					return MPARC_CONSTRUCT_FAIL;
+					structure->my_err = err;
+					return err;
 				}
 				char* bottom = MPARC_i_construct_ender(structure);
 				if(bottom == NULL) {
@@ -5853,6 +5869,20 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				}
 
 				{
+					if(strlen(top) < 1 || strlen(bottom) < 1){ // empty, the unparsable one
+						if (top)
+							MPARC_free(top);
+						if (mid)
+							MPARC_free(mid);
+						if (bottom)
+							MPARC_free(bottom);
+						top = NULL;
+						mid = NULL;
+						bottom = NULL;
+						structure->my_err = MPARC_CONSTRUCT_FAIL;
+						return MPARC_CONSTRUCT_FAIL;
+					}
+
 					// fprintf(stdout, fmt, top, mid, bottom);
 					int sizy = snprintf(NULL, 0, fmt, top, mid, bottom);
 					if(sizy < 0){
@@ -5887,7 +5917,24 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 						bottom = NULL;
 						alloca_out = NULL;
 						structure->my_err = MPARC_CONSTRUCT_FAIL;
-						return MPARC_CONSTRUCT_FAIL;
+						return structure->my_err;
+					}
+
+					if(strlen(alloca_out) < 1) {
+						if (top)
+							MPARC_free(top);
+						if (mid)
+							MPARC_free(mid);
+						if (bottom)
+							MPARC_free(bottom);
+						if (alloca_out)
+							MPARC_free(alloca_out);
+						top = NULL;
+						mid = NULL;
+						bottom = NULL;
+						alloca_out = NULL;
+						structure->my_err = MPARC_CONSTRUCT_FAIL;
+						return structure->my_err;
 					}
 					*output = alloca_out;
 				}

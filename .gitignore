@@ -13,6 +13,7 @@
 *.mpar*
 *.struct*
 *.log*
+vgcore*
 
 # autotools
 !configure.ac

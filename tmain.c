@@ -148,13 +148,22 @@ int main(int argc, char* argv[]){
     } */
 
     // test encryption
-    int ROTKey[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    MPARC_cipher(archive, 
-    1, (unsigned char*) "yes", strlen("yes"), NULL, NULL,
-    1, ROTKey, sizeof(ROTKey)/sizeof(ROTKey[0]), NULL, NULL);
-    printf("Cipher set (XOR+ROT)\n");
+    {
+        int ROTKey[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        MPARC_cipher(archive, 
+        1, (unsigned char*) "yes", strlen("yes"), NULL, NULL,
+        1, ROTKey, sizeof(ROTKey)/sizeof(ROTKey[0]), NULL, NULL);
+        printf("Cipher set (XOR+ROT)\n");
+    }
 
-    MPARC_construct_filename(archive, "ck_chorder.mpar");
+    {
+        MXPSQL_MPARC_err err = MPARC_construct_filename(archive, "ck_chorder.mpar");
+        if(err != MPARC_OK){
+            MPARC_perror(err);
+            printf("Archive construction failed%s", (err == MPARC_INTERNAL ? ": Something internal went horribly wrong" : ""));
+            abort();
+        }
+    }
     printf("Constructed archive\n");
     // printf("%s", PRIuFAST32);
 	MPARC_clear(archive);
