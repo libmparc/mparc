@@ -136,7 +136,7 @@
 #define MPARC_DEBUG_CONF_PRINTF_FILE stderr
 
 // sort stuff
-// broken, but not because of the sorter.
+// broken, but not because of the sorter. If you enable this, you will get MPARC_INTERNAL.
 // #define MPARC_QSORT
 // sorting mode setups
 #ifndef MPARC_QSORT_MODE
