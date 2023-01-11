@@ -3586,7 +3586,7 @@ static int voidstrcmp(const void* str1, const void* str2){
 
 // future, may not be used
 /// @brief endian
-static int isLittleEndian(){
+static int isLittleEndian(void){
 	volatile uint32_t i=0x01234567;
 	// return 0 for big endian, 1 for little endian.
 	return (*((uint8_t*)(&i))) == 0x67;
@@ -6313,11 +6313,11 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 
 
-		size_t MPARC_MXPSQL_MPARC_t_sizeof(){
+		size_t MPARC_MXPSQL_MPARC_t_sizeof(void){
 			return sizeof(MXPSQL_MPARC_t);
 		}
 
-		size_t MPARC_MXPSQL_MPARC_iter_t_sizeof(){
+		size_t MPARC_MXPSQL_MPARC_iter_t_sizeof(void){
 			return sizeof(MXPSQL_MPARC_iter_t);
 		}
 		/* END OF MAIN CODE */

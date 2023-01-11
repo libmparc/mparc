@@ -768,7 +768,7 @@ extern "C"{
      * 
      * @see MXPSQL_MPARC_t
      */
-    size_t MPARC_MXPSQL_MPARC_t_sizeof();
+    size_t MPARC_MXPSQL_MPARC_t_sizeof(void);
     /**
      * @brief Get sizeof MXPSQL_MPARC_iter_t
      * 
@@ -776,7 +776,7 @@ extern "C"{
      * 
      * @see MXPSQL_MPARC_iter_t
      */
-    size_t MPARC_MXPSQL_MPARC_iter_t_sizeof();
+    size_t MPARC_MXPSQL_MPARC_iter_t_sizeof(void);
 
     // Auxiliary function
     #ifdef MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS

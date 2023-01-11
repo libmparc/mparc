@@ -1,5 +1,5 @@
-CFLAGS=-std=c99 $(CPPFLAGS) $(shell cat ccflegs.txt)
-CXXFLAGS=-std=c++11 $(CPPFLAGS) $(shell cat ccflegs.txt)
+CFLAGS=-std=c99 $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt)
+CXXFLAGS=-std=c++11 $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt)
 # If you need DMalloc, uncomment the line below
 # LDLIBS:=-ldmallocth
 
