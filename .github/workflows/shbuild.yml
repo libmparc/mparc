@@ -30,7 +30,7 @@ jobs:
     #   run: make -f ./[Mm]akefile.dumb clean
 
     - name: Prepare build environment
-      - run: |
+      run: |
         sudo apt-get update
         sudo apt-get install scons
         sudo apt-get install ninja-build
