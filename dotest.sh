@@ -56,7 +56,7 @@ perform_cmake(){
 
 
     printer "Generating a Makefile project from CMake";
-    cmake ..; # sudo make me a makefile
+    cmake .. -G "Unix Makefiles"; # sudo make me a makefile
     printer "Running the generated makefile";
     make; # run makefile
 
@@ -98,4 +98,5 @@ perform_scons;
 
 
 # cleanup
+printer "END OF TEST";
 exit 0;
