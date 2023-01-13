@@ -29,5 +29,11 @@ jobs:
     # - name: Clean
     #   run: make -f ./[Mm]akefile.dumb clean
 
+    - name: Prepare build environment
+      - run: |
+        sudo apt-get update
+        sudo apt-get install scons
+        sudo apt-get install ninja-build
+
     - name: Run test script
       run: bash ./dotest.sh
