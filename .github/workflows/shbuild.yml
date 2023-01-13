@@ -1,4 +1,4 @@
-name: Makefile CI
+name: Shell Script Testing CI
 
 on:
   push:
@@ -28,5 +28,6 @@ jobs:
     # 
     # - name: Clean
     #   run: make -f ./[Mm]akefile.dumb clean
+
     - name: Run test script
-      run: sh ./dotest.sh
+      run: bash ./dotest.sh

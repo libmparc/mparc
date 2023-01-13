@@ -40,6 +40,10 @@ mparc-*/
 # build/ is our cmake output directory
 build/
 
+# scons
+*.sconsign.dblite
+.sconsign.dblite
+
 # misc
 *.tar
 *.tar.*
