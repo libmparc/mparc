@@ -14,7 +14,7 @@ CXX=${CXX:="g++"}
 
 # CUSTOM PRINTER
 printer(){
-    echo "CRUDE MPARC TESTING RIG>>>" "$@";
+    echo "MPARC CRUDE TESTING RIG AND HARNESS>>>" "$@";
 };
 
 # CUSTOM DIE
@@ -64,7 +64,7 @@ perform_cmake(){
     rm -rf *;
 
     printer "Generating a Ninja project from CMake";
-    cmake .. -G Ninja; # sudo make me a build.ninja
+    cmake .. -G "Ninja"; # sudo make me a build.ninja
     printer "Running the generated build.ninja file";
     ninja; # run ninja, run build.ninja
 
@@ -87,6 +87,10 @@ perform_scons(){
     make -f [mM]akefile.dumb clean || die "Failed to clean others (why)"; # makefile clean
 }
 
+teardown(){
+    printer "Cleaning with git.";
+    git clean -xdf || printer "Git is not installed";
+}
 
 
 perform_makefile;
@@ -94,9 +98,11 @@ printf "\n\n";
 perform_cmake;
 printf "\n\n";
 perform_scons;
+printf "\n\n";
+teardown;
 
 
 
 # cleanup
-printer "END OF TEST";
+printer "END OF TEST: EZ";
 exit 0;
