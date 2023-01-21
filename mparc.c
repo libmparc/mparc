@@ -58,6 +58,17 @@
 #define MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
 #include "mparc.h"
 
+// OSDEFS for later use
+#if (defined(_WIN32) || defined(_WIN64)) && (!defined(__CYGWIN__))
+	#define MPARC_C_OS_WIN
+#elif (defined(__unix__) || defined(unix) || defined(__unix)) || (defined(__APPLE__) && defined(__MACH__)) || (defined(__linux__) || defined(__linux) || defined(__linux)) || (defined(__CYGWIN__))
+	#define MPARC_C_OS_POSIX
+#endif
+
+#if defined(MPARC_C_OS_POSIX)
+	#define _GNU_SOURCE
+#endif
+
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -71,6 +82,13 @@
 #include <stdbool.h>
 #include <time.h>
 #include <stdint.h>
+
+// portable
+#if defined(MPARC_C_OS_WIN)
+#include <windows.h>
+#elif defined(MPARC_C_OS_POSIX)
+#include <unistd.h>
+#endif
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -3314,32 +3332,36 @@ void *llist_pop(llist *list)
 		<https://www.gnu.org/licenses/>.  */
 char* MPARC_strtok_r (char *s, const char *delim, char **save_ptr)
 {
+#if defined(MPARC_C_OS_POSIX) && (_SVID_SOURCE || _BSD_SOURCE || _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE)
+	return strtok_r(s, delim, save_ptr);
+	#else
 	char *end;
 	if (s == NULL)
 		s = *save_ptr;
 	if (*s == '\0')
-		{
-			*save_ptr = s;
-			return NULL;
-		}
+	{
+		*save_ptr = s;
+		return NULL;
+	}
 	/* Scan leading delimiters.  */
-	s += strspn (s, delim);
+	s += strspn(s, delim);
 	if (*s == '\0')
-		{
-			*save_ptr = s;
-			return NULL;
-		}
+	{
+		*save_ptr = s;
+		return NULL;
+	}
 	/* Find the end of the token.  */
-	end = s + strcspn (s, delim);
+	end = s + strcspn(s, delim);
 	if (*end == '\0')
-		{
-			*save_ptr = end;
-			return s;
-		}
+	{
+		*save_ptr = end;
+		return s;
+	}
 	/* Terminate the token and make *SAVE_PTR point past it.  */
 	*end = '\0';
 	*save_ptr = end + 1;
 	return s;
+	#endif
 }
 
 /**
@@ -3350,15 +3372,20 @@ char* MPARC_strtok_r (char *s, const char *delim, char **save_ptr)
  * @return size_t length of str or maxlen
  */
 size_t MPARC_strnlen(const char* str, size_t maxlen){
+	#if defined(MPARC_C_OS_POSIX) && ((defined(_XOPEN_SOURCE) || defined(_POSIX_C_SOURCE)) && (_XOPEN_SOURCE >= 700 || _POSIX_C_SOURCE >= 200809L))
+	return strnlen(str, maxlen);
+	#else
 	size_t i = 0;
 
-	for(i = 0; i < maxlen; i++,str++ ){
-		if(!*str){
-			break;
+	for (i = 0; i < maxlen; i++, str++)
+	{
+			if(!*str){
+				break;
+			}
 		}
-	}
 
-	return i;
+		return i;
+	#endif
 }
 
 /**
@@ -3526,7 +3553,10 @@ char* MPARC_get_extension(const char* fnp, int full_or_not){
 }
 
 static int MPARC_strncmp (const char *s1, const char *s2, size_t n)
-{
+{	
+	#if defined(MPARC_C_OS_POSIX)
+	return strncmp(s1, s2, n);
+	#else
 	unsigned char c1 = '\0';
 	unsigned char c2 = '\0';
 
@@ -3565,6 +3595,7 @@ static int MPARC_strncmp (const char *s1, const char *s2, size_t n)
     }
 
   return c1 - c2;
+  #endif
 }
 
 // bsearch and strcmp
