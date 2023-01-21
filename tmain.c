@@ -199,11 +199,11 @@ int main(int argc, char* argv[]){
 		}
 	} */
 	if((err =MPARC_extract(archive, ".", NULL)) != MPARC_OK){
-		MPARC_sfperror(err, stderr, "DFialed to extract archive");
+		MPARC_sfperror(err, stderr, "Failed to extract archive");
 	}
     printf("Extracted archive\n");
     MPARC_destroy(&archive);
     printf("Destroyed archive\n");
-    printf("Sizeof MXPSQL_MPARC_t: %zu\nSizeof MXPSQL_MPARC_iter_t: %zu", MPARC_MXPSQL_MPARC_t_sizeof(), MPARC_MXPSQL_MPARC_iter_t_sizeof());
+    printf("Sizeof MXPSQL_MPARC_t: %zu\nSizeof MXPSQL_MPARC_iter_t: %zu\n", MPARC_MXPSQL_MPARC_t_sizeof(), MPARC_MXPSQL_MPARC_iter_t_sizeof());
     return 0;
 }
