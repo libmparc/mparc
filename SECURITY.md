@@ -10,6 +10,7 @@
 
 - Normal security vulnerability
 - Undefined behavior
+- Memory leaks
 
 ## Reporting a Vulnerability
 
