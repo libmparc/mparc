@@ -13,6 +13,11 @@
 <section title="How can I implement this format in my own method?" ref="index.htm#autotoc_md5"/>
 <section title="How can I make bindings to my own language?" ref="index.htm#autotoc_md6"/>
 </section>
+<section title="Security Policy" ref="d7/d88/md__s_e_c_u_r_i_t_y.htm">
+<section title="Supported Versions" ref="d7/d88/md__s_e_c_u_r_i_t_y.htm#autotoc_md8"/>
+<section title="What Constitutes a Vulnerability" ref="d7/d88/md__s_e_c_u_r_i_t_y.htm#autotoc_md9"/>
+<section title="Reporting a Vulnerability" ref="d7/d88/md__s_e_c_u_r_i_t_y.htm#autotoc_md10"/>
+</section>
 <section title="Data Structures" ref="annotated.htm">
 <section title="Data Structures" ref="annotated.htm">
 <section title="MXPSQL" ref="">
@@ -23,23 +28,25 @@
 <section title="MPARC" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a368144033dc89f746d468825ec081537"/>
 <section title="MPARC" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a9224db67b6f76630e6f4c07e554f3fe3"/>
 <section title="~MPARC" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a16a6ccd4573e3ebec8396b2a4e3aef5a"/>
+<section title="cipher" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#aa518adb13a5d19027b68cb47ee14a574"/>
 <section title="clear" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ae2be5c421c8feca1f7ee1d20f9256346"/>
 <section title="construct" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#afb70314f726295a2faa18bde9466b156"/>
 <section title="construct" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a78672f7055226461291fee836959b943"/>
 <section title="duplicate" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a3a425fc2543377f2d264aca1a97e13e4"/>
 <section title="extract" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a2e1a7be460bee41e92633b66b7a3abdd"/>
-<section title="extract" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#acdd2425594802bbb58e217efeb35b583"/>
+<section title="extract" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad66e8dcdf60fbcd9de4a0c57dbc16ab2"/>
 <section title="getInstance" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#aeb00815a82be2adad9ca295945e25740"/>
+<section title="getLastError" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ac7a085966a25bdccd446fd9343d8c7e8"/>
 <section title="grabIterator" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a406972582c9cf92be00b552f95a06ef0"/>
 <section title="list" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#adbc176e04dc847a2b5e867e40fd5a6fc"/>
 <section title="parse" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a78148e6cd7eb8b771760e9bf697370ae"/>
-<section title="parse" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a67e25ff78f713eee91953f418e8fa4a2"/>
+<section title="parse" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a0b15569cdfb5743df68e2f4372c07b90"/>
 <section title="peek" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad5275f9e7d6b9ff07daeb745097340ae"/>
 <section title="pop" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a7fbad5eb88cbf14251385d57a01981fd"/>
 <section title="push" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a51ceea22405f62bc513137759bcdcc47"/>
 <section title="push" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a01158ceb52b79ef54c0c4540401bb5cc"/>
 <section title="push" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a2f40bd391d69ea58fe27edd2b0528c52"/>
-<section title="readdir" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a5314ce89d9fd2f73c35f215d8778f048"/>
+<section title="readdir" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#aae1d3c723a620ad3cd90795e1019830d"/>
 <section title="rename" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#af9a513455c336dcf197851525554248f"/>
 <section title="swap" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad5e1c6132df41f41082334b8a35cf423"/>
 </section>
@@ -51,11 +58,15 @@
 <section title="OrDie" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#a962baaf351184a2f49c6fbce03f0b925"/>
 <section title="OrThrow" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#a7d2db894f0d1000b6c494001faf62270"/>
 <section title="setErr" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#af5c0dade1dbd2ab28ac8e0e34263df2f"/>
+<section title="str" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#aff1d1dbcf4572ba05f5a49e6e44fdcfd"/>
 </section>
 <section title="MPARC_Iter" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm">
 <section title="MPARC_Iter" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a70f1457de952c35796d08b92db5d8694"/>
 <section title="~MPARC_Iter" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a70c30c3ed125aafe586207548681c462"/>
 <section title="next" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#aa2f4faf9bfa5e8f8066dc145f4e03922"/>
+<section title="operator*" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a2d5c2d861f42abb51a928c3ca686d89d"/>
+<section title="operator++" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a69b8dde0b2c986ceda38f230d0940bdf"/>
+<section title="operator++" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a8f837658a5a3f5dbb82f3c0c2be3d23d"/>
 </section>
 </section>
 </section>
@@ -68,6 +79,7 @@
 <section title="comment_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aad362e739896a54a50dad4e64a892033"/>
 <section title="end_entry_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a26c1872123c25b246032c16600642720"/>
 <section title="end_file_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a511526e119a82600076f09fba5ff5931"/>
+<section title="entry_content_preprocessor" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a03712b39c516f06fec6625e879e904f6"/>
 <section title="entry_elem2_sep_marker_or_magic_sep_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#abf07d17f73f5b9e78d3516899bbb9d96"/>
 <section title="entry_sep_or_general_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6409b7665569ed0cff4cb5f0a34c40a8"/>
 <section title="globby" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#acb278656734207f1f8d2cc3a8e2174a6"/>
@@ -98,6 +110,7 @@
 <section title="comment_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aad362e739896a54a50dad4e64a892033"/>
 <section title="end_entry_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a26c1872123c25b246032c16600642720"/>
 <section title="end_file_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a511526e119a82600076f09fba5ff5931"/>
+<section title="entry_content_preprocessor" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a03712b39c516f06fec6625e879e904f6"/>
 <section title="entry_elem2_sep_marker_or_magic_sep_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#abf07d17f73f5b9e78d3516899bbb9d96"/>
 <section title="entry_sep_or_general_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6409b7665569ed0cff4cb5f0a34c40a8"/>
 <section title="globby" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#acb278656734207f1f8d2cc3a8e2174a6"/>
@@ -127,34 +140,34 @@
 <section title="STANKY_MPAR_FILE_FORMAT_VERSION_NUMBER" ref="d9/dd9/mparc_8c.htm#ac81508c80aafaf02a004a59dbff7dcc5"/>
 <section title="STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION" ref="d9/dd9/mparc_8c.htm#a326f77dcf18011fb94858f1a047eea10"/>
 <section title="MPARC_calloc" ref="d9/dd9/mparc_8c.htm#ab23a5170998401c4b3852fe54d4374a3"/>
-<section title="MPARC_cipher" ref="d9/dd9/mparc_8c.htm#ad6484053854eda8c457e08869a8378c2"/>
+<section title="MPARC_cipher" ref="d9/dd9/mparc_8c.htm#a5e0f388381ef42b9660faa483dd858df"/>
 <section title="MPARC_clear" ref="d9/dd9/mparc_8c.htm#a211f6b2c204d841108a1c841daafa80e"/>
 <section title="MPARC_construct_filename" ref="d9/dd9/mparc_8c.htm#adabab1461aa5fa7e8aa042a00c2a4a0c"/>
 <section title="MPARC_construct_filestream" ref="d9/dd9/mparc_8c.htm#aa125160bff8db1ddf1b8bb0aba864b74"/>
 <section title="MPARC_construct_str" ref="d9/dd9/mparc_8c.htm#a5b17c807bb2fa6e05ac4130112ce6643"/>
 <section title="MPARC_copy" ref="d9/dd9/mparc_8c.htm#a6da21dcbf030cec0307ad7bfd3ea4f48"/>
 <section title="MPARC_destroy" ref="d9/dd9/mparc_8c.htm#a5a278819906e49b1155ee23cd2f3ad33"/>
-<section title="MPARC_duplicate_file" ref="d9/dd9/mparc_8c.htm#a2c6c265facbb49fd6e6c07ea4056bb5d"/>
+<section title="MPARC_duplicate_file" ref="d9/dd9/mparc_8c.htm#ab98218a8b53f801a8191a2b0e2181153"/>
 <section title="MPARC_exists" ref="d9/dd9/mparc_8c.htm#ae8ef340b41eb2b0e988fd6a2dd76c5cc"/>
 <section title="MPARC_extract" ref="d9/dd9/mparc_8c.htm#ac13fc6725de74ddb52f7108c819299da"/>
-<section title="MPARC_extract_advance" ref="d9/dd9/mparc_8c.htm#ae7e09eadefd698df2d888ff0f3525fdb"/>
+<section title="MPARC_extract_advance" ref="d9/dd9/mparc_8c.htm#aefa6bafcddd579e0b46f3bb5cb3a479c"/>
 <section title="MPARC_fperror" ref="d9/dd9/mparc_8c.htm#a0d77b86222a2630f482dc038b149e553"/>
 <section title="MPARC_free" ref="d9/dd9/mparc_8c.htm#a95d02449201605a28ce5143bc19b1abc"/>
 <section title="MPARC_get_last_error" ref="d9/dd9/mparc_8c.htm#ad84d7044d4f65ef1385cd7453278aa27"/>
 <section title="MPARC_init" ref="d9/dd9/mparc_8c.htm#a1fe7a9487c96376771cec41e72f1fbf7"/>
 <section title="MPARC_list_array" ref="d9/dd9/mparc_8c.htm#a70b485272c72704901ab0e2c54d40820"/>
 <section title="MPARC_list_array_free" ref="d9/dd9/mparc_8c.htm#abc033ce1084b6c7e42ebfa2415ccd160"/>
-<section title="MPARC_list_foreach" ref="d9/dd9/mparc_8c.htm#abdd468971dbef0efc6ff7b12a80ed11b"/>
+<section title="MPARC_list_foreach" ref="d9/dd9/mparc_8c.htm#a447ddf276fb30e5722e79b5997814271"/>
 <section title="MPARC_list_iterator_destroy" ref="d9/dd9/mparc_8c.htm#af69cf2c23d9a3d0f4a175c7c1dc8af2e"/>
 <section title="MPARC_list_iterator_init" ref="d9/dd9/mparc_8c.htm#a984c02b5c1b6a21cfbe863364f78208b"/>
 <section title="MPARC_list_iterator_next" ref="d9/dd9/mparc_8c.htm#a0e2b9d912b91cac836a472009257f732"/>
 <section title="MPARC_malloc" ref="d9/dd9/mparc_8c.htm#a397599ed1504ab0b9ad7a5c945c359ba"/>
-<section title="MPARC_MXPSQL_MPARC_iter_t_sizeof" ref="d9/dd9/mparc_8c.htm#a2666d0b1108a0727558b73f2e5ad53d1"/>
-<section title="MPARC_MXPSQL_MPARC_t_sizeof" ref="d9/dd9/mparc_8c.htm#aab06ea978e0ab92f8b5086607fa9e4f4"/>
+<section title="MPARC_MXPSQL_MPARC_iter_t_sizeof" ref="d9/dd9/mparc_8c.htm#aca83479a1ec5c46392d5d0891eecc6ca"/>
+<section title="MPARC_MXPSQL_MPARC_t_sizeof" ref="d9/dd9/mparc_8c.htm#a8ba40404c2a0ac26ee34350820770194"/>
 <section title="MPARC_parse_filename" ref="d9/dd9/mparc_8c.htm#a329d8459e0d873adbafadb9969b5f392"/>
 <section title="MPARC_parse_filestream" ref="d9/dd9/mparc_8c.htm#a10a53d66991368ae2ae051f485d8a728"/>
 <section title="MPARC_parse_str" ref="d9/dd9/mparc_8c.htm#a29a82ea12bfbf7210256c1264aedb091"/>
-<section title="MPARC_parse_str_advance" ref="d9/dd9/mparc_8c.htm#a7ecda162d4ed1a9819f12dbb8b7c3eba"/>
+<section title="MPARC_parse_str_advance" ref="d9/dd9/mparc_8c.htm#a6e0d911cce6085d4763c0d957dcef45e"/>
 <section title="MPARC_peek_file" ref="d9/dd9/mparc_8c.htm#a677f04c3376fd501c2d8aaa19f147984"/>
 <section title="MPARC_perror" ref="d9/dd9/mparc_8c.htm#ae5d11cf031a7370f20dd6861746208df"/>
 <section title="MPARC_pop_file" ref="d9/dd9/mparc_8c.htm#a1dd72fe09a33d45a0594e30c4de589c9"/>
@@ -162,13 +175,11 @@
 <section title="MPARC_push_filestr" ref="d9/dd9/mparc_8c.htm#ab8028a20dc77814394bb16b58e4a93be"/>
 <section title="MPARC_push_filestream" ref="d9/dd9/mparc_8c.htm#a5ef974df9809818436802bf6e3a2588e"/>
 <section title="MPARC_push_ufilestr" ref="d9/dd9/mparc_8c.htm#a8639e49b467fd1322682fc75df57a83c"/>
-<section title="MPARC_push_ufilestr_advance" ref="d9/dd9/mparc_8c.htm#a84ac2fc933b618d9a7645f29b07fdbf8"/>
+<section title="MPARC_push_ufilestr_advance" ref="d9/dd9/mparc_8c.htm#af8926502591fce41f1b6313e004df11c"/>
 <section title="MPARC_push_voidfile" ref="d9/dd9/mparc_8c.htm#a1e326d95791906a75532c4ef8be59d9a"/>
-<section title="MPARC_query" ref="d9/dd9/mparc_8c.htm#a70f4059ce1c060481d68b988364e7a64"/>
-<section title="MPARC_query_vlist" ref="d9/dd9/mparc_8c.htm#a68975942da537c7c347d8c5830f80de9"/>
-<section title="MPARC_readdir" ref="d9/dd9/mparc_8c.htm#a9c3319d2799c4c27be4213af3c4059de"/>
+<section title="MPARC_readdir" ref="d9/dd9/mparc_8c.htm#a5cb6ee181b1984f1f5c74915971083b8"/>
 <section title="MPARC_realloc" ref="d9/dd9/mparc_8c.htm#a1bbdf1d27c7dbf8c222535770fb5323f"/>
-<section title="MPARC_rename_file" ref="d9/dd9/mparc_8c.htm#aa3d5a4a1236c55430857988405a43ec4"/>
+<section title="MPARC_rename_file" ref="d9/dd9/mparc_8c.htm#ad19d14cc148f3b983b1c3a8f38d6720d"/>
 <section title="MPARC_sfperror" ref="d9/dd9/mparc_8c.htm#acb33c06446b2c32a15eaead47728808c"/>
 <section title="MPARC_strerror" ref="d9/dd9/mparc_8c.htm#a499191b4f97ceb2791a4861cd493b9d4"/>
 <section title="MPARC_swap_file" ref="d9/dd9/mparc_8c.htm#afd013dd1d48216d0e879e9923adaa47a"/>
@@ -176,6 +187,7 @@
 <section title="mparc.h" ref="d6/d08/mparc_8h.htm">
 <section title="MXPSQL_MPARC_err" ref="d6/d08/mparc_8h.htm#a0b43069d31ce01c4447ed5207aec2b55"/>
 <section title="MXPSQL_MPARC_iter_t" ref="d6/d08/mparc_8h.htm#a07c83537b86c7bd755c69f0dc234d291"/>
+<section title="MXPSQL_MPARC_preprocessor_func_t" ref="d6/d08/mparc_8h.htm#ae73faf5f9b5b871aaef340c5c8e98b18"/>
 <section title="MXPSQL_MPARC_t" ref="d6/d08/mparc_8h.htm#af86786ca7b4ba1464c419b034cd238d3"/>
 <section title="MXPSQL_MPARC_uint_repr_t" ref="d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb"/>
 <section title="MXPSQL_MPARC_err" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100c">
@@ -197,7 +209,7 @@
 </section>
 <section title="MPARC_basename" ref="d6/d08/mparc_8h.htm#a3a202a71270a2d8faf571af197e42e6e"/>
 <section title="MPARC_calloc" ref="d6/d08/mparc_8h.htm#ab23a5170998401c4b3852fe54d4374a3"/>
-<section title="MPARC_cipher" ref="d6/d08/mparc_8h.htm#ad6484053854eda8c457e08869a8378c2"/>
+<section title="MPARC_cipher" ref="d6/d08/mparc_8h.htm#a5e0f388381ef42b9660faa483dd858df"/>
 <section title="MPARC_clear" ref="d6/d08/mparc_8h.htm#a211f6b2c204d841108a1c841daafa80e"/>
 <section title="MPARC_construct_filename" ref="d6/d08/mparc_8h.htm#adabab1461aa5fa7e8aa042a00c2a4a0c"/>
 <section title="MPARC_construct_filestream" ref="d6/d08/mparc_8h.htm#aa125160bff8db1ddf1b8bb0aba864b74"/>
@@ -205,10 +217,10 @@
 <section title="MPARC_copy" ref="d6/d08/mparc_8h.htm#a6da21dcbf030cec0307ad7bfd3ea4f48"/>
 <section title="MPARC_destroy" ref="d6/d08/mparc_8h.htm#a5a278819906e49b1155ee23cd2f3ad33"/>
 <section title="MPARC_dirname" ref="d6/d08/mparc_8h.htm#ac62666bee60ef27ce66c4fb3361a467f"/>
-<section title="MPARC_duplicate_file" ref="d6/d08/mparc_8h.htm#a2c6c265facbb49fd6e6c07ea4056bb5d"/>
+<section title="MPARC_duplicate_file" ref="d6/d08/mparc_8h.htm#ab98218a8b53f801a8191a2b0e2181153"/>
 <section title="MPARC_exists" ref="d6/d08/mparc_8h.htm#ae8ef340b41eb2b0e988fd6a2dd76c5cc"/>
 <section title="MPARC_extract" ref="d6/d08/mparc_8h.htm#ac13fc6725de74ddb52f7108c819299da"/>
-<section title="MPARC_extract_advance" ref="d6/d08/mparc_8h.htm#ae7e09eadefd698df2d888ff0f3525fdb"/>
+<section title="MPARC_extract_advance" ref="d6/d08/mparc_8h.htm#aefa6bafcddd579e0b46f3bb5cb3a479c"/>
 <section title="MPARC_fperror" ref="d6/d08/mparc_8h.htm#a0d77b86222a2630f482dc038b149e553"/>
 <section title="MPARC_free" ref="d6/d08/mparc_8h.htm#a95d02449201605a28ce5143bc19b1abc"/>
 <section title="MPARC_get_extension" ref="d6/d08/mparc_8h.htm#a1d9ab18fe1541bbb781847327dc66475"/>
@@ -216,18 +228,18 @@
 <section title="MPARC_init" ref="d6/d08/mparc_8h.htm#a1fe7a9487c96376771cec41e72f1fbf7"/>
 <section title="MPARC_list_array" ref="d6/d08/mparc_8h.htm#a70b485272c72704901ab0e2c54d40820"/>
 <section title="MPARC_list_array_free" ref="d6/d08/mparc_8h.htm#abc033ce1084b6c7e42ebfa2415ccd160"/>
-<section title="MPARC_list_foreach" ref="d6/d08/mparc_8h.htm#abdd468971dbef0efc6ff7b12a80ed11b"/>
+<section title="MPARC_list_foreach" ref="d6/d08/mparc_8h.htm#a447ddf276fb30e5722e79b5997814271"/>
 <section title="MPARC_list_iterator_destroy" ref="d6/d08/mparc_8h.htm#af69cf2c23d9a3d0f4a175c7c1dc8af2e"/>
 <section title="MPARC_list_iterator_init" ref="d6/d08/mparc_8h.htm#a984c02b5c1b6a21cfbe863364f78208b"/>
 <section title="MPARC_list_iterator_next" ref="d6/d08/mparc_8h.htm#a0e2b9d912b91cac836a472009257f732"/>
 <section title="MPARC_malloc" ref="d6/d08/mparc_8h.htm#a397599ed1504ab0b9ad7a5c945c359ba"/>
 <section title="MPARC_memdup" ref="d6/d08/mparc_8h.htm#ad0e52e267c7096327e368e249c1f51fd"/>
-<section title="MPARC_MXPSQL_MPARC_iter_t_sizeof" ref="d6/d08/mparc_8h.htm#a2666d0b1108a0727558b73f2e5ad53d1"/>
-<section title="MPARC_MXPSQL_MPARC_t_sizeof" ref="d6/d08/mparc_8h.htm#aab06ea978e0ab92f8b5086607fa9e4f4"/>
+<section title="MPARC_MXPSQL_MPARC_iter_t_sizeof" ref="d6/d08/mparc_8h.htm#aca83479a1ec5c46392d5d0891eecc6ca"/>
+<section title="MPARC_MXPSQL_MPARC_t_sizeof" ref="d6/d08/mparc_8h.htm#a8ba40404c2a0ac26ee34350820770194"/>
 <section title="MPARC_parse_filename" ref="d6/d08/mparc_8h.htm#a329d8459e0d873adbafadb9969b5f392"/>
 <section title="MPARC_parse_filestream" ref="d6/d08/mparc_8h.htm#a10a53d66991368ae2ae051f485d8a728"/>
 <section title="MPARC_parse_str" ref="d6/d08/mparc_8h.htm#a29a82ea12bfbf7210256c1264aedb091"/>
-<section title="MPARC_parse_str_advance" ref="d6/d08/mparc_8h.htm#ad7a0a19abd782ef9668e59c252722dff"/>
+<section title="MPARC_parse_str_advance" ref="d6/d08/mparc_8h.htm#a4c8cae502d2f392be252b78546ab274f"/>
 <section title="MPARC_peek_file" ref="d6/d08/mparc_8h.htm#a677f04c3376fd501c2d8aaa19f147984"/>
 <section title="MPARC_perror" ref="d6/d08/mparc_8h.htm#ae5d11cf031a7370f20dd6861746208df"/>
 <section title="MPARC_pop_file" ref="d6/d08/mparc_8h.htm#a1dd72fe09a33d45a0594e30c4de589c9"/>
@@ -235,13 +247,11 @@
 <section title="MPARC_push_filestr" ref="d6/d08/mparc_8h.htm#ab8028a20dc77814394bb16b58e4a93be"/>
 <section title="MPARC_push_filestream" ref="d6/d08/mparc_8h.htm#a5ef974df9809818436802bf6e3a2588e"/>
 <section title="MPARC_push_ufilestr" ref="d6/d08/mparc_8h.htm#a8639e49b467fd1322682fc75df57a83c"/>
-<section title="MPARC_push_ufilestr_advance" ref="d6/d08/mparc_8h.htm#a84ac2fc933b618d9a7645f29b07fdbf8"/>
+<section title="MPARC_push_ufilestr_advance" ref="d6/d08/mparc_8h.htm#af8926502591fce41f1b6313e004df11c"/>
 <section title="MPARC_push_voidfile" ref="d6/d08/mparc_8h.htm#a4de3a2301aa982b61406fa9022e2fd88"/>
-<section title="MPARC_query" ref="d6/d08/mparc_8h.htm#a70f4059ce1c060481d68b988364e7a64"/>
-<section title="MPARC_query_vlist" ref="d6/d08/mparc_8h.htm#a68975942da537c7c347d8c5830f80de9"/>
-<section title="MPARC_readdir" ref="d6/d08/mparc_8h.htm#a9c3319d2799c4c27be4213af3c4059de"/>
+<section title="MPARC_readdir" ref="d6/d08/mparc_8h.htm#a5cb6ee181b1984f1f5c74915971083b8"/>
 <section title="MPARC_realloc" ref="d6/d08/mparc_8h.htm#a1bbdf1d27c7dbf8c222535770fb5323f"/>
-<section title="MPARC_rename_file" ref="d6/d08/mparc_8h.htm#aa3d5a4a1236c55430857988405a43ec4"/>
+<section title="MPARC_rename_file" ref="d6/d08/mparc_8h.htm#ad19d14cc148f3b983b1c3a8f38d6720d"/>
 <section title="MPARC_sfperror" ref="d6/d08/mparc_8h.htm#acb33c06446b2c32a15eaead47728808c"/>
 <section title="MPARC_strdup" ref="d6/d08/mparc_8h.htm#a1594c0be7e62d1541f058feb7cbfa262"/>
 <section title="MPARC_strerror" ref="d6/d08/mparc_8h.htm#a499191b4f97ceb2791a4861cd493b9d4"/>
@@ -259,11 +269,15 @@
 <section title="OrDie" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#a962baaf351184a2f49c6fbce03f0b925"/>
 <section title="OrThrow" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#a7d2db894f0d1000b6c494001faf62270"/>
 <section title="setErr" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#af5c0dade1dbd2ab28ac8e0e34263df2f"/>
+<section title="str" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#aff1d1dbcf4572ba05f5a49e6e44fdcfd"/>
 </section>
 <section title="MXPSQL::MPARC::MPARC_Iter" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm">
 <section title="MPARC_Iter" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a70f1457de952c35796d08b92db5d8694"/>
 <section title="~MPARC_Iter" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a70c30c3ed125aafe586207548681c462"/>
 <section title="next" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#aa2f4faf9bfa5e8f8066dc145f4e03922"/>
+<section title="operator*" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a2d5c2d861f42abb51a928c3ca686d89d"/>
+<section title="operator++" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a69b8dde0b2c986ceda38f230d0940bdf"/>
+<section title="operator++" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a8f837658a5a3f5dbb82f3c0c2be3d23d"/>
 </section>
 <section title="MXPSQL::MPARC::MPARC" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm">
 <section title="MPARC" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a6fce6b56fd88fa431d76145b7766fd20"/>
@@ -271,23 +285,25 @@
 <section title="MPARC" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a368144033dc89f746d468825ec081537"/>
 <section title="MPARC" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a9224db67b6f76630e6f4c07e554f3fe3"/>
 <section title="~MPARC" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a16a6ccd4573e3ebec8396b2a4e3aef5a"/>
+<section title="cipher" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#aa518adb13a5d19027b68cb47ee14a574"/>
 <section title="clear" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ae2be5c421c8feca1f7ee1d20f9256346"/>
 <section title="construct" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#afb70314f726295a2faa18bde9466b156"/>
 <section title="construct" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a78672f7055226461291fee836959b943"/>
 <section title="duplicate" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a3a425fc2543377f2d264aca1a97e13e4"/>
 <section title="extract" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a2e1a7be460bee41e92633b66b7a3abdd"/>
-<section title="extract" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#acdd2425594802bbb58e217efeb35b583"/>
+<section title="extract" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad66e8dcdf60fbcd9de4a0c57dbc16ab2"/>
 <section title="getInstance" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#aeb00815a82be2adad9ca295945e25740"/>
+<section title="getLastError" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ac7a085966a25bdccd446fd9343d8c7e8"/>
 <section title="grabIterator" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a406972582c9cf92be00b552f95a06ef0"/>
 <section title="list" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#adbc176e04dc847a2b5e867e40fd5a6fc"/>
 <section title="parse" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a78148e6cd7eb8b771760e9bf697370ae"/>
-<section title="parse" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a67e25ff78f713eee91953f418e8fa4a2"/>
+<section title="parse" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a0b15569cdfb5743df68e2f4372c07b90"/>
 <section title="peek" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad5275f9e7d6b9ff07daeb745097340ae"/>
 <section title="pop" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a7fbad5eb88cbf14251385d57a01981fd"/>
 <section title="push" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a51ceea22405f62bc513137759bcdcc47"/>
 <section title="push" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a01158ceb52b79ef54c0c4540401bb5cc"/>
 <section title="push" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a2f40bd391d69ea58fe27edd2b0528c52"/>
-<section title="readdir" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a5314ce89d9fd2f73c35f215d8778f048"/>
+<section title="readdir" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#aae1d3c723a620ad3cd90795e1019830d"/>
 <section title="rename" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#af9a513455c336dcf197851525554248f"/>
 <section title="swap" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad5e1c6132df41f41082334b8a35cf423"/>
 </section>
@@ -311,8 +327,10 @@
 <keyword name="MXPSQL::MPARC::MPARC_Iter" id="MXPSQL::MPARC::MPARC_Iter_" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm"/>
 <keyword name="MXPSQL_MPARC_iter_t" id="MXPSQL_MPARC_iter_t_" ref="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm"/>
 <keyword name="MXPSQL_MPARC_t" id="MXPSQL_MPARC_t_" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm"/>
+<keyword name="Security Policy" id="Security Policy_" ref="d7/d88/md__s_e_c_u_r_i_t_y.htm"/>
 <keyword name="archive" id="MXPSQL_MPARC_iter_t::archive_a0b5107e8ae5f147b2946780382581147" ref="d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm#a0b5107e8ae5f147b2946780382581147"/>
 <keyword name="begin_entry_marker" id="MXPSQL_MPARC_t::begin_entry_marker_ac7d3e82c0c06765de567a88484a1834f" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ac7d3e82c0c06765de567a88484a1834f"/>
+<keyword name="cipher(bool SetXOR, unsigned char *XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char **XORKeyOut, MXPSQL_MPARC_uint_repr_t *XORKeyLengthOut, bool SetROT, int *ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int **ROTKeyOut, MXPSQL_MPARC_uint_repr_t *ROTKeyLengthOut)" id="MXPSQL::MPARC::MPARC::cipher_aa518adb13a5d19027b68cb47ee14a574" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#aa518adb13a5d19027b68cb47ee14a574"/>
 <keyword name="clear()" id="MXPSQL::MPARC::MPARC::clear_ae2be5c421c8feca1f7ee1d20f9256346" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ae2be5c421c8feca1f7ee1d20f9256346"/>
 <keyword name="comment_marker" id="MXPSQL_MPARC_t::comment_marker_aad362e739896a54a50dad4e64a892033" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aad362e739896a54a50dad4e64a892033"/>
 <keyword name="construct(std::string &amp;out, bool interpretation_mode)" id="MXPSQL::MPARC::MPARC::construct_a78672f7055226461291fee836959b943" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a78672f7055226461291fee836959b943"/>
@@ -320,12 +338,14 @@
 <keyword name="duplicate(std::string filename1, std::string filename2, bool overwrite)" id="MXPSQL::MPARC::MPARC::duplicate_a3a425fc2543377f2d264aca1a97e13e4" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a3a425fc2543377f2d264aca1a97e13e4"/>
 <keyword name="end_entry_marker" id="MXPSQL_MPARC_t::end_entry_marker_a26c1872123c25b246032c16600642720" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a26c1872123c25b246032c16600642720"/>
 <keyword name="end_file_marker" id="MXPSQL_MPARC_t::end_file_marker_a511526e119a82600076f09fba5ff5931" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a511526e119a82600076f09fba5ff5931"/>
+<keyword name="entry_content_preprocessor" id="MXPSQL_MPARC_t::entry_content_preprocessor_a03712b39c516f06fec6625e879e904f6" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a03712b39c516f06fec6625e879e904f6"/>
 <keyword name="entry_elem2_sep_marker_or_magic_sep_marker" id="MXPSQL_MPARC_t::entry_elem2_sep_marker_or_magic_sep_marker_abf07d17f73f5b9e78d3516899bbb9d96" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#abf07d17f73f5b9e78d3516899bbb9d96"/>
 <keyword name="entry_sep_or_general_marker" id="MXPSQL_MPARC_t::entry_sep_or_general_marker_a6409b7665569ed0cff4cb5f0a34c40a8" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6409b7665569ed0cff4cb5f0a34c40a8"/>
-<keyword name="extract(std::string dest_dir, char **dir2make, void(*on_item)(const char *), int(*mk_dir)(char *))" id="MXPSQL::MPARC::MPARC::extract_acdd2425594802bbb58e217efeb35b583" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#acdd2425594802bbb58e217efeb35b583"/>
+<keyword name="extract(std::string dest_dir, char **dir2make, void(*on_item)(const char *, void *), int(*mk_dir)(char *, void *), void *on_item_ctx, void *mk_dir_ctx)" id="MXPSQL::MPARC::MPARC::extract_ad66e8dcdf60fbcd9de4a0c57dbc16ab2" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad66e8dcdf60fbcd9de4a0c57dbc16ab2"/>
 <keyword name="extract(std::string dest_dir, char **dir2make)" id="MXPSQL::MPARC::MPARC::extract_a2e1a7be460bee41e92633b66b7a3abdd" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a2e1a7be460bee41e92633b66b7a3abdd"/>
 <keyword name="getErr()" id="MXPSQL::MPARC::MPARC_Error::getErr_a23fe7546bd88bdfa3426d46f8d258e88" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#a23fe7546bd88bdfa3426d46f8d258e88"/>
 <keyword name="getInstance()" id="MXPSQL::MPARC::MPARC::getInstance_aeb00815a82be2adad9ca295945e25740" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#aeb00815a82be2adad9ca295945e25740"/>
+<keyword name="getLastError()" id="MXPSQL::MPARC::MPARC::getLastError_ac7a085966a25bdccd446fd9343d8c7e8" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ac7a085966a25bdccd446fd9343d8c7e8"/>
 <keyword name="globby" id="MXPSQL_MPARC_t::globby_acb278656734207f1f8d2cc3a8e2174a6" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#acb278656734207f1f8d2cc3a8e2174a6"/>
 <keyword name="grabIterator()" id="MXPSQL::MPARC::MPARC::grabIterator_a406972582c9cf92be00b552f95a06ef0" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a406972582c9cf92be00b552f95a06ef0"/>
 <keyword name="isOk()" id="MXPSQL::MPARC::MPARC_Error::isOk_a72c4653a7cc2b38304bdc3330f9edf42" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#a72c4653a7cc2b38304bdc3330f9edf42"/>
@@ -343,20 +363,24 @@
 <keyword name="MPARC_Iter(MXPSQL_MPARC_t *Ptr)" id="MXPSQL::MPARC::MPARC_Iter::MPARC_Iter_a70f1457de952c35796d08b92db5d8694" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a70f1457de952c35796d08b92db5d8694"/>
 <keyword name="my_err" id="MXPSQL_MPARC_t::my_err_aa0b92957bff728a7ad943ae7ccfdb33d" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#aa0b92957bff728a7ad943ae7ccfdb33d"/>
 <keyword name="next(std::string &amp;out)" id="MXPSQL::MPARC::MPARC_Iter::next_aa2f4faf9bfa5e8f8066dc145f4e03922" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#aa2f4faf9bfa5e8f8066dc145f4e03922"/>
+<keyword name="operator*()" id="MXPSQL::MPARC::MPARC_Iter::operator*_a2d5c2d861f42abb51a928c3ca686d89d" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a2d5c2d861f42abb51a928c3ca686d89d"/>
+<keyword name="operator++()" id="MXPSQL::MPARC::MPARC_Iter::operator++_a69b8dde0b2c986ceda38f230d0940bdf" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a69b8dde0b2c986ceda38f230d0940bdf"/>
+<keyword name="operator++(int)" id="MXPSQL::MPARC::MPARC_Iter::operator++_a8f837658a5a3f5dbb82f3c0c2be3d23d" ref="da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm#a8f837658a5a3f5dbb82f3c0c2be3d23d"/>
 <keyword name="OrDie()" id="MXPSQL::MPARC::MPARC_Error::OrDie_a962baaf351184a2f49c6fbce03f0b925" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#a962baaf351184a2f49c6fbce03f0b925"/>
 <keyword name="OrThrow()" id="MXPSQL::MPARC::MPARC_Error::OrThrow_a7d2db894f0d1000b6c494001faf62270" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#a7d2db894f0d1000b6c494001faf62270"/>
-<keyword name="parse(std::string str, bool interpretation_mode, bool erroronduplicate)" id="MXPSQL::MPARC::MPARC::parse_a67e25ff78f713eee91953f418e8fa4a2" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a67e25ff78f713eee91953f418e8fa4a2"/>
+<keyword name="parse(std::string str, bool interpretation_mode, bool erroronduplicate, bool sensitive)" id="MXPSQL::MPARC::MPARC::parse_a0b15569cdfb5743df68e2f4372c07b90" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a0b15569cdfb5743df68e2f4372c07b90"/>
 <keyword name="parse(std::ifstream &amp;strem)" id="MXPSQL::MPARC::MPARC::parse_a78148e6cd7eb8b771760e9bf697370ae" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a78148e6cd7eb8b771760e9bf697370ae"/>
 <keyword name="peek(std::string filename, unsigned char **bout, MXPSQL_MPARC_uint_repr_t *sout)" id="MXPSQL::MPARC::MPARC::peek_ad5275f9e7d6b9ff07daeb745097340ae" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad5275f9e7d6b9ff07daeb745097340ae"/>
 <keyword name="pop(std::string filename)" id="MXPSQL::MPARC::MPARC::pop_a7fbad5eb88cbf14251385d57a01981fd" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a7fbad5eb88cbf14251385d57a01981fd"/>
 <keyword name="push(std::string filename, unsigned char *binary, MXPSQL_MPARC_uint_repr_t size)" id="MXPSQL::MPARC::MPARC::push_a2f40bd391d69ea58fe27edd2b0528c52" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a2f40bd391d69ea58fe27edd2b0528c52"/>
 <keyword name="push(std::string filename, std::ifstream &amp;strem)" id="MXPSQL::MPARC::MPARC::push_a01158ceb52b79ef54c0c4540401bb5cc" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a01158ceb52b79ef54c0c4540401bb5cc"/>
 <keyword name="push(std::string filename)" id="MXPSQL::MPARC::MPARC::push_a51ceea22405f62bc513137759bcdcc47" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a51ceea22405f62bc513137759bcdcc47"/>
-<keyword name="readdir(std::string srcdir, bool recursive, int(*listdir)(const char *, int, char **))" id="MXPSQL::MPARC::MPARC::readdir_a5314ce89d9fd2f73c35f215d8778f048" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#a5314ce89d9fd2f73c35f215d8778f048"/>
+<keyword name="readdir(std::string srcdir, bool recursive, int(*listdir)(const char *, bool, char ***, void *), void *listdir_ctx)" id="MXPSQL::MPARC::MPARC::readdir_aae1d3c723a620ad3cd90795e1019830d" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#aae1d3c723a620ad3cd90795e1019830d"/>
 <keyword name="rename(std::string filename1, std::string filename2, bool overwrite)" id="MXPSQL::MPARC::MPARC::rename_af9a513455c336dcf197851525554248f" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#af9a513455c336dcf197851525554248f"/>
 <keyword name="ROTKey" id="MXPSQL_MPARC_t::ROTKey_a856a6068552baf6827633d65c5506cf3" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a856a6068552baf6827633d65c5506cf3"/>
 <keyword name="ROTKeyLength" id="MXPSQL_MPARC_t::ROTKeyLength_ab2a172f99285250583934935a0ee9ae4" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ab2a172f99285250583934935a0ee9ae4"/>
 <keyword name="setErr(MXPSQL_MPARC_err err)" id="MXPSQL::MPARC::MPARC_Error::setErr_af5c0dade1dbd2ab28ac8e0e34263df2f" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#af5c0dade1dbd2ab28ac8e0e34263df2f"/>
+<keyword name="str()" id="MXPSQL::MPARC::MPARC_Error::str_aff1d1dbcf4572ba05f5a49e6e44fdcfd" ref="df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm#aff1d1dbcf4572ba05f5a49e6e44fdcfd"/>
 <keyword name="swap(std::string filename1, std::string filename2)" id="MXPSQL::MPARC::MPARC::swap_ad5e1c6132df41f41082334b8a35cf423" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad5e1c6132df41f41082334b8a35cf423"/>
 <keyword name="vlist" id="MXPSQL_MPARC_t::vlist_a986b6427a9a2601d2b48e3a65a842e21" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a986b6427a9a2601d2b48e3a65a842e21"/>
 <keyword name="writerVersion" id="MXPSQL_MPARC_t::writerVersion_a6dc1d2da99ae25490088f0f36ffc4286" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#a6dc1d2da99ae25490088f0f36ffc4286"/>
@@ -371,8 +395,8 @@
 <keyword name="MPARC_calloc(MXPSQL_MPARC_uint_repr_t arr_size, size_t el_size)" id="mparc.c::MPARC_calloc_ab23a5170998401c4b3852fe54d4374a3" ref="d9/dd9/mparc_8c.htm#ab23a5170998401c4b3852fe54d4374a3"/>
 <keyword name="MPARC_calloc(MXPSQL_MPARC_uint_repr_t arr_size, size_t el_size)" id="mparc.h::MPARC_calloc_ab23a5170998401c4b3852fe54d4374a3" ref="d6/d08/mparc_8h.htm#ab23a5170998401c4b3852fe54d4374a3"/>
 <keyword name="MPARC_CHKSUM" id="mparc.h::MPARC_CHKSUM_ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e"/>
-<keyword name="MPARC_cipher(MXPSQL_MPARC_t *structure, int SetXOR, unsigned char *XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char **XORKeyOut, MXPSQL_MPARC_uint_repr_t *XORKeyLengthOut, int SetROT, int *ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int **ROTKeyOut, MXPSQL_MPARC_uint_repr_t *ROTKeyLengthOut)" id="mparc.c::MPARC_cipher_ad6484053854eda8c457e08869a8378c2" ref="d9/dd9/mparc_8c.htm#ad6484053854eda8c457e08869a8378c2"/>
-<keyword name="MPARC_cipher(MXPSQL_MPARC_t *structure, int SetXOR, unsigned char *XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char **XORKeyOut, MXPSQL_MPARC_uint_repr_t *XORKeyLengthOut, int SetROT, int *ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int **ROTKeyOut, MXPSQL_MPARC_uint_repr_t *ROTKeyLengthOut)" id="mparc.h::MPARC_cipher_ad6484053854eda8c457e08869a8378c2" ref="d6/d08/mparc_8h.htm#ad6484053854eda8c457e08869a8378c2"/>
+<keyword name="MPARC_cipher(MXPSQL_MPARC_t *structure, bool SetXOR, unsigned char *XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char **XORKeyOut, MXPSQL_MPARC_uint_repr_t *XORKeyLengthOut, bool SetROT, int *ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int **ROTKeyOut, MXPSQL_MPARC_uint_repr_t *ROTKeyLengthOut)" id="mparc.c::MPARC_cipher_a5e0f388381ef42b9660faa483dd858df" ref="d9/dd9/mparc_8c.htm#a5e0f388381ef42b9660faa483dd858df"/>
+<keyword name="MPARC_cipher(MXPSQL_MPARC_t *structure, bool SetXOR, unsigned char *XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char **XORKeyOut, MXPSQL_MPARC_uint_repr_t *XORKeyLengthOut, bool SetROT, int *ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int **ROTKeyOut, MXPSQL_MPARC_uint_repr_t *ROTKeyLengthOut)" id="mparc.h::MPARC_cipher_a5e0f388381ef42b9660faa483dd858df" ref="d6/d08/mparc_8h.htm#a5e0f388381ef42b9660faa483dd858df"/>
 <keyword name="MPARC_clear(MXPSQL_MPARC_t *structure)" id="mparc.c::MPARC_clear_a211f6b2c204d841108a1c841daafa80e" ref="d9/dd9/mparc_8c.htm#a211f6b2c204d841108a1c841daafa80e"/>
 <keyword name="MPARC_clear(MXPSQL_MPARC_t *structure)" id="mparc.h::MPARC_clear_a211f6b2c204d841108a1c841daafa80e" ref="d6/d08/mparc_8h.htm#a211f6b2c204d841108a1c841daafa80e"/>
 <keyword name="MPARC_CONSTRUCT_FAIL" id="mparc.h::MPARC_CONSTRUCT_FAIL_ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4"/>
@@ -389,14 +413,14 @@
 <keyword name="MPARC_destroy(MXPSQL_MPARC_t **structure)" id="mparc.h::MPARC_destroy_a5a278819906e49b1155ee23cd2f3ad33" ref="d6/d08/mparc_8h.htm#a5a278819906e49b1155ee23cd2f3ad33"/>
 <keyword name="MPARC_DIRECTF_MINIMUM" id="mparc.c::MPARC_DIRECTF_MINIMUM_a2ad7e18ba758ac0fc4c67b4d963dd119" ref="d9/dd9/mparc_8c.htm#a2ad7e18ba758ac0fc4c67b4d963dd119"/>
 <keyword name="MPARC_dirname(char *path)" id="mparc.h::MPARC_dirname_ac62666bee60ef27ce66c4fb3361a467f" ref="d6/d08/mparc_8h.htm#ac62666bee60ef27ce66c4fb3361a467f"/>
-<keyword name="MPARC_duplicate_file(MXPSQL_MPARC_t *structure, int overwrite, const char *srcfile, const char *destfile)" id="mparc.c::MPARC_duplicate_file_a2c6c265facbb49fd6e6c07ea4056bb5d" ref="d9/dd9/mparc_8c.htm#a2c6c265facbb49fd6e6c07ea4056bb5d"/>
-<keyword name="MPARC_duplicate_file(MXPSQL_MPARC_t *structure, int overwrite, const char *srcfile, const char *destfile)" id="mparc.h::MPARC_duplicate_file_a2c6c265facbb49fd6e6c07ea4056bb5d" ref="d6/d08/mparc_8h.htm#a2c6c265facbb49fd6e6c07ea4056bb5d"/>
+<keyword name="MPARC_duplicate_file(MXPSQL_MPARC_t *structure, bool overwrite, const char *srcfile, const char *destfile)" id="mparc.c::MPARC_duplicate_file_ab98218a8b53f801a8191a2b0e2181153" ref="d9/dd9/mparc_8c.htm#ab98218a8b53f801a8191a2b0e2181153"/>
+<keyword name="MPARC_duplicate_file(MXPSQL_MPARC_t *structure, bool overwrite, const char *srcfile, const char *destfile)" id="mparc.h::MPARC_duplicate_file_ab98218a8b53f801a8191a2b0e2181153" ref="d6/d08/mparc_8h.htm#ab98218a8b53f801a8191a2b0e2181153"/>
 <keyword name="MPARC_exists(MXPSQL_MPARC_t *structure, const char *filename)" id="mparc.c::MPARC_exists_ae8ef340b41eb2b0e988fd6a2dd76c5cc" ref="d9/dd9/mparc_8c.htm#ae8ef340b41eb2b0e988fd6a2dd76c5cc"/>
 <keyword name="MPARC_exists(MXPSQL_MPARC_t *structure, const char *filename)" id="mparc.h::MPARC_exists_ae8ef340b41eb2b0e988fd6a2dd76c5cc" ref="d6/d08/mparc_8h.htm#ae8ef340b41eb2b0e988fd6a2dd76c5cc"/>
 <keyword name="MPARC_extract(MXPSQL_MPARC_t *structure, const char *destdir, char **dir2make)" id="mparc.c::MPARC_extract_ac13fc6725de74ddb52f7108c819299da" ref="d9/dd9/mparc_8c.htm#ac13fc6725de74ddb52f7108c819299da"/>
 <keyword name="MPARC_extract(MXPSQL_MPARC_t *structure, const char *destdir, char **dir2make)" id="mparc.h::MPARC_extract_ac13fc6725de74ddb52f7108c819299da" ref="d6/d08/mparc_8h.htm#ac13fc6725de74ddb52f7108c819299da"/>
-<keyword name="MPARC_extract_advance(MXPSQL_MPARC_t *structure, const char *destdir, char **dir2make, void(*on_item)(const char *), int(*mk_dir)(char *))" id="mparc.c::MPARC_extract_advance_ae7e09eadefd698df2d888ff0f3525fdb" ref="d9/dd9/mparc_8c.htm#ae7e09eadefd698df2d888ff0f3525fdb"/>
-<keyword name="MPARC_extract_advance(MXPSQL_MPARC_t *structure, const char *destdir, char **dir2make, void(*on_item)(const char *), int(*mk_dir)(char *))" id="mparc.h::MPARC_extract_advance_ae7e09eadefd698df2d888ff0f3525fdb" ref="d6/d08/mparc_8h.htm#ae7e09eadefd698df2d888ff0f3525fdb"/>
+<keyword name="MPARC_extract_advance(MXPSQL_MPARC_t *structure, const char *destdir, char **dir2make, void(*on_item)(const char *, void *), int(*mk_dir)(char *, void *), void *on_item_ctx, void *mk_dir_ctx)" id="mparc.c::MPARC_extract_advance_aefa6bafcddd579e0b46f3bb5cb3a479c" ref="d9/dd9/mparc_8c.htm#aefa6bafcddd579e0b46f3bb5cb3a479c"/>
+<keyword name="MPARC_extract_advance(MXPSQL_MPARC_t *structure, const char *destdir, char **dir2make, void(*on_item)(const char *, void *), int(*mk_dir)(char *, void *), void *on_item_ctx, void *mk_dir_ctx)" id="mparc.h::MPARC_extract_advance_aefa6bafcddd579e0b46f3bb5cb3a479c" ref="d6/d08/mparc_8h.htm#aefa6bafcddd579e0b46f3bb5cb3a479c"/>
 <keyword name="MPARC_FERROR" id="mparc.h::MPARC_FERROR_ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa"/>
 <keyword name="MPARC_fperror(MXPSQL_MPARC_err err, FILE *fileptrstream)" id="mparc.c::MPARC_fperror_a0d77b86222a2630f482dc038b149e553" ref="d9/dd9/mparc_8c.htm#a0d77b86222a2630f482dc038b149e553"/>
 <keyword name="MPARC_fperror(MXPSQL_MPARC_err err, FILE *fileptrstream)" id="mparc.h::MPARC_fperror_a0d77b86222a2630f482dc038b149e553" ref="d6/d08/mparc_8h.htm#a0d77b86222a2630f482dc038b149e553"/>
@@ -416,8 +440,8 @@
 <keyword name="MPARC_list_array(MXPSQL_MPARC_t *structure, char ***listout, MXPSQL_MPARC_uint_repr_t *length)" id="mparc.h::MPARC_list_array_a70b485272c72704901ab0e2c54d40820" ref="d6/d08/mparc_8h.htm#a70b485272c72704901ab0e2c54d40820"/>
 <keyword name="MPARC_list_array_free(char ***list)" id="mparc.c::MPARC_list_array_free_abc033ce1084b6c7e42ebfa2415ccd160" ref="d9/dd9/mparc_8c.htm#abc033ce1084b6c7e42ebfa2415ccd160"/>
 <keyword name="MPARC_list_array_free(char ***list)" id="mparc.h::MPARC_list_array_free_abc033ce1084b6c7e42ebfa2415ccd160" ref="d6/d08/mparc_8h.htm#abc033ce1084b6c7e42ebfa2415ccd160"/>
-<keyword name="MPARC_list_foreach(MXPSQL_MPARC_t *structure, int *cb_aborted, MXPSQL_MPARC_err(*callback)(MXPSQL_MPARC_t *, const char *))" id="mparc.c::MPARC_list_foreach_abdd468971dbef0efc6ff7b12a80ed11b" ref="d9/dd9/mparc_8c.htm#abdd468971dbef0efc6ff7b12a80ed11b"/>
-<keyword name="MPARC_list_foreach(MXPSQL_MPARC_t *structure, int *cb_aborted, MXPSQL_MPARC_err(*callback)(MXPSQL_MPARC_t *, const char *))" id="mparc.h::MPARC_list_foreach_abdd468971dbef0efc6ff7b12a80ed11b" ref="d6/d08/mparc_8h.htm#abdd468971dbef0efc6ff7b12a80ed11b"/>
+<keyword name="MPARC_list_foreach(MXPSQL_MPARC_t *structure, bool *cb_aborted, MXPSQL_MPARC_err(*callback)(MXPSQL_MPARC_t *, const char *, void *), void *cb_ctx)" id="mparc.c::MPARC_list_foreach_a447ddf276fb30e5722e79b5997814271" ref="d9/dd9/mparc_8c.htm#a447ddf276fb30e5722e79b5997814271"/>
+<keyword name="MPARC_list_foreach(MXPSQL_MPARC_t *structure, bool *cb_aborted, MXPSQL_MPARC_err(*callback)(MXPSQL_MPARC_t *, const char *, void *), void *cb_ctx)" id="mparc.h::MPARC_list_foreach_a447ddf276fb30e5722e79b5997814271" ref="d6/d08/mparc_8h.htm#a447ddf276fb30e5722e79b5997814271"/>
 <keyword name="MPARC_list_iterator_destroy(MXPSQL_MPARC_iter_t **iterator)" id="mparc.c::MPARC_list_iterator_destroy_af69cf2c23d9a3d0f4a175c7c1dc8af2e" ref="d9/dd9/mparc_8c.htm#af69cf2c23d9a3d0f4a175c7c1dc8af2e"/>
 <keyword name="MPARC_list_iterator_destroy(MXPSQL_MPARC_iter_t **iterator)" id="mparc.h::MPARC_list_iterator_destroy_af69cf2c23d9a3d0f4a175c7c1dc8af2e" ref="d6/d08/mparc_8h.htm#af69cf2c23d9a3d0f4a175c7c1dc8af2e"/>
 <keyword name="MPARC_list_iterator_init(MXPSQL_MPARC_t **structure, MXPSQL_MPARC_iter_t **iterator)" id="mparc.c::MPARC_list_iterator_init_a984c02b5c1b6a21cfbe863364f78208b" ref="d9/dd9/mparc_8c.htm#a984c02b5c1b6a21cfbe863364f78208b"/>
@@ -428,10 +452,10 @@
 <keyword name="MPARC_malloc(MXPSQL_MPARC_uint_repr_t size)" id="mparc.c::MPARC_malloc_a397599ed1504ab0b9ad7a5c945c359ba" ref="d9/dd9/mparc_8c.htm#a397599ed1504ab0b9ad7a5c945c359ba"/>
 <keyword name="MPARC_malloc(MXPSQL_MPARC_uint_repr_t size)" id="mparc.h::MPARC_malloc_a397599ed1504ab0b9ad7a5c945c359ba" ref="d6/d08/mparc_8h.htm#a397599ed1504ab0b9ad7a5c945c359ba"/>
 <keyword name="MPARC_memdup(const void *src, size_t len)" id="mparc.h::MPARC_memdup_ad0e52e267c7096327e368e249c1f51fd" ref="d6/d08/mparc_8h.htm#ad0e52e267c7096327e368e249c1f51fd"/>
-<keyword name="MPARC_MXPSQL_MPARC_iter_t_sizeof()" id="mparc.c::MPARC_MXPSQL_MPARC_iter_t_sizeof_a2666d0b1108a0727558b73f2e5ad53d1" ref="d9/dd9/mparc_8c.htm#a2666d0b1108a0727558b73f2e5ad53d1"/>
-<keyword name="MPARC_MXPSQL_MPARC_iter_t_sizeof()" id="mparc.h::MPARC_MXPSQL_MPARC_iter_t_sizeof_a2666d0b1108a0727558b73f2e5ad53d1" ref="d6/d08/mparc_8h.htm#a2666d0b1108a0727558b73f2e5ad53d1"/>
-<keyword name="MPARC_MXPSQL_MPARC_t_sizeof()" id="mparc.c::MPARC_MXPSQL_MPARC_t_sizeof_aab06ea978e0ab92f8b5086607fa9e4f4" ref="d9/dd9/mparc_8c.htm#aab06ea978e0ab92f8b5086607fa9e4f4"/>
-<keyword name="MPARC_MXPSQL_MPARC_t_sizeof()" id="mparc.h::MPARC_MXPSQL_MPARC_t_sizeof_aab06ea978e0ab92f8b5086607fa9e4f4" ref="d6/d08/mparc_8h.htm#aab06ea978e0ab92f8b5086607fa9e4f4"/>
+<keyword name="MPARC_MXPSQL_MPARC_iter_t_sizeof(void)" id="mparc.c::MPARC_MXPSQL_MPARC_iter_t_sizeof_aca83479a1ec5c46392d5d0891eecc6ca" ref="d9/dd9/mparc_8c.htm#aca83479a1ec5c46392d5d0891eecc6ca"/>
+<keyword name="MPARC_MXPSQL_MPARC_iter_t_sizeof(void)" id="mparc.h::MPARC_MXPSQL_MPARC_iter_t_sizeof_aca83479a1ec5c46392d5d0891eecc6ca" ref="d6/d08/mparc_8h.htm#aca83479a1ec5c46392d5d0891eecc6ca"/>
+<keyword name="MPARC_MXPSQL_MPARC_t_sizeof(void)" id="mparc.c::MPARC_MXPSQL_MPARC_t_sizeof_a8ba40404c2a0ac26ee34350820770194" ref="d9/dd9/mparc_8c.htm#a8ba40404c2a0ac26ee34350820770194"/>
+<keyword name="MPARC_MXPSQL_MPARC_t_sizeof(void)" id="mparc.h::MPARC_MXPSQL_MPARC_t_sizeof_a8ba40404c2a0ac26ee34350820770194" ref="d6/d08/mparc_8h.htm#a8ba40404c2a0ac26ee34350820770194"/>
 <keyword name="MPARC_NOCRYPT" id="mparc.h::MPARC_NOCRYPT_ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77"/>
 <keyword name="MPARC_NOTARCHIVE" id="mparc.h::MPARC_NOTARCHIVE_ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca"/>
 <keyword name="MPARC_NULL" id="mparc.h::MPARC_NULL_ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca54a5368a9871f090425cd4c1dd2d2385"/>
@@ -444,8 +468,8 @@
 <keyword name="MPARC_parse_filestream(MXPSQL_MPARC_t *structure, FILE *fpstream)" id="mparc.h::MPARC_parse_filestream_a10a53d66991368ae2ae051f485d8a728" ref="d6/d08/mparc_8h.htm#a10a53d66991368ae2ae051f485d8a728"/>
 <keyword name="MPARC_parse_str(MXPSQL_MPARC_t *structure, const char *stringy)" id="mparc.c::MPARC_parse_str_a29a82ea12bfbf7210256c1264aedb091" ref="d9/dd9/mparc_8c.htm#a29a82ea12bfbf7210256c1264aedb091"/>
 <keyword name="MPARC_parse_str(MXPSQL_MPARC_t *structure, const char *stringy)" id="mparc.h::MPARC_parse_str_a29a82ea12bfbf7210256c1264aedb091" ref="d6/d08/mparc_8h.htm#a29a82ea12bfbf7210256c1264aedb091"/>
-<keyword name="MPARC_parse_str_advance(MXPSQL_MPARC_t *structure, const char *Stringy, int erronduplicate)" id="mparc.c::MPARC_parse_str_advance_a7ecda162d4ed1a9819f12dbb8b7c3eba" ref="d9/dd9/mparc_8c.htm#a7ecda162d4ed1a9819f12dbb8b7c3eba"/>
-<keyword name="MPARC_parse_str_advance(MXPSQL_MPARC_t *structure, const char *stringy, int erronduplicate)" id="mparc.h::MPARC_parse_str_advance_ad7a0a19abd782ef9668e59c252722dff" ref="d6/d08/mparc_8h.htm#ad7a0a19abd782ef9668e59c252722dff"/>
+<keyword name="MPARC_parse_str_advance(MXPSQL_MPARC_t *structure, const char *StegoStringy, bool erronduplicate, bool sensitive)" id="mparc.c::MPARC_parse_str_advance_a6e0d911cce6085d4763c0d957dcef45e" ref="d9/dd9/mparc_8c.htm#a6e0d911cce6085d4763c0d957dcef45e"/>
+<keyword name="MPARC_parse_str_advance(MXPSQL_MPARC_t *structure, const char *stringy, bool erronduplicate, bool sensitive)" id="mparc.h::MPARC_parse_str_advance_a4c8cae502d2f392be252b78546ab274f" ref="d6/d08/mparc_8h.htm#a4c8cae502d2f392be252b78546ab274f"/>
 <keyword name="MPARC_peek_file(MXPSQL_MPARC_t *structure, const char *filename, unsigned char **bout, MXPSQL_MPARC_uint_repr_t *sout)" id="mparc.c::MPARC_peek_file_a677f04c3376fd501c2d8aaa19f147984" ref="d9/dd9/mparc_8c.htm#a677f04c3376fd501c2d8aaa19f147984"/>
 <keyword name="MPARC_peek_file(MXPSQL_MPARC_t *structure, const char *filename, unsigned char **bout, MXPSQL_MPARC_uint_repr_t *sout)" id="mparc.h::MPARC_peek_file_a677f04c3376fd501c2d8aaa19f147984" ref="d6/d08/mparc_8h.htm#a677f04c3376fd501c2d8aaa19f147984"/>
 <keyword name="MPARC_perror(MXPSQL_MPARC_err err)" id="mparc.c::MPARC_perror_ae5d11cf031a7370f20dd6861746208df" ref="d9/dd9/mparc_8c.htm#ae5d11cf031a7370f20dd6861746208df"/>
@@ -460,21 +484,17 @@
 <keyword name="MPARC_push_filestream(MXPSQL_MPARC_t *structure, FILE *filestream, const char *filename)" id="mparc.h::MPARC_push_filestream_a5ef974df9809818436802bf6e3a2588e" ref="d6/d08/mparc_8h.htm#a5ef974df9809818436802bf6e3a2588e"/>
 <keyword name="MPARC_push_ufilestr(MXPSQL_MPARC_t *structure, const char *filename, unsigned char *ustringc, MXPSQL_MPARC_uint_repr_t sizy)" id="mparc.c::MPARC_push_ufilestr_a8639e49b467fd1322682fc75df57a83c" ref="d9/dd9/mparc_8c.htm#a8639e49b467fd1322682fc75df57a83c"/>
 <keyword name="MPARC_push_ufilestr(MXPSQL_MPARC_t *structure, const char *filename, unsigned char *ustringc, MXPSQL_MPARC_uint_repr_t sizy)" id="mparc.h::MPARC_push_ufilestr_a8639e49b467fd1322682fc75df57a83c" ref="d6/d08/mparc_8h.htm#a8639e49b467fd1322682fc75df57a83c"/>
-<keyword name="MPARC_push_ufilestr_advance(MXPSQL_MPARC_t *structure, const char *filename, int stripdir, int overwrite, unsigned char *ustringc, MXPSQL_MPARC_uint_repr_t sizy)" id="mparc.c::MPARC_push_ufilestr_advance_a84ac2fc933b618d9a7645f29b07fdbf8" ref="d9/dd9/mparc_8c.htm#a84ac2fc933b618d9a7645f29b07fdbf8"/>
-<keyword name="MPARC_push_ufilestr_advance(MXPSQL_MPARC_t *structure, const char *filename, int stripdir, int overwrite, unsigned char *ustringc, MXPSQL_MPARC_uint_repr_t sizy)" id="mparc.h::MPARC_push_ufilestr_advance_a84ac2fc933b618d9a7645f29b07fdbf8" ref="d6/d08/mparc_8h.htm#a84ac2fc933b618d9a7645f29b07fdbf8"/>
+<keyword name="MPARC_push_ufilestr_advance(MXPSQL_MPARC_t *structure, const char *filename, bool stripdir, bool overwrite, unsigned char *ustringc, MXPSQL_MPARC_uint_repr_t sizy)" id="mparc.c::MPARC_push_ufilestr_advance_af8926502591fce41f1b6313e004df11c" ref="d9/dd9/mparc_8c.htm#af8926502591fce41f1b6313e004df11c"/>
+<keyword name="MPARC_push_ufilestr_advance(MXPSQL_MPARC_t *structure, const char *filename, bool stripdir, bool overwrite, unsigned char *ustringc, MXPSQL_MPARC_uint_repr_t sizy)" id="mparc.h::MPARC_push_ufilestr_advance_af8926502591fce41f1b6313e004df11c" ref="d6/d08/mparc_8h.htm#af8926502591fce41f1b6313e004df11c"/>
 <keyword name="MPARC_push_voidfile(MXPSQL_MPARC_t *structure, const char *filename, void *buffer_guffer, MXPSQL_MPARC_uint_repr_t sizey)" id="mparc.c::MPARC_push_voidfile_a1e326d95791906a75532c4ef8be59d9a" ref="d9/dd9/mparc_8c.htm#a1e326d95791906a75532c4ef8be59d9a"/>
 <keyword name="MPARC_push_voidfile(MXPSQL_MPARC_t *structure, const char *filename, void *buffer_guffer, MXPSQL_MPARC_uint_repr_t sizy)" id="mparc.h::MPARC_push_voidfile_a4de3a2301aa982b61406fa9022e2fd88" ref="d6/d08/mparc_8h.htm#a4de3a2301aa982b61406fa9022e2fd88"/>
 <keyword name="MPARC_QSORT_MODE" id="mparc.c::MPARC_QSORT_MODE_a9b1621e1582ea29e5168ef97ac544868" ref="d9/dd9/mparc_8c.htm#a9b1621e1582ea29e5168ef97ac544868"/>
-<keyword name="MPARC_query(MXPSQL_MPARC_t *structure, char ***output, const char *command,...)" id="mparc.c::MPARC_query_a70f4059ce1c060481d68b988364e7a64" ref="d9/dd9/mparc_8c.htm#a70f4059ce1c060481d68b988364e7a64"/>
-<keyword name="MPARC_query(MXPSQL_MPARC_t *structure, char ***output, const char *command,...)" id="mparc.h::MPARC_query_a70f4059ce1c060481d68b988364e7a64" ref="d6/d08/mparc_8h.htm#a70f4059ce1c060481d68b988364e7a64"/>
-<keyword name="MPARC_query_vlist(MXPSQL_MPARC_t *structure, char ***output, const char *command, va_list vlist)" id="mparc.c::MPARC_query_vlist_a68975942da537c7c347d8c5830f80de9" ref="d9/dd9/mparc_8c.htm#a68975942da537c7c347d8c5830f80de9"/>
-<keyword name="MPARC_query_vlist(MXPSQL_MPARC_t *structure, char ***output, const char *command, va_list vlist)" id="mparc.h::MPARC_query_vlist_a68975942da537c7c347d8c5830f80de9" ref="d6/d08/mparc_8h.htm#a68975942da537c7c347d8c5830f80de9"/>
-<keyword name="MPARC_readdir(MXPSQL_MPARC_t *structure, const char *srcdir, int recursive, int(*listdir)(const char *, int, char **))" id="mparc.c::MPARC_readdir_a9c3319d2799c4c27be4213af3c4059de" ref="d9/dd9/mparc_8c.htm#a9c3319d2799c4c27be4213af3c4059de"/>
-<keyword name="MPARC_readdir(MXPSQL_MPARC_t *structure, const char *srcdir, int recursive, int(*listdir)(const char *, int, char **))" id="mparc.h::MPARC_readdir_a9c3319d2799c4c27be4213af3c4059de" ref="d6/d08/mparc_8h.htm#a9c3319d2799c4c27be4213af3c4059de"/>
+<keyword name="MPARC_readdir(MXPSQL_MPARC_t *structure, const char *srcdir, bool recursive, int(*listdir)(const char *, bool, char ***, void *), void *listdir_ctx)" id="mparc.c::MPARC_readdir_a5cb6ee181b1984f1f5c74915971083b8" ref="d9/dd9/mparc_8c.htm#a5cb6ee181b1984f1f5c74915971083b8"/>
+<keyword name="MPARC_readdir(MXPSQL_MPARC_t *structure, const char *srcdir, bool recursive, int(*listdir)(const char *, bool, char ***, void *), void *listdir_ctx)" id="mparc.h::MPARC_readdir_a5cb6ee181b1984f1f5c74915971083b8" ref="d6/d08/mparc_8h.htm#a5cb6ee181b1984f1f5c74915971083b8"/>
 <keyword name="MPARC_realloc(void *oldmem, MXPSQL_MPARC_uint_repr_t newsize)" id="mparc.c::MPARC_realloc_a1bbdf1d27c7dbf8c222535770fb5323f" ref="d9/dd9/mparc_8c.htm#a1bbdf1d27c7dbf8c222535770fb5323f"/>
 <keyword name="MPARC_realloc(void *oldmem, MXPSQL_MPARC_uint_repr_t newsize)" id="mparc.h::MPARC_realloc_a1bbdf1d27c7dbf8c222535770fb5323f" ref="d6/d08/mparc_8h.htm#a1bbdf1d27c7dbf8c222535770fb5323f"/>
-<keyword name="MPARC_rename_file(MXPSQL_MPARC_t *structure, int overwrite, const char *oldname, const char *newname)" id="mparc.c::MPARC_rename_file_aa3d5a4a1236c55430857988405a43ec4" ref="d9/dd9/mparc_8c.htm#aa3d5a4a1236c55430857988405a43ec4"/>
-<keyword name="MPARC_rename_file(MXPSQL_MPARC_t *structure, int overwrite, const char *oldname, const char *newname)" id="mparc.h::MPARC_rename_file_aa3d5a4a1236c55430857988405a43ec4" ref="d6/d08/mparc_8h.htm#aa3d5a4a1236c55430857988405a43ec4"/>
+<keyword name="MPARC_rename_file(MXPSQL_MPARC_t *structure, bool overwrite, const char *oldname, const char *newname)" id="mparc.c::MPARC_rename_file_ad19d14cc148f3b983b1c3a8f38d6720d" ref="d9/dd9/mparc_8c.htm#ad19d14cc148f3b983b1c3a8f38d6720d"/>
+<keyword name="MPARC_rename_file(MXPSQL_MPARC_t *structure, bool overwrite, const char *oldname, const char *newname)" id="mparc.h::MPARC_rename_file_ad19d14cc148f3b983b1c3a8f38d6720d" ref="d6/d08/mparc_8h.htm#ad19d14cc148f3b983b1c3a8f38d6720d"/>
 <keyword name="MPARC_sfperror(MXPSQL_MPARC_err err, FILE *filepstream, const char *emsg)" id="mparc.c::MPARC_sfperror_acb33c06446b2c32a15eaead47728808c" ref="d9/dd9/mparc_8c.htm#acb33c06446b2c32a15eaead47728808c"/>
 <keyword name="MPARC_sfperror(MXPSQL_MPARC_err err, FILE *filepstream, const char *emsg)" id="mparc.h::MPARC_sfperror_acb33c06446b2c32a15eaead47728808c" ref="d6/d08/mparc_8h.htm#acb33c06446b2c32a15eaead47728808c"/>
 <keyword name="MPARC_strdup(const char *src)" id="mparc.h::MPARC_strdup_a1594c0be7e62d1541f058feb7cbfa262" ref="d6/d08/mparc_8h.htm#a1594c0be7e62d1541f058feb7cbfa262"/>
@@ -504,6 +524,7 @@
 <keyword name="MPARC_FERROR" id="mparc.h::MPARC_FERROR_ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa" ref="d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100caef886506aee9318adff452b136f0abfa"/>
 <keyword name="MXPSQL_MPARC_err" id="mparc.h::MXPSQL_MPARC_err_a0b43069d31ce01c4447ed5207aec2b55" ref="d6/d08/mparc_8h.htm#a0b43069d31ce01c4447ed5207aec2b55"/>
 <keyword name="MXPSQL_MPARC_iter_t" id="mparc.h::MXPSQL_MPARC_iter_t_a07c83537b86c7bd755c69f0dc234d291" ref="d6/d08/mparc_8h.htm#a07c83537b86c7bd755c69f0dc234d291"/>
+<keyword name="MXPSQL_MPARC_preprocessor_func_t)(char *, char **)" id="mparc.h::MXPSQL_MPARC_preprocessor_func_t_ae73faf5f9b5b871aaef340c5c8e98b18" ref="d6/d08/mparc_8h.htm#ae73faf5f9b5b871aaef340c5c8e98b18"/>
 <keyword name="MXPSQL_MPARC_t" id="mparc.h::MXPSQL_MPARC_t_af86786ca7b4ba1464c419b034cd238d3" ref="d6/d08/mparc_8h.htm#af86786ca7b4ba1464c419b034cd238d3"/>
 <keyword name="MXPSQL_MPARC_uint_repr_t" id="mparc.h::MXPSQL_MPARC_uint_repr_t_a6dd4c5df4f9e32a9e863fc789ebaddfb" ref="d6/d08/mparc_8h.htm#a6dd4c5df4f9e32a9e863fc789ebaddfb"/>
 <keyword name="STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25" id="mparc.c::STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25_a5a4364cfb3e1d0c4e1ee461bfef7875c" ref="d9/dd9/mparc_8c.htm#a5a4364cfb3e1d0c4e1ee461bfef7875c"/>
@@ -522,6 +543,7 @@
 <file>d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm</file>
 <file>d6/d08/mparc_8h.htm</file>
 <file>d6/d08/mparc_8h_source.htm</file>
+<file>d7/d88/md__s_e_c_u_r_i_t_y.htm</file>
 <file>d9/dd9/mparc_8c.htm</file>
 <file>da/d2a/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___iter.htm</file>
 <file>dd/de9/mparc_8hpp.htm</file>
@@ -556,6 +578,7 @@
 <file>nav_h.png</file>
 <file>nav_hd.png</file>
 <file>open.png</file>
+<file>pages.htm</file>
 <file>search/close.svg</file>
 <file>search/mag.svg</file>
 <file>search/mag_d.svg</file>

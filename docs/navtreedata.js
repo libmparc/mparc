@@ -32,6 +32,11 @@ var NAVTREE =
       [ "How can I implement this format in my own method?", "index.htm#autotoc_md5", null ],
       [ "How can I make bindings to my own language?", "index.htm#autotoc_md6", null ]
     ] ],
+    [ "Security Policy", "d7/d88/md__s_e_c_u_r_i_t_y.htm", [
+      [ "Supported Versions", "d7/d88/md__s_e_c_u_r_i_t_y.htm#autotoc_md8", null ],
+      [ "What Constitutes a Vulnerability", "d7/d88/md__s_e_c_u_r_i_t_y.htm#autotoc_md9", null ],
+      [ "Reporting a Vulnerability", "d7/d88/md__s_e_c_u_r_i_t_y.htm#autotoc_md10", null ]
+    ] ],
     [ "Data Structures", "annotated.htm", [
       [ "Data Structures", "annotated.htm", "annotated_dup" ],
       [ "Data Structure Index", "classes.htm", null ],

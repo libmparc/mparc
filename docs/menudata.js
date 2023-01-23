@@ -24,6 +24,7 @@
 */
 var menudata={children:[
 {text:"Main Page",url:"index.htm"},
+{text:"Related Pages",url:"pages.htm"},
 {text:"Data Structures",url:"annotated.htm",children:[
 {text:"Data Structures",url:"annotated.htm"},
 {text:"Data Structure Index",url:"classes.htm"},
