@@ -20,6 +20,9 @@ MPAR archive reimplemented in C instead of C++, more advanced than before.
 - Versatile! You can make it into a key value database store somehow. Can store literal bytes of structs (uh oh endian problems)!
 - Built in encryption
 - Extensible format;You can add extra fields to the archive
+- You can sneak this pass censorship as this is not a widely known format.  
+  The format looks like a normal text file even if censorship is in place.
+  How do they know if the file is an archive or a random text file that looks like it?
 
 
 ### Why shouldn't I use this library and archive format
