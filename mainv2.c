@@ -473,6 +473,7 @@ optparse_long(struct optparse *options,
 
 /// Print out magic stuff
 /// @param key print this key with magic print
+/// @param ctx would be context, but unused
 void xhandler(const char* key, void* ctx){
     ((void)ctx);
     printf("x> %s\n", key);
@@ -480,6 +481,7 @@ void xhandler(const char* key, void* ctx){
 
 /// Sudo make me a directory
 /// @param dir directory to make
+/// @param ctx would be context, but unused
 int mkdirer(char* dir, void* ctx){
     ((void)ctx);
     #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))

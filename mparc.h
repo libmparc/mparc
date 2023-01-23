@@ -579,6 +579,7 @@ extern "C"{
      *
      *
      * Example of the mk_dir function:  
+     * ```
      *      int mkdirer(char* dir, void* ctx){
      *          ((void)ctx);
      *          #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
@@ -587,6 +588,7 @@ extern "C"{
      *          return mkdir(dir, 0777);
      *          #endif
      *      }
+     * ```
      */
     MXPSQL_MPARC_err MPARC_extract_advance(MXPSQL_MPARC_t* structure, const char* destdir, char** dir2make, void (*on_item)(const char*, void*), int (*mk_dir)(char*, void*), void* on_item_ctx, void* mk_dir_ctx);
     /**
@@ -627,6 +629,7 @@ extern "C"{
      * 
      * 
      * Example for listdir (POSIX only for now, also to be continued):
+     * ```
      *      int list_me_dir_recur(const char* path, bool recursive, char** output, void* ctx, size_t block_size){
      *          ((void)ctx);
      *          DIR* dir;
@@ -655,6 +658,7 @@ extern "C"{
      *          *output
      *          return list_me_dir_recur(path, recursive, buff, ctx);
      *      }
+     * ```
      */
     MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, const char* srcdir, bool recursive, int (*listdir)(const char*, bool, char***, void*), void* listdir_ctx);
 

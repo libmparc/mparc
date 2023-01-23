@@ -149,6 +149,22 @@ namespace MXPSQL{
              * @return false I am not OK
              */
             bool isOk(){return (this->getErr() == MPARC_OK);}
+
+            /**
+             * @brief Get a string representation in C++
+             * 
+             * @return std::string the string representation
+             */
+            std::string str(){
+                char* str = NULL;
+                MPARC_strerror(this->getErr(), &str);
+                if(!str){
+                    return "Unable to get error string (" + std::to_string(this->getErr()) + ")";
+                }
+                std::string cxxstr = str;
+                free(str);
+                return cxxstr;
+            }
         };
 
         /**
@@ -324,7 +340,6 @@ namespace MXPSQL{
             /**
             * @brief Plagiarised from mparc.h: Control cipher encryption;One function to control two ciphers (horrible design)
             * 
-            * @param structure the target structure
             * @param SetXOR Indicate if you want to set XOR Encryption
             * @param XORKeyIn XOR Key Input
             * @param XORKeyLengthIn XOR Key Input Length
@@ -346,13 +361,13 @@ namespace MXPSQL{
             * @note Having the wrong encryption key will cause garbage data.
             */
             MPARC_Error cipher(
-                int SetXORCipher, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,
-                int SetROTCipher, int* ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int** ROTKeyOut, MXPSQL_MPARC_uint_repr_t* ROTKeyLengthOut
+                bool SetXOR, unsigned char* XORKeyIn, MXPSQL_MPARC_uint_repr_t XORKeyLengthIn, unsigned char** XORKeyOut, MXPSQL_MPARC_uint_repr_t* XORKeyLengthOut,
+                bool SetROT, int* ROTKeyIn, MXPSQL_MPARC_uint_repr_t ROTKeyLengthIn, int** ROTKeyOut, MXPSQL_MPARC_uint_repr_t* ROTKeyLengthOut
             ){
                 return MPARC_Error(
                     MPARC_cipher(this->getInstance(),
-                        (SetXORCipher ? 1 : 0), XORKeyIn, XORKeyLengthIn, XORKeyOut, XORKeyLengthOut,
-                        (SetROTCipher ? 1 : 0), ROTKeyIn, ROTKeyLengthIn, ROTKeyOut, ROTKeyLengthOut
+                        SetXOR, XORKeyIn, XORKeyLengthIn, XORKeyOut, XORKeyLengthOut,
+                        SetROT, ROTKeyIn, ROTKeyLengthIn, ROTKeyOut, ROTKeyLengthOut
                     )
                 );
             }
@@ -564,6 +579,8 @@ namespace MXPSQL{
              * @param dir2make What directory should I make?
              * @param on_item Called everytime a file is to be extracted
              * @param mk_dir Make me a directory function
+             * @param on_item_ctx You set this. Passed to the void* of on_item
+             * @param mk_dir_ctx Context that you set. Passed to the void* of mk_dir
              * @return MPARC_Error Success?
              */
             MPARC_Error extract(std::string dest_dir, char** dir2make, void (*on_item)(const char*, void*), int (*mk_dir)(char*, void*), void* on_item_ctx, void* mk_dir_ctx){
@@ -620,12 +637,13 @@ namespace MXPSQL{
              * @param str Content of the archive or filename
              * @param interpretation_mode How to interpret the archive, true to interpretet as the archive content, false to interpret as a filename
              * @param erroronduplicate Error out if a duplicate is found.
+             * @param sensitive Be strict when parsing? If strict, str must be exactly the archive, no other junk.
              * @return MPARC_Error Success?
              */
             MPARC_Error parse(std::string str, bool interpretation_mode, bool erroronduplicate, bool sensitive){
                 MXPSQL_MPARC_err err = MPARC_OK;
                 if(interpretation_mode){
-                    err = MPARC_parse_str_advance(this->getInstance(), str.c_str(), (erroronduplicate ? 1 : 0), sensitive);
+                    err = MPARC_parse_str_advance(this->getInstance(), str.c_str(), erroronduplicate, sensitive);
                 }
                 else{
                     std::ifstream strem(str, std::ios::binary);
