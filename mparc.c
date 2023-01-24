@@ -5329,25 +5329,21 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				}
 
 				#ifdef MPARC_QSORT 
-				if (listout_structure == NULL || listout_structure[lentracker] != NULL)
-				{
-					structure->my_err = MPARC_INTERNAL;
-					return structure->my_err; // Something bad happened (listout_structure shouldn't be NULL and listout_structure[lentracker] should be NULL)
-				}
-				qsort(listout_structure, lentracker, sizeof(*listout_structure), voidstrcmp);
+					#if MPARC_QSORT != -1
+					if (listout_structure == NULL || listout_structure[lentracker] != NULL)
+					{
+						structure->my_err = MPARC_INTERNAL;
+						return structure->my_err; // Something bad happened (listout_structure shouldn't be NULL and listout_structure[lentracker] should be NULL)
+					}
+					#endif
+					qsort(listout_structure, lentracker, sizeof(*listout_structure), voidstrcmp);
 				#endif
 
 				if(listout != NULL){
 						*listout = listout_structure;
 				}
 				else{
-					for(MXPSQL_MPARC_uint_repr_t i = 0; i < lentracker; i++){
-						if(listout_structure) {
-							if(listout_structure[i]) MPARC_free(listout_structure[i]);
-						}
-					}
-
-					if(listout_structure) MPARC_free(listout_structure);
+					MPARC_list_array_free(&listout_structure);
 				}
 
 				structure->my_err = MPARC_OK;
