@@ -5048,7 +5048,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		        if(recursive){
 		            struct stat stetbuf;
 		            if(stat(entry->d_name, &stetbuf) != 0) return 1;
-		            if(S_ISDIR(stet.st_mode)){
+		            if(S_ISDIR(stetbuf.st_mode)){
 		                // TBA
 		            }
 		        }
