@@ -5054,6 +5054,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		        }
 		    }
 		    closedir(dir);
+			return 0;
 			// #elif defined(MPARC_C_OS_WIN)
 			// if(path == NULL){
 			// 	return 0;
