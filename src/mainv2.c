@@ -479,18 +479,6 @@ void xhandler(const char* key, void* ctx){
     printf("x> %s\n", key);
 }
 
-/// Sudo make me a directory
-/// @param dir directory to make
-/// @param ctx would be context, but unused
-int mkdirer(char* dir, void* ctx){
-    ((void)ctx);
-    #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
-    return !CreateDirectoryA(dir, NULL);
-    #else
-    return mkdir(dir, 0777);
-    #endif
-}
-
 
 /// REPL mode
 /// @param argc argc
@@ -645,6 +633,12 @@ int cmdline_main(int argc, char* exe, char** argv){
         MPARC_CHECKXIT(err);
     }
     else if(mode == 'x'){
+        if(MPARC_mkdirer(NULL, NULL) == 10){
+            fprintf(stderr, "%s\n", "I cannot make the directory for extraction. The function to do so does not exists.");
+            ex = EXIT_FAILURE;
+            goto exit_handler;
+        }
+
         err = MPARC_parse_filename(archive, filename);
         MPARC_CHECKXIT(err);
         arg = optparse_arg(&parser);
@@ -654,7 +648,7 @@ int cmdline_main(int argc, char* exe, char** argv){
             goto exit_handler;
         }
 
-        err = MPARC_extract_advance(archive, arg, NULL, xhandler, mkdirer, NULL, NULL);
+        err = MPARC_extract_advance(archive, arg, NULL, xhandler, MPARC_mkdirer, NULL, NULL);
         MPARC_CHECKXIT(err);
     }
     else if(mode == 'd'){

@@ -19,15 +19,6 @@ void xhandler(const char* key, void* ctx){
     printf("x> %s\n", key);
 }
 
-int mkdirer(char* dir, void* ctx){
-    ((void)ctx);
-    #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
-    return !CreateDirectoryA(dir, NULL);
-    #else
-    return mkdir(dir, 0777);
-    #endif
-}
-
 int main(int argc, char** argv){
     MXPSQL_MPARC_t* archive = NULL;
     MXPSQL_MPARC_err err = MPARC_OK;
@@ -181,9 +172,15 @@ int main(int argc, char** argv){
             goto exit_handler;
         }
 
+        if(MPARC_mkdirer(NULL, NULL) == 10){
+            fprintf(stderr, "%s\n", "I cannot make the directory for extraction. The function to do so does not exists.");
+            exit_c = EXIT_FAILURE;
+            goto exit_handler;
+        }
+
         if(1){ // use new extract, it is much user friendlier
             // new extract
-            err = MPARC_extract_advance(archive, argv[3], NULL, xhandler, mkdirer, NULL, NULL);
+            err = MPARC_extract_advance(archive, argv[3], NULL, xhandler, MPARC_mkdirer, NULL, NULL);
             if(err != MPARC_OK){
                 MPARC_perror(err);
                 exit_c = EXIT_FAILURE;
@@ -198,7 +195,7 @@ int main(int argc, char** argv){
             while(run == 1){
                 errstat = MPARC_extract(archive, argv[3], &d2m);
                 if(errstat == MPARC_OPPART){
-                    if(mkdirer(d2m, NULL) != 0){
+                    if(MPARC_mkdirer(d2m, NULL) != 0){
                         fprintf(stderr, "Failed to make directory\n");
                         exit_c = EXIT_FAILURE;
                         goto exit_handler;

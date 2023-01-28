@@ -67,7 +67,7 @@ clean:
 	rm -rf .deps/ mparc-*/ 
 	rm -rf missing install-sh depcomp compile config.sub config.guess
 
-	rm -rf *.sconssign.dblite .sconssign.dblite
+	rm -rf *.sconsign.dblite .sconsign.dblite
 
 	rm -rf *.tar.* *.tar
 

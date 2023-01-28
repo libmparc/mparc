@@ -194,7 +194,7 @@ extern "C"{
          * @brief No encryption is set
          * 
          */
-        MPARC_NOCRYPT  =8,
+        MPARC_NOCRYPT  = 8,
 
         /**
          * @brief Failure to construct archive
@@ -605,38 +605,38 @@ extern "C"{
 
     /**
      * @brief Read a directory into the structure
-     * 
+     *
      * @param structure the target structure
      * @param srcdir the source directory to read from
      * @param recursive read from subdirectories if given true
      * @param listdir function to list a directory, shall not be NULL or else it returns an error. This is the function that handles listing the file and recursion.
      * @param listdir_ctx context value that is passed to the void* parameter of listdir
      * @return MXPSQL_MPARC_err error status of reading
-     * 
+     *
      * @details
-     * 
+     *
      * > listdir Prototyping
-     * 
+     *
      * the first parameter of the listdir function is the current directory that should be read from
-     * 
+     *
      * the second parameter indicates if it should be recursive, its a boolean
-     * 
+     *
      * the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc'ed or Malloc'ed (pls Calloc it) (Also please use the MPARC allocation functions instead of the standard libc ones) as it relies on finding NULL and the array getting freed
-     * 
+     *
      * the fourth parameter is context, it's user defined, is set by putting a value in the listdir_ctx parameter
-     * 
+     *
      * the return value should always be 0 for success, other values indicate failure
-     * 
-     * 
+     *
+     *
      * Example for listdir (POSIX only for now, also to be continued):
      * ```
-     *      int list_me_dir_recur(const char* path, bool recursive, char** output, void* ctx, size_t block_size){
+     *      int list_me_dir_recur(const char* path, bool recursive, char*** output, void* ctx, size_t block_size){
      *          ((void)ctx);
      *          DIR* dir;
      *          struct dirent* entry;
-     *          
+     *
      *          if(!(dir = opendir(path))) return 1;
-     *          
+     *
      *          while((entry = readdir(dir))){
      *              if(recursive){
      *                  struct stat stet;
@@ -646,21 +646,21 @@ extern "C"{
      *                  }
      *              }
      *          }
-     *          
+     *
      *          closedir(dir);
-     * 
+     *
      *          return 0;
      *      }
-     *      
+     *
      *      int list_me_dir(const char* path, bool recursive, char*** output, void* ctx){
      *          static size_t bloc_size = 5;
      *          char** buff = MPARC_calloc(5, sizeof(char*));
      *          *output
-     *          return list_me_dir_recur(path, recursive, buff, ctx);
+     *          return list_me_dir_recur(path, recursive, buff, ctx, block_size);
      *      }
      * ```
      */
-    MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, const char* srcdir, bool recursive, int (*listdir)(const char*, bool, char***, void*), void* listdir_ctx);
+    MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t *structure, const char *srcdir, bool recursive, int (*listdir)(const char*, bool, char***, void*), void *listdir_ctx);
 
     /**
      * @brief Parse the archive into the structure with extra flags
@@ -785,16 +785,38 @@ extern "C"{
      */
     size_t MPARC_MXPSQL_MPARC_iter_t_sizeof(void);
 
+    // Platform dependent functions with a graceful error handling
+    /**
+     * @brief Make a directory.
+     * 
+     * @param dir directory to make. If null, enters a check mode (returns 10 if not available, else 0 without doing anything)
+     * @param ctx context, unused
+     * @return int Is it successful? Will return 10 if a fallback is used. 0 if successful, 1 if not.
+     */
+    int MPARC_mkdirer(char* dir, void* ctx);
+    /**
+     * @brief List whatever is in that directory
+     *
+     * @param path directory to list. If null, enters a check mode (returns 10 if not available, else 0 without doing anything)
+     * @param recursive recursively list the directory?
+     * @param output What is found there, excluding files. Guranteed to be null terminated.
+     * @param ctx context, unused
+     * @return int Is it successful? Will return 10 if a fallback is used. 0 if successful, 1 if not.
+     * 
+     * @note unfinished
+     */
+    int MPARC_list_me_dir(const char *path, bool recursive, char ***output, void *ctx);
+
     // Auxiliary function
     #ifdef MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
-    /**
-     * @brief My strlen for portability
-     * 
-     * @param str string to check
-     * @param maxlen max length
-     * @return size_t actual str length or maxlen
-     */
-    size_t MPARC_strnlen(const char* str, size_t maxlen);
+        /**
+         * @brief My strlen for portability
+         *
+         * @param str string to check
+         * @param maxlen max length
+         * @return size_t actual str length or maxlen
+         */
+        size_t MPARC_strnlen(const char *str, size_t maxlen);
     /**
      * @brief Strtok Safe Edition
      * 

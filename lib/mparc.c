@@ -88,6 +88,8 @@
 #include <windows.h>
 #elif defined(MPARC_C_OS_POSIX)
 #include <unistd.h>
+#include <dirent.h>
+#include <sys/stat.h>
 #endif
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -3791,7 +3793,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 				/* metadata */
 				/// version that is used when creating archive
 				STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION writerVersion; 
-				/// version that indicates what version of the archive is loaded
+				/// version that indicates what version of the archive is loaded, used for backwards compatibility
 				STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION loadedVersion; 
 
 				/// storage actually
@@ -5030,6 +5032,41 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		static MXPSQL_MPARC_err MPARC_i_parse_ender(MXPSQL_MPARC_t* structure, char* Stringy, bool sensitive){
 			return MPARC_i_verify_ender(structure, Stringy, sensitive);
 		}
+
+		static int list_me_dir_recur(const char* path, bool recursive, char*** output, void* ctx, size_t block_size){
+		    ((void)ctx);
+			#ifdef MPARC_C_OS_POSIX
+			((void)output);
+			((void)block_size);
+			if(path == NULL){
+				return 0;
+			}
+		    DIR* dir;
+		    struct dirent* entry;
+		    if(!(dir = opendir(path))) return 1;
+		    while((entry = readdir(dir))){
+		        if(recursive){
+		            struct stat stet;
+		            if(stat(entry->d_name, &statbuf) != 0) return 1;
+		            if(S_ISDIR(stet.st_mode)){
+		                // TBA
+		            }
+		        }
+		    }
+		    closedir(dir);
+			// #elif defined(MPARC_C_OS_WIN)
+			// if(path == NULL){
+			// 	return 0;
+			// }
+			// return 0;
+			#else
+			((void)path);
+			((void)recursive);
+			((void)output);
+			((void)block_size);
+			return 10;
+			#endif
+		}
 		
 
 
@@ -6255,8 +6292,8 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 			return MPARC_extract_advance(structure, destdir, dir2make, NULL, NULL, NULL, NULL);
 		}
 
-
-		MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t* structure, const char* srcdir, bool recursive, int (*listdir)(const char*, bool, char***, void*), void* listdir_ctx){
+		MXPSQL_MPARC_err MPARC_readdir(MXPSQL_MPARC_t *structure, const char *srcdir, bool recursive, int (*listdir)(const char *, bool, char ***, void *), void *listdir_ctx)
+		{
 			if(listdir == NULL) {
 				structure->my_err = MPARC_NULL;
 				return structure->my_err;
@@ -6265,7 +6302,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 			char** flists = NULL;
 			MXPSQL_MPARC_err err = MPARC_OK;
 
-			if(listdir(srcdir, recursive, &flists, listdir_ctx) != 0){
+			if((*listdir)(srcdir, recursive, &flists, listdir_ctx) != 0){
 				err = MPARC_FERROR;
 				goto main_errhandler;
 			}
@@ -6289,8 +6326,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 			if(flists) MPARC_free(flists);
 
 			return err;
-		}
-
+			}
 
 		MXPSQL_MPARC_err MPARC_parse_str_advance(MXPSQL_MPARC_t* structure, const char* StegoStringy, bool erronduplicate, bool sensitive){
 			MXPSQL_MPARC_err err = MPARC_OK;
@@ -6445,6 +6481,28 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 		size_t MPARC_MXPSQL_MPARC_iter_t_sizeof(void){
 			return sizeof(MXPSQL_MPARC_iter_t);
+		}
+
+		int MPARC_mkdirer(char* dir, void* ctx){
+    		((void)ctx);
+    		#if defined(MPARC_C_OS_WIN)
+			if (dir == NULL) return 0;
+    		return !CreateDirectoryA(dir, NULL);
+    		#elif defined(MPARC_C_OS_POSIX)
+			if(dir == NULL) return 0;
+    		return (mkdir(dir, 0777) == 0 ? 0 : 1);
+			#else
+			((void)dir);
+			return 10;
+    		#endif
+		}
+
+		int MPARC_list_me_dir(const char *path, bool recursive, char ***output, void *ctx){
+			static size_t bloc_size = 5;
+			char **buff = MPARC_calloc(5, sizeof(char *));
+			int status = list_me_dir_recur(path, recursive, &buff, ctx, bloc_size);
+			*output = buff;
+			return status;
 		}
 		/* END OF MAIN CODE */
 
