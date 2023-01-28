@@ -13,7 +13,7 @@
 #include <errno.h>
 
 #define MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
-#include "mparc.h"
+#include "../lib/mparc.h"
 
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

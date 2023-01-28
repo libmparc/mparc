@@ -7,9 +7,14 @@ CXXFLAGS=-std=c++11 $(LDFLAGS) $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt
 # Same thing, but above
 DMALLOC_PATH:=
 
-MAINcFILE=main.c
-MAINcFILE2=mainv2.c
-MAINcppFILE=cxmain.cpp
+LIBDIR=./lib
+LIBcFILE=$(LIBDIR)/mparc.c
+
+SRCDIR=./src
+MAINcFILE=$(SRCDIR)/main.c
+TMAINcFILE=$(SRCDIR)/tmain.c
+MAINcFILE2=$(SRCDIR)/mainv2.c
+MAINcppFILE=$(SRCDIR)/cxmain.cpp
 
 LIBO:=mparc.o
 LIBA:=libmparc.a
@@ -32,13 +37,13 @@ cls:
 
 
 $(LIBO): 
-	$(CC) $(CFLAGS) mparc.c $(LDLIBS) $(LDFLAGS) -c -o $(LIBO)
+	$(CC) $(CFLAGS) $(LIBcFILE) $(LDLIBS) $(LDFLAGS) -c -o $(LIBO)
 
 $(LIBA): mparc.o
 	ar rcs $(LIBA) $(LIBO) $(DMALLOC_PATH)
 
 t$(EXEC): $(LIBA)
-	$(CC) $(CFLAGS) t$(MAINcFILE) $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./t$(EXEC)
+	$(CC) $(CFLAGS) $(TMAINcFILE) $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./t$(EXEC)
 
 $(EXEC): $(LIBA)
 	$(CC) $(CFLAGS) $(MAINcFILE) $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(EXEC)
@@ -74,7 +79,7 @@ clean:
 
 
 mkar:
-	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./my.mpar -c ./*.c ./*.h ./[Mm]akefile.dumb ./configure.ac ./[Mm]akefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
+	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./my.mpar -c ./**/*.c ./**/*.h ./**/*.cpp ./**/*.hpp ./[Mm]akefile.dumb ./configure.ac ./[Mm]akefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
 	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./mini.mpar -c ./misc/lsarah.txt ./misc/logobase.txt
 	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./tiny.mpar -c ./misc/lsarah.txt
 

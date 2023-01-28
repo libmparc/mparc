@@ -5,7 +5,7 @@
 #include <string.h>
 
 #define MPARC_WANT_EXTERN_AUX_UTIL_FUNCTIONS
-#include "mparc.h"
+#include "../lib/mparc.h"
 
 /**
   * @file mparc.h

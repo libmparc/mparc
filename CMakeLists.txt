@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
 # add executable
-add_executable(MPARC mainv2.c mparc.c)
+add_executable(MPARC ./src/mainv2.c ./lib/mparc.c)
 
 # enforce post-target-definition property configurations
 set_property(TARGET MPARC PROPERTY C_STANDARD_REQUIRED TRUE)

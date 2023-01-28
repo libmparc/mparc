@@ -33,21 +33,21 @@ if TRUNIX:
 
 
 # library maker
-lib = env.StaticLibrary(target="mparc.a", source="mparc.c")
+lib = env.StaticLibrary(target="mparc.a", source="./lib/mparc.c")
 
 
 # binary builders
 if TRUNIX:
     l1 = lib.copy()
-    l1.insert(0, "main.c")
+    l1.insert(0, "./src/main.c")
     program1 = env.Program(target="mparc.exe", source=l1)
 
 if TRUNIX:
     l2 = lib.copy()
-    l2.insert(0, "mainv2.c")
+    l2.insert(0, "./src/mainv2.c")
     program2 = env.Program(target="mparc2.exe", source=l2)
 
 if TRUNIX:
     l3 = lib.copy()
-    l3.insert(0, "cxmain.cpp")
+    l3.insert(0, "./src/cxmain.cpp")
     program3 = env.Program(target="cxmparc.exe", source=l3)

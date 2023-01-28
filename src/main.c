@@ -12,7 +12,7 @@
 #endif
 #include <errno.h>
 
-#include "mparc.h"
+#include "../lib/mparc.h"
 
 void xhandler(const char* key, void* ctx){
     ((void)ctx);
