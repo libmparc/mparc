@@ -157,6 +157,7 @@ int main(int argc, char* argv[]){
     }
 
     {
+        printf("Constructing archive\n");
         MXPSQL_MPARC_err err = MPARC_construct_filename(archive, "ck_chorder.mpar");
         if(err != MPARC_OK){
             MPARC_perror(err);
