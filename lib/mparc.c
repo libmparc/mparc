@@ -4582,7 +4582,8 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 			// construction note tip compliant method
 			// also cleaner
-			{
+			// SCRATCH THAT ONE, I AM REDOING THIS
+			/* {
 				char magic_sep[] = {structure->magic_byte_sep, '\0'};
 				char* magic_saveptr;
 				char* magic_tok = MPARC_strtok_r(Stringy, magic_sep, &magic_saveptr);
@@ -4710,7 +4711,132 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 						}
 					}
 				}
+			} */
+
+			{
+				char magic_sep[] = {structure->magic_byte_sep, '\0'};
+				char* magic_saveptr;
+				char* magic_tok = MPARC_strtok_r(Stringy, magic_sep, &magic_saveptr);
+				if(magic_tok == NULL || strcmp(magic_tok, "") == 0 || strcmp(magic_saveptr, "") == 0){
+					structure->my_err = MPARC_NOTARCHIVE;
+					return structure->my_err;
+				} // magic number extraction
+
+				if(MPARC_strncmp(magic_tok, STANKY_MPAR_FILE_FORMAT_MAGIC_NUMBER_25, strlen(magic_tok)) != 0){ // bad magic number
+					structure->my_err = MPARC_NOTARCHIVE;
+					return structure->my_err;
+				}
+
+				{
+					char pre_entry_begin_sep[2] = {structure->begin_entry_marker, '\0'};
+					char* pre_entry_begin_saveptr;
+					char* peb_tok = MPARC_strtok_r(magic_saveptr, pre_entry_begin_sep, &pre_entry_begin_saveptr); // peb means pre entry begin
+					if(peb_tok == NULL || strcmp(peb_tok, "") == 0 || strcmp(peb_tok, "") == 0){
+						structure->my_err = MPARC_NOTARCHIVE;
+						return structure->my_err;
+					} // metadata extraction
+
+					{
+						char meta_sep_sep[2] = {structure->meta_sep, '\0'};
+						char* meta_saveptr;
+						char* meta_tok = MPARC_strtok_r(peb_tok, meta_sep_sep, &meta_saveptr);
+						if(meta_tok == NULL || strcmp(meta_tok, "") == 0 || strcmp(meta_saveptr, "") == 0){
+							structure->my_err = MPARC_NOTARCHIVE;
+							return structure->my_err;
+						}
+
+						{ // version parsing
+							char* version_str = meta_tok;
+						
+							int success = 0;
+							STANKY_MPAR_FILE_FORMAT_VERSION_REPRESENTATION lversion = MPARC_i_parse_version(version_str, &success);
+							if(success != 1){
+								structure->my_err = MPARC_NOTARCHIVE;
+								return structure->my_err;
+							}
+
+							if(lversion > version){
+								structure->my_err = MPARC_ARCHIVETOOSHINY;
+								return structure->my_err;
+							}
+
+							structure->loadedVersion = lversion;
+							if(structure->loadedVersion <= 0) { // version 0 is invalid
+								structure->my_err = MPARC_NOTARCHIVE;
+								return structure->my_err;
+							}
+						}
+
+						{ // Metadata parsers
+							char *js = meta_saveptr;
+							JsonNode *jsnode = json_decode(js);
+							if (!js)
+							{
+								structure->my_err = MPARC_NOTARCHIVE;
+								return structure->my_err;
+							}
+
+							{
+								bool ecrypt_found = false;
+								JsonNode *child_i = NULL;
+								json_foreach(child_i, jsnode)
+								{
+									if(structure->loadedVersion >= 1){
+										if (strcmp(child_i->key, "encrypt") == 0 && child_i->tag == JSON_ARRAY)
+										{ // check for encryption
+
+											ecrypt_found = true;
+											JsonNode *child_ecrypt = NULL;
+
+											json_foreach(child_ecrypt, child_i)
+											{
+
+												if (child_ecrypt->tag == JSON_STRING && child_ecrypt->key == NULL)
+												{
+													char *key = child_ecrypt->store.string;
+													unsigned char *XORStat = NULL;
+													int *ROTStat = NULL;
+
+													MPARC_cipher(structure,
+																 0, NULL, 0, &XORStat, NULL,
+																 0, NULL, 0, &ROTStat, NULL);
+
+													if (strcmp(key, "XOR") == 0 && XORStat == NULL)
+													{
+														structure->my_err = MPARC_NOCRYPT;
+														return structure->my_err;
+													}
+
+													if (strcmp(key, "ROT") == 0 && ROTStat == NULL)
+													{
+														structure->my_err = MPARC_NOCRYPT;
+														return structure->my_err;
+													}
+												}
+												else
+												{
+													structure->my_err = MPARC_NOTARCHIVE;
+													return structure->my_err;
+												}
+											}
+										}
+									}
+									else{
+										ecrypt_found = true;
+									}
+								}
+
+								if (!ecrypt_found)
+								{
+									structure->my_err = MPARC_NOCRYPT;
+									return structure->my_err;
+								}
+							}
+						}
+					}
+				}
 			}
+
 			return MPARC_OK;
 		}
 
@@ -5866,6 +5992,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 		 * 		Make sure to base64 your metadata entries to prevent issues with parsing.
 		 * 		
 		 * 		Parsing tips:
+		 * 			- Splitting order -
 		 * 			Split ';' from the whole archive to get the magic number first  
 		 * 			Then split '>' from to get the special info header  
 		 * 			The split '$' from the special info header to get the version and extra metadata.
