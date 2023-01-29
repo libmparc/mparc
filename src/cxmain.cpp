@@ -1,4 +1,4 @@
-#include "../lib/mparc.hpp"
+#include <mparc.hpp>
 #include <cstdlib>
 
 int main(int argc, char* argv[]){

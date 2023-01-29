@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _MXPSQL_MPARC_H
 #define _MXPSQL_MPARC_H
 
