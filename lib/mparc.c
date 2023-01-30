@@ -66,7 +66,9 @@
 #endif
 
 #if defined(MPARC_C_OS_POSIX)
-	#define _GNU_SOURCE
+	#ifndef _GNU_SOURCE
+		#define _GNU_SOURCE
+	#endif
 #endif
 
 #include <stdio.h>
@@ -3458,12 +3460,14 @@ static MXPSQL_MPARC_uint_repr_t strlcpy(char *dst, const char *src, MXPSQL_MPARC
 }
 
 // from glibc from https://github.com/lattera/glibc/blob/master/string/basename.c
+// also windows _splitpath
 char* MPARC_basename (const char *filename)
 {
 	char* p = NULL;
 	#if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
 	p = strrchr(filename, '/');
 	p = p ? p : strrchr(filename, '\\');
+	// _splitpath(filename, NULL, p, NULL, NULL) // not enuf time for splitpath
 	#else
 	p = strrchr (filename, '/');
 	#endif
@@ -3940,7 +3944,7 @@ static unsigned char* ROTCipher(const unsigned char * bytes_src, MXPSQL_MPARC_ui
 
 			const char* pfilename = NULL;
 			if(stripdir){
-				pfilename = MPARC_basename(pfilename);
+				pfilename = MPARC_basename(filename);
 			}
 			else{
 				pfilename = filename;
