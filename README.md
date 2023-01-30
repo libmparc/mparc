@@ -43,7 +43,7 @@ MPAR archive reimplemented in C instead of C++, more advanced than before.
 You only need libc for standard functions, but (the boehm garbage collector/dmalloc) can be used to debug memory issues.
 
 > Also this can be built with the old makefile (Makefile.dumb) (trust me, I am the old method),  
-> autotools (Less broken, but still yes you need to make it yourself),  
+> autotools ([dotest.sh](./dotest.sh) does the work of testing it),  
 > scons (SConstruct)  
 > or CMake (it works, please do it in the build/ directory).
 

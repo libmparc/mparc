@@ -14,7 +14,7 @@ CXX=${CXX:="g++"}
 
 # CUSTOM PRINTER
 printer(){
-    echo "MPARC CRUDE TESTING RIG AND HARNESS>>>" "$@";
+    printf "MPARC CRUDE TESTING RIG AND HARNESS>>> %s\n" "$@";
 };
 
 # CUSTOM DIE
@@ -87,6 +87,17 @@ perform_scons(){
     make -f [mM]akefile.dumb clean || die "Failed to clean others (why)"; # makefile clean
 }
 
+perform_autotools(){
+    printer "DO ME GLORY AUTOTOOLS!!!";
+
+    aclocal || die "No autotools"; # Aclocal for aclocal.m4
+    autoconf || die "No"; # Autoconf
+    automake --add-missing || die "No again"; # Automake
+    ./configure || die "What did I do?"; # Configure as usual
+    make || die "Why u must fail me, makefile?"; # make me binary
+    make -f [mM]akefile.dumb clean || die "Why"; # clean
+}
+
 teardown(){
     printer "Cleaning with git.";
     git clean -xdf || printer "Git is not installed";
@@ -98,6 +109,8 @@ printf "\n\n";
 perform_cmake;
 printf "\n\n";
 perform_scons;
+printf "\n\n";
+perform_autotools;
 printf "\n\n";
 teardown;
 
