@@ -95,6 +95,7 @@ perform_autotools(){
     automake --add-missing || die "No again"; # Automake
     ./configure || die "What did I do?"; # Configure as usual
     make || die "Why u must fail me, makefile?"; # make me binary
+    make dist || die "Why can't I make a distribution, makefile?" # make me a distribution tar
     make -f [mM]akefile.dumb clean || die "Why"; # clean
 }
 

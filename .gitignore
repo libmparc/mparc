@@ -18,6 +18,7 @@ vgcore*
 # autotools
 !configure.ac
 !Makefile.am
+Makefile
 confinc.mk
 configure
 config.status
@@ -35,6 +36,7 @@ depcomp
 autom4te.cache/
 mparc-*/
 .deps/
+**/.dirstamp
 
 # cmake
 # build/ is our cmake output directory

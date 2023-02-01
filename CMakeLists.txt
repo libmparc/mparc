@@ -13,6 +13,9 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
+# include some magic ???
+include(GNUInstallDirs)
+
 # add library
 add_subdirectory(./lib)
 
@@ -27,3 +30,6 @@ set_property(TARGET MPARCX PROPERTY C_STANDARD_REQUIRED TRUE)
 
 # link the library in
 target_link_libraries(MPARCX MPARC)
+
+# installer
+install(TARGETS MPARCX DESTINATION CMAKE_INSTALL_BINDIR)
