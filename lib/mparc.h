@@ -525,7 +525,7 @@ extern "C"{
      * 
      * @param structure the target structure
      * @param filename the filename to peek the contents at
-     * @param bout the output pointer to a variable that represent the binary content of the file
+     * @param bout the output pointer to a variable that represent the binary content of the file. Do not free this pointer;Its not your responsibility to do so.
      * @param sout the output pointer to a variable that represent the size of bout
      * @return MXPSQL_MPARC_err the status code if successfully done
      */

@@ -65,3 +65,8 @@ docs/rtfdoc/
 docs/man/
 docs/xmldoc/
 docs/docbook/
+
+# git modules
+gmodules/*
+gmodules/*/
+!gmodules/.gitkeep
