@@ -17,6 +17,7 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -99,9 +100,9 @@ $(document).ready(function(){initNavTree('index.htm',''); initResizable(); });
 <div class="caption">
 Logo is the MPARC archive behind an #ffffff background lmao</div></div>
     <p>MPAR archive reimplemented in C instead of C++, more advanced than before.</p>
-<h1><a class="anchor" id="autotoc_md1"></a>
+<h1><a class="anchor" id="autotoc_md2"></a>
 Enough of the boring stuff</h1>
-<h2><a class="anchor" id="autotoc_md2"></a>
+<h2><a class="anchor" id="autotoc_md3"></a>
 Why should I use this library and archive format</h2>
 <ul>
 <li>An archive format, but not just that. <br  />
@@ -116,7 +117,7 @@ Why should I use this library and archive format</h2>
 <li>You can sneak this pass censorship as this is not a widely known format. <br  />
  The format looks like a normal text file even if censorship is in place. How do they know if the file is an archive or a random text file that looks like it?</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md3"></a>
+<h2><a class="anchor" id="autotoc_md4"></a>
 Why shouldn't I use this library and archive format</h2>
 <ul>
 <li>The code I wrote may not be up to quality control. <br  />
@@ -132,16 +133,16 @@ Why shouldn't I use this library and archive format</h2>
 <li>Difficult to work with once encryption is set; <br  />
  Having to use XOR and ROT Cipher tools to do encryption and decryption</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md4"></a>
+<h2><a class="anchor" id="autotoc_md5"></a>
 Teach me how to build it</h2>
 <p>You only need libc for standard functions, but (the boehm garbage collector/dmalloc) can be used to debug memory issues.</p>
 <blockquote class="doxtable">
 <p>&zwj;Also this can be built with the old makefile (Makefile.dumb) (trust me, I am the old method), <br  />
- autotools (Less broken, but still yes you need to make it yourself), <br  />
+ autotools (<a href="./dotest.sh" target="_blank">dotest.sh</a> does the work of testing it), <br  />
  scons (SConstruct) <br  />
  or CMake (it works, please do it in the build/ directory). </p>
 </blockquote>
-<h2><a class="anchor" id="autotoc_md5"></a>
+<h2><a class="anchor" id="autotoc_md6"></a>
 How can I implement this format in my own method?</h2>
 <p>Go to <a href="./mparc.c" target="_blank">the source code</a> and find the MPARC_construct_str function body, <br  />
  there is the instruction there for you on how to construct the archive by hand, <br  />
@@ -149,7 +150,7 @@ How can I implement this format in my own method?</h2>
 <p>You also know how to parse the file just by looking at the specification on file construction.</p>
 <p>Read those instructions, think about parsing it and putting it together and there you have your own library implementation! <br  />
  Or just copy my code and say it is yours (HEY!).</p>
-<h2><a class="anchor" id="autotoc_md6"></a>
+<h2><a class="anchor" id="autotoc_md7"></a>
 How can I make bindings to my own language?</h2>
 <p>You make it yourself, or use <a href="./mparc.swigi" target="_blank">SWIG</a>!</p>
 <p>However, you want C++? You can use the C functions immediately! Or use the C++ Wrappers I made for you. </p>
@@ -159,7 +160,7 @@ How can I make bindings to my own language?</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Jan 23 2023 19:34:48 for MPARC by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Wed Feb 1 2023 20:43:54 for MPARC by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>

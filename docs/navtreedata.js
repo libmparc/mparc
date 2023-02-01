@@ -25,12 +25,12 @@
 var NAVTREE =
 [
   [ "MPARC", "index.htm", [
-    [ "Enough of the boring stuff", "index.htm#autotoc_md1", [
-      [ "Why should I use this library and archive format", "index.htm#autotoc_md2", null ],
-      [ "Why shouldn't I use this library and archive format", "index.htm#autotoc_md3", null ],
-      [ "Teach me how to build it", "index.htm#autotoc_md4", null ],
-      [ "How can I implement this format in my own method?", "index.htm#autotoc_md5", null ],
-      [ "How can I make bindings to my own language?", "index.htm#autotoc_md6", null ]
+    [ "Enough of the boring stuff", "index.htm#autotoc_md2", [
+      [ "Why should I use this library and archive format", "index.htm#autotoc_md3", null ],
+      [ "Why shouldn't I use this library and archive format", "index.htm#autotoc_md4", null ],
+      [ "Teach me how to build it", "index.htm#autotoc_md5", null ],
+      [ "How can I implement this format in my own method?", "index.htm#autotoc_md6", null ],
+      [ "How can I make bindings to my own language?", "index.htm#autotoc_md7", null ]
     ] ],
     [ "Security Policy", "d7/d88/md__s_e_c_u_r_i_t_y.htm", [
       [ "Supported Versions", "d7/d88/md__s_e_c_u_r_i_t_y.htm#autotoc_md8", null ],

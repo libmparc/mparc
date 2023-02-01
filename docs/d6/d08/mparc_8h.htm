@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MPARC: mparc.h File Reference</title>
+<title>MPARC: lib/mparc.h File Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -17,6 +17,7 @@
 <script type="text/javascript" src="../../search/searchdata.js"></script>
 <script type="text/javascript" src="../../search/search.js"></script>
 <link href="../../doxygen.css" rel="stylesheet" type="text/css" />
+<link href="../../doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -92,7 +93,6 @@ $(document).ready(function(){initNavTree('d6/d08/mparc_8h.htm','../../'); initRe
 
 <div class="header">
   <div class="summary">
-<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('d6/d08/mparc_8h.htm','../../'); initRe
 </div><!--header-->
 <div class="contents">
 
-<p>MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header. Reentrant functions. Not thread and async safe, probably.  
+<p>MPARC, A Dumb Archiver Format C Rewrite Of MPAR. Test file.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdarg.h&gt;</code><br />
@@ -144,7 +144,7 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca350d1ade11092e07e670c9196a542eca">MPARC_NOTARCHIVE</a> = 5
 , <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca632f405326c3cf2ebe6e9c47256dc324">MPARC_ARCHIVETOOSHINY</a>
 , <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca200d37833ebce99dce0a5cd44e63598e">MPARC_CHKSUM</a> = 7
-, <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77">MPARC_NOCRYPT</a> =8
+, <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca23b113b459189471379f1d07c9c02f77">MPARC_NOCRYPT</a> = 8
 , <br />
 &#160;&#160;<a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca96a73b81e59bb0d123c36afc5926d1e4">MPARC_CONSTRUCT_FAIL</a>
 , <a class="el" href="../../d6/d08/mparc_8h.htm#ab94170c55bb379cd60ae08c6bb68100ca623397490a5056f9df301df7dd73294f">MPARC_OPPART</a> = 10
@@ -289,6 +289,12 @@ Functions</h2></td></tr>
 <tr class="memitem:aca83479a1ec5c46392d5d0891eecc6ca"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d08/mparc_8h.htm#aca83479a1ec5c46392d5d0891eecc6ca">MPARC_MXPSQL_MPARC_iter_t_sizeof</a> (void)</td></tr>
 <tr class="memdesc:aca83479a1ec5c46392d5d0891eecc6ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get sizeof <a class="el" href="../../d0/dd2/struct_m_x_p_s_q_l___m_p_a_r_c__iter__t.htm" title="Iterator.">MXPSQL_MPARC_iter_t</a>.  <br /></td></tr>
 <tr class="separator:aca83479a1ec5c46392d5d0891eecc6ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dba6aa636c30ee35f2f4962a82e19b4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d08/mparc_8h.htm#a9dba6aa636c30ee35f2f4962a82e19b4">MPARC_mkdirer</a> (char *dir, void *ctx)</td></tr>
+<tr class="memdesc:a9dba6aa636c30ee35f2f4962a82e19b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a directory.  <br /></td></tr>
+<tr class="separator:a9dba6aa636c30ee35f2f4962a82e19b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86d2ede0312cc1a4af72cb21dba21169"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d08/mparc_8h.htm#a86d2ede0312cc1a4af72cb21dba21169">MPARC_list_me_dir</a> (const char *path, bool recursive, char ***output, void *ctx)</td></tr>
+<tr class="memdesc:a86d2ede0312cc1a4af72cb21dba21169"><td class="mdescLeft">&#160;</td><td class="mdescRight">List whatever is in that directory.  <br /></td></tr>
+<tr class="separator:a86d2ede0312cc1a4af72cb21dba21169"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab66f0b019f568c262b41520c209159ea"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d08/mparc_8h.htm#ab66f0b019f568c262b41520c209159ea">MPARC_strnlen</a> (const char *str, size_t maxlen)</td></tr>
 <tr class="memdesc:ab66f0b019f568c262b41520c209159ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">My strlen for portability.  <br /></td></tr>
 <tr class="separator:ab66f0b019f568c262b41520c209159ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -315,8 +321,8 @@ Functions</h2></td></tr>
 <tr class="separator:a1d9ab18fe1541bbb781847327dc66475"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header. Reentrant functions. Not thread and async safe, probably. </p>
-<p>MPARC, A Dumb Archiver Format C Rewrite Of MPAR. Test file.</p>
+<div class="textblock"><p>MPARC, A Dumb Archiver Format C Rewrite Of MPAR. Test file. </p>
+<p>MPARC, A Dumb Archiver Format C Rewrite Of MPAR. C Header. Reentrant functions. Not thread and async safe, probably.</p>
 <dl class="section author"><dt>Author</dt><dd>MXPSQL </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>0.1 </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2022-09-26</dd></dl>
@@ -811,6 +817,7 @@ Functions</h2></td></tr>
  Make sure to base64 your metadata entries to prevent issues with parsing.
 
  Parsing tips:
+     - Splitting order -
      Split ';' from the whole archive to get the magic number first  
      Then split '&gt;' from to get the special info header  
      The split '$' from the special info header to get the version and extra metadata.
@@ -1592,6 +1599,59 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a86d2ede0312cc1a4af72cb21dba21169" name="a86d2ede0312cc1a4af72cb21dba21169"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86d2ede0312cc1a4af72cb21dba21169">&#9670;&#160;</a></span>MPARC_list_me_dir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int MPARC_list_me_dir </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>recursive</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char ***&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>ctx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>List whatever is in that directory. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>directory to list. If null, enters a check mode (returns 10 if not available, else 0 without doing anything) </td></tr>
+    <tr><td class="paramname">recursive</td><td>recursively list the directory? </td></tr>
+    <tr><td class="paramname">output</td><td>What is found there, excluding files. Guranteed to be null terminated. </td></tr>
+    <tr><td class="paramname">ctx</td><td>context, unused </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>int Is it successful? Will return 10 if a fallback is used. 0 if successful, 1 if not.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>unfinished </dd></dl>
+
+</div>
+</div>
 <a id="a397599ed1504ab0b9ad7a5c945c359ba" name="a397599ed1504ab0b9ad7a5c945c359ba"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a397599ed1504ab0b9ad7a5c945c359ba">&#9670;&#160;</a></span>MPARC_malloc()</h2>
 
@@ -1659,6 +1719,44 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>void* duplicated value, interpreted as unsigned char*</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Use MPARC_free to deallocate instead of 'free' and 'delete' for forward compatibility.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d6/d08/mparc_8h.htm#ad0e52e267c7096327e368e249c1f51fd" title="Copy memory.">MPARC_memdup</a> </dd></dl>
+
+</div>
+</div>
+<a id="a9dba6aa636c30ee35f2f4962a82e19b4" name="a9dba6aa636c30ee35f2f4962a82e19b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dba6aa636c30ee35f2f4962a82e19b4">&#9670;&#160;</a></span>MPARC_mkdirer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int MPARC_mkdirer </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>ctx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Make a directory. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dir</td><td>directory to make. If null, enters a check mode (returns 10 if not available, else 0 without doing anything) </td></tr>
+    <tr><td class="paramname">ctx</td><td>context, unused </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>int Is it successful? Will return 10 if a fallback is used. 0 if successful, 1 if not. </dd></dl>
 
 </div>
 </div>
@@ -1920,7 +2018,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">structure</td><td>the target structure </td></tr>
     <tr><td class="paramname">filename</td><td>the filename to peek the contents at </td></tr>
-    <tr><td class="paramname">bout</td><td>the output pointer to a variable that represent the binary content of the file </td></tr>
+    <tr><td class="paramname">bout</td><td>the output pointer to a variable that represent the binary content of the file. Do not free this pointer;Its not your responsibility to do so. </td></tr>
     <tr><td class="paramname">sout</td><td>the output pointer to a variable that represent the size of bout </td></tr>
   </table>
   </dd>
@@ -2367,13 +2465,13 @@ Functions</h2></td></tr>
 <p>the third parameter is what files it has found, should be an array of string, terminated with NULL and Calloc'ed or Malloc'ed (pls Calloc it) (Also please use the MPARC allocation functions instead of the standard libc ones) as it relies on finding NULL and the array getting freed</p>
 <p>the fourth parameter is context, it's user defined, is set by putting a value in the listdir_ctx parameter</p>
 <p>the return value should always be 0 for success, other values indicate failure</p>
-<p>Example for listdir (POSIX only for now, also to be continued): </p><div class="fragment"><div class="line"><span class="keywordtype">int</span> list_me_dir_recur(<span class="keyword">const</span> <span class="keywordtype">char</span>* path, <span class="keywordtype">bool</span> recursive, <span class="keywordtype">char</span>** output, <span class="keywordtype">void</span>* ctx, <span class="keywordtype">size_t</span> block_size){</div>
+<p>Example for listdir (POSIX only for now, also to be continued): </p><div class="fragment"><div class="line"><span class="keywordtype">int</span> list_me_dir_recur(<span class="keyword">const</span> <span class="keywordtype">char</span>* path, <span class="keywordtype">bool</span> recursive, <span class="keywordtype">char</span>*** output, <span class="keywordtype">void</span>* ctx, <span class="keywordtype">size_t</span> block_size){</div>
 <div class="line">    ((void)ctx);</div>
 <div class="line">    DIR* dir;</div>
 <div class="line">    <span class="keyword">struct </span>dirent* entry;</div>
-<div class="line">    </div>
+<div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span>(!(dir = opendir(path))) <span class="keywordflow">return</span> 1;</div>
-<div class="line">    </div>
+<div class="line"> </div>
 <div class="line">    <span class="keywordflow">while</span>((entry = readdir(dir))){</div>
 <div class="line">        <span class="keywordflow">if</span>(recursive){</div>
 <div class="line">            <span class="keyword">struct </span>stat stet;</div>
@@ -2383,7 +2481,7 @@ Functions</h2></td></tr>
 <div class="line">            }</div>
 <div class="line">        }</div>
 <div class="line">    }</div>
-<div class="line">    </div>
+<div class="line"> </div>
 <div class="line">    closedir(dir);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
@@ -2393,9 +2491,9 @@ Functions</h2></td></tr>
 <div class="line">    <span class="keyword">static</span> <span class="keywordtype">size_t</span> bloc_size = 5;</div>
 <div class="line">    <span class="keywordtype">char</span>** buff = <a class="code hl_function" href="../../d9/dd9/mparc_8c.htm#ab23a5170998401c4b3852fe54d4374a3">MPARC_calloc</a>(5, <span class="keyword">sizeof</span>(<span class="keywordtype">char</span>*));</div>
 <div class="line">    *output</div>
-<div class="line">    <span class="keywordflow">return</span> list_me_dir_recur(path, recursive, buff, ctx);</div>
+<div class="line">    <span class="keywordflow">return</span> list_me_dir_recur(path, recursive, buff, ctx, block_size);</div>
 <div class="line">}</div>
-<div class="ttc" id="amparc_8c_htm_ab23a5170998401c4b3852fe54d4374a3"><div class="ttname"><a href="../../d9/dd9/mparc_8c.htm#ab23a5170998401c4b3852fe54d4374a3">MPARC_calloc</a></div><div class="ttdeci">void * MPARC_calloc(MXPSQL_MPARC_uint_repr_t arr_size, size_t el_size)</div><div class="ttdoc">My calloc, for easy plug and switch. Extensions should use this instead of calloc.</div><div class="ttdef"><b>Definition:</b> mparc.c:6432</div></div>
+<div class="ttc" id="amparc_8c_htm_ab23a5170998401c4b3852fe54d4374a3"><div class="ttname"><a href="../../d9/dd9/mparc_8c.htm#ab23a5170998401c4b3852fe54d4374a3">MPARC_calloc</a></div><div class="ttdeci">void * MPARC_calloc(MXPSQL_MPARC_uint_repr_t arr_size, size_t el_size)</div><div class="ttdoc">My calloc, for easy plug and switch. Extensions should use this instead of calloc.</div><div class="ttdef"><b>Definition:</b> mparc.c:6596</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -2784,8 +2882,8 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="../../d6/d08/mparc_8h.htm">mparc.h</a></li>
-    <li class="footer">Generated on Mon Jan 23 2023 19:34:43 for MPARC by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="navelem"><a class="el" href="../../dir_97aefd0d527b934f1d99a682da8fe6a9.htm">lib</a></li><li class="navelem"><a class="el" href="../../d6/d08/mparc_8h.htm">mparc.h</a></li>
+    <li class="footer">Generated on Wed Feb 1 2023 20:43:43 for MPARC by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>

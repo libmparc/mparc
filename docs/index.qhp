@@ -6,12 +6,12 @@
 <filterAttribute>doxygen</filterAttribute>
 <toc>
 <section title="MPARC 0.1" ref="index.htm">
-<section title="Enough of the boring stuff" ref="index.htm#autotoc_md1">
-<section title="Why should I use this library and archive format" ref="index.htm#autotoc_md2"/>
-<section title="Why shouldn&apos;t I use this library and archive format" ref="index.htm#autotoc_md3"/>
-<section title="Teach me how to build it" ref="index.htm#autotoc_md4"/>
-<section title="How can I implement this format in my own method?" ref="index.htm#autotoc_md5"/>
-<section title="How can I make bindings to my own language?" ref="index.htm#autotoc_md6"/>
+<section title="Enough of the boring stuff" ref="index.htm#autotoc_md2">
+<section title="Why should I use this library and archive format" ref="index.htm#autotoc_md3"/>
+<section title="Why shouldn&apos;t I use this library and archive format" ref="index.htm#autotoc_md4"/>
+<section title="Teach me how to build it" ref="index.htm#autotoc_md5"/>
+<section title="How can I implement this format in my own method?" ref="index.htm#autotoc_md6"/>
+<section title="How can I make bindings to my own language?" ref="index.htm#autotoc_md7"/>
 </section>
 <section title="Security Policy" ref="d7/d88/md__s_e_c_u_r_i_t_y.htm">
 <section title="Supported Versions" ref="d7/d88/md__s_e_c_u_r_i_t_y.htm#autotoc_md8"/>
@@ -104,6 +104,7 @@
 </section>
 <section title="Files" ref="files.htm">
 <section title="File List" ref="files.htm">
+<section title="lib" ref="dir_97aefd0d527b934f1d99a682da8fe6a9.htm">
 <section title="mparc.c" ref="d9/dd9/mparc_8c.htm">
 <section title="MXPSQL_MPARC_t" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm">
 <section title="begin_entry_marker" ref="d0/d4a/struct_m_x_p_s_q_l___m_p_a_r_c__t.htm#ac7d3e82c0c06765de567a88484a1834f"/>
@@ -161,7 +162,9 @@
 <section title="MPARC_list_iterator_destroy" ref="d9/dd9/mparc_8c.htm#af69cf2c23d9a3d0f4a175c7c1dc8af2e"/>
 <section title="MPARC_list_iterator_init" ref="d9/dd9/mparc_8c.htm#a984c02b5c1b6a21cfbe863364f78208b"/>
 <section title="MPARC_list_iterator_next" ref="d9/dd9/mparc_8c.htm#a0e2b9d912b91cac836a472009257f732"/>
+<section title="MPARC_list_me_dir" ref="d9/dd9/mparc_8c.htm#a86d2ede0312cc1a4af72cb21dba21169"/>
 <section title="MPARC_malloc" ref="d9/dd9/mparc_8c.htm#a397599ed1504ab0b9ad7a5c945c359ba"/>
+<section title="MPARC_mkdirer" ref="d9/dd9/mparc_8c.htm#a9dba6aa636c30ee35f2f4962a82e19b4"/>
 <section title="MPARC_MXPSQL_MPARC_iter_t_sizeof" ref="d9/dd9/mparc_8c.htm#aca83479a1ec5c46392d5d0891eecc6ca"/>
 <section title="MPARC_MXPSQL_MPARC_t_sizeof" ref="d9/dd9/mparc_8c.htm#a8ba40404c2a0ac26ee34350820770194"/>
 <section title="MPARC_parse_filename" ref="d9/dd9/mparc_8c.htm#a329d8459e0d873adbafadb9969b5f392"/>
@@ -232,8 +235,10 @@
 <section title="MPARC_list_iterator_destroy" ref="d6/d08/mparc_8h.htm#af69cf2c23d9a3d0f4a175c7c1dc8af2e"/>
 <section title="MPARC_list_iterator_init" ref="d6/d08/mparc_8h.htm#a984c02b5c1b6a21cfbe863364f78208b"/>
 <section title="MPARC_list_iterator_next" ref="d6/d08/mparc_8h.htm#a0e2b9d912b91cac836a472009257f732"/>
+<section title="MPARC_list_me_dir" ref="d6/d08/mparc_8h.htm#a86d2ede0312cc1a4af72cb21dba21169"/>
 <section title="MPARC_malloc" ref="d6/d08/mparc_8h.htm#a397599ed1504ab0b9ad7a5c945c359ba"/>
 <section title="MPARC_memdup" ref="d6/d08/mparc_8h.htm#ad0e52e267c7096327e368e249c1f51fd"/>
+<section title="MPARC_mkdirer" ref="d6/d08/mparc_8h.htm#a9dba6aa636c30ee35f2f4962a82e19b4"/>
 <section title="MPARC_MXPSQL_MPARC_iter_t_sizeof" ref="d6/d08/mparc_8h.htm#aca83479a1ec5c46392d5d0891eecc6ca"/>
 <section title="MPARC_MXPSQL_MPARC_t_sizeof" ref="d6/d08/mparc_8h.htm#a8ba40404c2a0ac26ee34350820770194"/>
 <section title="MPARC_parse_filename" ref="d6/d08/mparc_8h.htm#a329d8459e0d873adbafadb9969b5f392"/>
@@ -308,6 +313,7 @@
 <section title="swap" ref="de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm#ad5e1c6132df41f41082334b8a35cf423"/>
 </section>
 <section title="_MXPSQL_MPARC_CXX" ref="dd/de9/mparc_8hpp.htm#a2e224826d553c047cc32faba23a7694a"/>
+</section>
 </section>
 </section>
 <section title="Globals" ref="globals.htm">
@@ -448,10 +454,14 @@
 <keyword name="MPARC_list_iterator_init(MXPSQL_MPARC_t **structure, MXPSQL_MPARC_iter_t **iterator)" id="mparc.h::MPARC_list_iterator_init_a984c02b5c1b6a21cfbe863364f78208b" ref="d6/d08/mparc_8h.htm#a984c02b5c1b6a21cfbe863364f78208b"/>
 <keyword name="MPARC_list_iterator_next(MXPSQL_MPARC_iter_t **iterator, const char **outnam)" id="mparc.c::MPARC_list_iterator_next_a0e2b9d912b91cac836a472009257f732" ref="d9/dd9/mparc_8c.htm#a0e2b9d912b91cac836a472009257f732"/>
 <keyword name="MPARC_list_iterator_next(MXPSQL_MPARC_iter_t **iterator, const char **outnam)" id="mparc.h::MPARC_list_iterator_next_a0e2b9d912b91cac836a472009257f732" ref="d6/d08/mparc_8h.htm#a0e2b9d912b91cac836a472009257f732"/>
+<keyword name="MPARC_list_me_dir(const char *path, bool recursive, char ***output, void *ctx)" id="mparc.c::MPARC_list_me_dir_a86d2ede0312cc1a4af72cb21dba21169" ref="d9/dd9/mparc_8c.htm#a86d2ede0312cc1a4af72cb21dba21169"/>
+<keyword name="MPARC_list_me_dir(const char *path, bool recursive, char ***output, void *ctx)" id="mparc.h::MPARC_list_me_dir_a86d2ede0312cc1a4af72cb21dba21169" ref="d6/d08/mparc_8h.htm#a86d2ede0312cc1a4af72cb21dba21169"/>
 <keyword name="MPARC_MAGIC_CHKSM_SEP" id="mparc.c::MPARC_MAGIC_CHKSM_SEP_a248acd793693666ff78a087923887dfa" ref="d9/dd9/mparc_8c.htm#a248acd793693666ff78a087923887dfa"/>
 <keyword name="MPARC_malloc(MXPSQL_MPARC_uint_repr_t size)" id="mparc.c::MPARC_malloc_a397599ed1504ab0b9ad7a5c945c359ba" ref="d9/dd9/mparc_8c.htm#a397599ed1504ab0b9ad7a5c945c359ba"/>
 <keyword name="MPARC_malloc(MXPSQL_MPARC_uint_repr_t size)" id="mparc.h::MPARC_malloc_a397599ed1504ab0b9ad7a5c945c359ba" ref="d6/d08/mparc_8h.htm#a397599ed1504ab0b9ad7a5c945c359ba"/>
 <keyword name="MPARC_memdup(const void *src, size_t len)" id="mparc.h::MPARC_memdup_ad0e52e267c7096327e368e249c1f51fd" ref="d6/d08/mparc_8h.htm#ad0e52e267c7096327e368e249c1f51fd"/>
+<keyword name="MPARC_mkdirer(char *dir, void *ctx)" id="mparc.c::MPARC_mkdirer_a9dba6aa636c30ee35f2f4962a82e19b4" ref="d9/dd9/mparc_8c.htm#a9dba6aa636c30ee35f2f4962a82e19b4"/>
+<keyword name="MPARC_mkdirer(char *dir, void *ctx)" id="mparc.h::MPARC_mkdirer_a9dba6aa636c30ee35f2f4962a82e19b4" ref="d6/d08/mparc_8h.htm#a9dba6aa636c30ee35f2f4962a82e19b4"/>
 <keyword name="MPARC_MXPSQL_MPARC_iter_t_sizeof(void)" id="mparc.c::MPARC_MXPSQL_MPARC_iter_t_sizeof_aca83479a1ec5c46392d5d0891eecc6ca" ref="d9/dd9/mparc_8c.htm#aca83479a1ec5c46392d5d0891eecc6ca"/>
 <keyword name="MPARC_MXPSQL_MPARC_iter_t_sizeof(void)" id="mparc.h::MPARC_MXPSQL_MPARC_iter_t_sizeof_aca83479a1ec5c46392d5d0891eecc6ca" ref="d6/d08/mparc_8h.htm#aca83479a1ec5c46392d5d0891eecc6ca"/>
 <keyword name="MPARC_MXPSQL_MPARC_t_sizeof(void)" id="mparc.c::MPARC_MXPSQL_MPARC_t_sizeof_a8ba40404c2a0ac26ee34350820770194" ref="d9/dd9/mparc_8c.htm#a8ba40404c2a0ac26ee34350820770194"/>
@@ -550,8 +560,11 @@
 <file>dd/de9/mparc_8hpp_source.htm</file>
 <file>de/d72/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c.htm</file>
 <file>df/d18/class_m_x_p_s_q_l_1_1_m_p_a_r_c_1_1_m_p_a_r_c___error.htm</file>
+<file>dir_68267d1309a1af8e8297ef4c3efbcdba.htm</file>
+<file>dir_97aefd0d527b934f1d99a682da8fe6a9.htm</file>
 <file>doc.png</file>
 <file>docd.png</file>
+<file>doxygen-awesome.css</file>
 <file>doxygen.css</file>
 <file>doxygen.svg</file>
 <file>dynsections.js</file>
