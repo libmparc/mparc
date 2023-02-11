@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <stdint.h>
+#include <stdbool.h>
 #if (defined(_WIN32) || defined(_WIN64)) && !(defined(__CYGWIN__))
 #include <windows.h>
 #include <fileapi.h>
@@ -515,6 +516,8 @@ int cmdline_main(int argc, char* exe, char** argv){
     char* filename = NULL;
     char mode = '\0';
     int verbose = 0;
+    char* XORcKey = NULL;
+    int* ROTcKey = NULL;
 
     ((void)mode);
 
@@ -523,19 +526,32 @@ int cmdline_main(int argc, char* exe, char** argv){
 
     int opt = 0;
 
-    while((opt = optparse(&parser, "f:rksuypedxalchv")) != -1){
+    while((opt = optparse(&parser, "f:q:z:rksuypedxaltchv")) != -1){
         switch(opt){
-            case 'h':
+            case 'h': {
                 printf("Help shall be here\n");
                 return EXIT_SUCCESS;
+            }
             
-            case 'f':
+            case 'f': {
                 filename = parser.optarg;
                 break;
+            }
 
-            case 'v':
+            case 'q': {
+                // ROT Cipher TODO
+                break;
+            }
+
+            case 'z': {
+                XORcKey = parser.optarg;
+                break;
+            }
+
+            case 'v': {
                 verbose = 1;
                 break;
+            }
             
             case 'c':
             case 'l':
@@ -549,12 +565,16 @@ int cmdline_main(int argc, char* exe, char** argv){
             case 's':
             case 'k':
             case 'r':
+            case 't': 
+            {
                 mode = opt;
                 break;
+            }
 
-            case '?':
+            case '?': {
                 fprintf(stderr, "%s: %s\n", exe, parser.errmsg);
                 return EXIT_FAILURE;
+            }
         }
     }
 
@@ -576,6 +596,11 @@ int cmdline_main(int argc, char* exe, char** argv){
     MXPSQL_MPARC_err err = MPARC_init(&archive);
     int ex = EXIT_SUCCESS;
     MPARC_CHECKXIT(err);
+
+    err = MPARC_cipher(archive, 
+    true, (unsigned char*) XORcKey, (XORcKey ? strlen(XORcKey) : 0), NULL, NULL,
+    false, ROTcKey, 0, NULL, NULL);
+
     if(mode == 'c'){
         int flag = 0;
         while((arg = optparse_arg(&parser))){
@@ -602,7 +627,7 @@ int cmdline_main(int argc, char* exe, char** argv){
             MPARC_CHECKXIT(err);
         }
     }
-    else if(mode == 'l'){
+    else if(mode == 'l' || mode == 't'){
         err = MPARC_parse_filename(archive, filename);
         MPARC_CHECKXIT(err);
 
