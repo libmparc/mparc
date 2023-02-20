@@ -1,0 +1,39 @@
+name: Shell Script Testing CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  schedule:
+    - cron: '18 23 * * 5'
+  workflow_dispatch: {}
+
+jobs:
+  Test:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # - name: Build
+    #   run: make -f ./[Mm]akefile.dumb DMALLOC_PATH= LDLIBS= all
+    # 
+    # - name: Test the test executable
+    #   run: ./tmparc.exe || false
+    # 
+    # - name: Test the editor utility
+    #   run: make -f ./[Mm]akefile.dumb mkar
+    # 
+    # - name: Clean
+    #   run: make -f ./[Mm]akefile.dumb clean
+
+    - name: Prepare build environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install scons
+        sudo apt-get install ninja-build
+
+    - name: Run test script
+      run: bash ./dotest.sh
