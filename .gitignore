@@ -1,0 +1,72 @@
+# spoopy scarey skellingtons
+
+# executables
+*.exe*
+*.o*
+*.so*
+*.so
+*.a*
+*.dll
+*.lib
+
+# misc files
+*.mpar*
+*.struct*
+*.log*
+vgcore*
+
+# autotools
+!configure.ac
+!Makefile.am
+Makefile
+confinc.mk
+configure
+config.status
+confdefs.h
+conftest.*
+configure~
+aclocal.m4
+install-sh
+Makefile.in
+compile
+config.guess
+missing
+config.sub
+depcomp
+autom4te.cache/
+mparc-*/
+.deps/
+**/.dirstamp
+
+# cmake
+# build/ is our cmake output directory
+build/
+
+# scons
+*.sconsign.dblite
+.sconsign.dblite
+
+# misc
+*.tar
+*.tar.*
+
+# dirs
+html/
+# e/ is our test directory
+e/
+
+# doxygen
+# docs/ is our singlular documentation directory
+# latex/, rtfdoc/, man/, xmldoc/, docbook/ and htmldoc/ is our invidual documentation directory
+docs/
+docs/latex/
+docs/htmldoc/
+docs/rtfdoc/
+docs/man/
+docs/xmldoc/
+docs/docbook/
+
+# git modules
+gmodules/*
+gmodules/*/
+!gmodules/.gitkeep
