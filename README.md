@@ -2,6 +2,12 @@
 
 ![Logo is the MPARC archive behind an #ffffff background lmao](./img/logo.png)
 
+## ALERT
+
+This version is depercated due to the MPAR parser being spaghetti code.
+
+> Before
+
 MPAR archive reimplemented in C instead of C++, more advanced than before.
 
 
