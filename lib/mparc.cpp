@@ -22,6 +22,17 @@ std::string Utils::ByteArrayToString(ByteArray bytearr){
     return std::string(bytearr.begin(), bytearr.end());
 }
 
+Status::Code Utils::isDirectoryDefaultImplementation(std::string name) {
+    // TODO: Add windows and Unix implementation if C++17 is not available
+    #ifdef MXPSQL_MPARC_FIX11_CPP17
+    return ( stdfs::is_directory(
+        stdfs::path(name)
+    ) ? Status::Code::OK : (Status::Code)(Status::Code::KEY | Status::Code::KEY_NOEXISTS));
+    #else
+    return Status::Code::NOT_IMPLEMENTED;
+    #endif
+}
+
 
 
 // STATUS FUNCTIONS
@@ -60,11 +71,18 @@ std::string Status::str(Status::Code* code = nullptr){
             return "An internal error has been detected.";
 
         case INVALID_VALUE: {
-            if(cod & NULL_VALUE){
-                return "A null value has been provided at an inappropriate time.";
-            }
+            if(cod & NULL_VALUE) return "A null value has been provided at an inappropriate time.";
             return "An invalid value has been provided.";
         }
+
+        case KEY: {
+            if(cod & KEY_EXISTS) return "The key exists.";
+            if(cod & KEY_NOEXISTS) return "The key does not exist.";
+            return "A generic/unknown key related error has been detected.";
+        }
+
+        case FERROR:
+            return "A File I/O related error has been detected.";
 
         default:
             return "Unknown code";
@@ -78,6 +96,10 @@ Status::Code Status::getCode(){
     return stat_code;
 }
 
+Status::operator bool(){
+    return isOK();
+}
+
 
 // MAIN ARCHIVE STRUCTURE
 
@@ -86,12 +108,12 @@ MPARC::MPARC(std::vector<std::string> entries){}
 MPARC::MPARC(MPARC& other){}
 
 void MPARC::init(){
-    std::unique_lock(sync_mutex);
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
 }
 
 
 Status MPARC::exists(std::string name){
-    std::unique_lock(sync_mutex);
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     return Status(
         (this->my_code = (
                 (Status::Code)
@@ -107,8 +129,8 @@ Status MPARC::exists(std::string name){
 
 
 Status MPARC::push(std::string name, Entry entry, bool overwrite){
-    std::unique_lock(sync_mutex);
-    if(!overwrite && exists(name).getCode() != Status::Code::OK){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    if(!overwrite && exists(name)){
         return Status(
             (this->my_code = (Status::Code)(Status::Code::KEY | Status::Code::KEY_EXISTS))
         );
@@ -122,7 +144,7 @@ Status MPARC::push(std::string name, Entry entry, bool overwrite){
 }
 
 Status MPARC::push(std::string name, bool directory, ByteArray content, bool overwrite){
-    std::unique_lock(sync_mutex);
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     Entry entreh;
     entreh.directory = directory;
     entreh.content = content;
@@ -130,12 +152,12 @@ Status MPARC::push(std::string name, bool directory, ByteArray content, bool ove
 }
 
 Status MPARC::push(std::string name, bool directory, std::string content, bool overwrite){
-    std::unique_lock(sync_mutex);
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     return push(name, directory, Utils::StringToByteArray(content), overwrite);
 }
 
 Status MPARC::push(std::string name, MPARC::isDirFuncType isDirFunc, bool overwrite){
-    std::unique_lock(sync_mutex);
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     Status::Code isDir = isDirFunc(name);
     if(isDir == Status::Code::NOT_IMPLEMENTED){
         return Status(isDir);
@@ -169,15 +191,62 @@ Status MPARC::push(std::string name, MPARC::isDirFuncType isDirFunc, bool overwr
 }
 
 Status MPARC::push(std::string name, bool overwrite){
-    std::unique_lock(sync_mutex);
-    auto dfunc = [](std::string name) -> Status::Code {
-        #ifdef MXPSQL_MPARC_FIX11_CPP17
-        return ( stdfs::is_directory(
-            stdfs::path(name)
-        ) ? Status::Code::OK : (Status::Code)(Status::Code::KEY | Status::Code::KEY_NOEXISTS));
-        #else
-        return Status::Code::NOT_IMPLEMENTED;
-        #endif
-    };
-    return push(name, dfunc, overwrite);
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    return push(name, Utils::isDirectoryDefaultImplementation, overwrite);
+}
+
+
+Status MPARC::pop(std::string name){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    {
+        Status stat = exists(name);
+        if(!stat) return stat;
+    }
+
+    entries.erase(entries.find(name));
+
+    return Status(
+        (this->my_code = Status::Code::OK)  
+    );
+}
+
+
+Status MPARC::peek(std::string name){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    {
+        Status stat = exists(name);
+        if(!stat) return stat;
+    }
+
+    if(entries[name].directory){
+        return Status(
+            (this->my_code = Status::Code::ISDIR)
+        );
+    }
+
+    return Status(
+        (this->my_code = Status::Code::OK)  
+    );    
+}
+
+
+Status MPARC::peek(std::string name, std::string* output_str, ByteArray* output_ba){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    Status stat = exists(name);
+    if(!stat) return stat;
+
+    stat = peek(name);
+    if(!stat) return stat;
+
+    ByteArray ba = entries[name].content;
+    if(output_ba){
+        *output_ba = ba;
+    }
+    if(output_str){
+        *output_str = Utils::ByteArrayToString(ba);
+    }
+
+    return Status(
+        (this->my_code = Status::Code::OK)  
+    );    
 }

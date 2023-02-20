@@ -31,12 +31,6 @@
 namespace MXPSQL::MPARC11{
     using ByteArray = std::vector<unsigned char>;
 
-
-    namespace Utils{
-        ByteArray StringToByteArray(std::string content);
-        std::string ByteArrayToString(ByteArray bytearr);
-    };
-
     struct Entry{
         ByteArray content;
         bool directory;
@@ -59,6 +53,7 @@ namespace MXPSQL::MPARC11{
             KEY_NOEXISTS = 1 << 8,
 
             FERROR = 1 << 9,
+            ISDIR = 1 << 10
         };
 
         private:
@@ -72,6 +67,8 @@ namespace MXPSQL::MPARC11{
         bool isOK();
         Code getCode();
         void assert(bool throw_err);
+
+        operator bool();
     };
 
     class MPARC{
@@ -110,6 +107,19 @@ namespace MXPSQL::MPARC11{
         Status push(std::string name, bool directory, std::string content, bool overwrite);
         Status push(std::string name, isDirFuncType isDirFunc, bool overwrite);
         Status push(std::string name, bool overwrite);
+
+        Status pop(std::string name);
+
+        Status peek(std::string name);
+        Status peek(std::string name, std::string* output_str, ByteArray* output_ba);
+    };
+
+
+    namespace Utils{
+        ByteArray StringToByteArray(std::string content);
+        std::string ByteArrayToString(ByteArray bytearr);
+
+        Status::Code isDirectoryDefaultImplementation(std::string path);
     };
 };
 
