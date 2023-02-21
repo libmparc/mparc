@@ -29,11 +29,13 @@
 #endif
 
 namespace MXPSQL::MPARC11{
+    /// @brief A typedef for a vector of unsigned char, also a byte aray
     using ByteArray = std::vector<unsigned char>;
 
+    /// @brief A representation of an entry
     struct Entry{
+        /// @brief Content of the entry, if applicable
         ByteArray content;
-        bool directory;
     };
 
     class Status{
@@ -44,16 +46,17 @@ namespace MXPSQL::MPARC11{
             GENERIC = 1 << 1,
             INTERNAL = 1 << 2,
             NOT_IMPLEMENTED = 1 << 3,
+            FALSE = 1 << 4,
 
-            INVALID_VALUE = 1 << 4,
-            NULL_VALUE = 1 << 5,
+            INVALID_VALUE = 1 << 5,
+            NULL_VALUE = 1 << 6,
 
-            KEY = 1 << 6,
-            KEY_EXISTS = 1 << 7,
-            KEY_NOEXISTS = 1 << 8,
+            KEY = 1 << 7,
+            KEY_EXISTS = 1 << 8,
+            KEY_NOEXISTS = 1 << 9,
 
-            FERROR = 1 << 9,
-            ISDIR = 1 << 10
+            FERROR = 1 << 10,
+            ISDIR = 1 << 11
         };
 
         private:
@@ -71,54 +74,116 @@ namespace MXPSQL::MPARC11{
         operator bool();
     };
 
+    /**
+     * @brief The class, which is also the archive
+     * 
+     */
     class MPARC{
         public:
-        /**
-         * @brief An alias for a function that check if something is a directory
-         * 
-         * @details
-         * 
-         * It shall return these values:
-         * 
-         * - Status::Code::OK -> Is a irectory
-         * - Status::Code::KEY | Status::Code::KEY_NOEXISTS -> Not a directory
-         * - Status::Code::NOT_IMPLEMENTED -> Not implemnted
-         * - Others -> Eroneous to return
-         * 
-         */
-        using isDirFuncType = std::function<Status::Code(std::string)>;
-
         private:
+        /// @brief Internal storage
         std::map<std::string, Entry> entries;
+        /// @brief Safety mutex
         std::recursive_mutex sync_mutex;
+        /// @brief Internal error reporting
         Status::Code my_code = Status::Code::OK;
 
+        /// @brief Initialization function
         void init();
 
         public:
+        /// @brief  Construct an empty archive
         MPARC();
+        /// @brief Construct an archive from a list of strings
+        /// @param entries the list of strings that mention the names of the file you want to copy
         MPARC(std::vector<std::string> entries);
+        /// @brief Construct an archive by copying another one
+        /// @param other that other one you want to copy from
         MPARC(MPARC& other);
 
+        /// @brief Does [name] exists?
+        /// @param name the entry to check for existence
+        /// @return Status::Code::OK = Exists. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Does not exist.
         Status exists(std::string name);
 
+        /// @brief Push an entry struct as a file into the archive.
+        /// @param name Name of the entry.
+        /// @param entry The entry of file. It also can be a directory.
+        /// @param overwrite Overwrite an existing entry?
+        /// @return Status::Code::OK = Exists. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Does not exist.
         Status push(std::string name, Entry entry, bool overwrite);
-        Status push(std::string name, bool directory, ByteArray content, bool overwrite);
-        Status push(std::string name, bool directory, std::string content, bool overwrite);
-        Status push(std::string name, isDirFuncType isDirFunc, bool overwrite);
+        /// @brief Push arguments as an entry struct as a file into the archive.
+        /// @param name Name of the entry
+        /// @param directory Is entry a directory?
+        /// @param content Content of the entry, ignored if directory is true
+        /// @param overwrite Overwrite an existing entry?
+        /// @return Status::Code::OK = Exists. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Does not exist.
+        Status push(std::string name, ByteArray content, bool overwrite);
+        /// @brief Push arguments (string edition) as an entry struct as a file into the archive.
+        /// @param name Name of the entry
+        /// @param directory Is entry a directory
+        /// @param content Content of the entry, ignored if directory is true
+        /// @param overwrite Overwrite an existing entry?
+        /// @return Status::Code::OK = Exists. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Does not exist.
+        Status push(std::string name, std::string content, bool overwrite);
+        /// @brief Push an entry by reading it into the archive.
+        /// @param name Name of the entry
+        /// @param overwrite Overwrite an existing entry?
+        /// @return Status::Code::OK = Exists. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Does not exist.
         Status push(std::string name, bool overwrite);
 
+        /// @brief Pop an entry off the archive
+        /// @param name Name of the entry to pop off
+        /// @return Status::Code::OK = Success. Status::Code::KEY | Status::Code::KEY_NOEXISTS = [name] does not exist.
         Status pop(std::string name);
 
+        /// @brief Basically an alias of exists
+        /// @param name Name of the entry to check
+        /// @see exists
+        /// @return Status::Code::OK = Success, you got a file. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Fail, it doesn't exist.
         Status peek(std::string name);
+        /// @return Status::Code::OK = Success. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Fail, it doesn't exist.
         Status peek(std::string name, std::string* output_str, ByteArray* output_ba);
+
+        /// @brief Swap [name] and [name2]
+        /// @param name Name of the first entry to swap
+        /// @param name2 Name of the second entry to swap
+        /// @return Status::Code::OK = Success. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Fail, one of the names doesn't exist.
+        Status swap(std::string name, std::string name2);
+        /// @brief copy from [name] to [name2]
+        /// @param name Name of the first entry as a source
+        /// @param name2 Name of the second entry as a destination
+        /// @param overwrite Overwrite [name2] if it exists?
+        /// @return Status::Code::OK = Success. Status::Code::KEY | Status::Code::KEY_EXISTS = Fail, name2 exists, no overwrite. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Fail, one of the names doesn't exist.
+        Status copy(std::string name, std::string name2, bool overwrite);
+        /// @brief Rename [name] to [name2]
+        /// @param name Old name of entry you wish to rename
+        /// @param name2 New name of [name]
+        /// @param overwrite Overwrite [name2] if it exists?
+        /// @return Status::Code::OK = Success. Status::Code::KEY | Status::Code::KEY_EXISTS = Fail, name2 exists, no overwrite. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Fail, one of the names doesn't exist.
+        Status rename(std::string name, std::string name2, bool overwrite);
+
+        /// @brief List all the files
+        /// @param output Output vector.
+        /// @return Status::Code::OK = Success.
+        /// @warning This function will clear your vector.
+        Status list(std::vector<std::string>& output);
     };
 
 
     namespace Utils{
+        /// @brief Convert a string to a bytearray
+        /// @param content Your string
+        /// @return Your bytearray
         ByteArray StringToByteArray(std::string content);
+        /// @brief Convert a bytearray to a string
+        /// @param bytearr Your bytearray
+        /// @return Your string
         std::string ByteArrayToString(ByteArray bytearr);
 
+        /// @brief The default implementation for checking if [path] is a directory. Used in the push function
+        /// @param path The path to check
+        /// @return Status::Code::OK = Exists, is a file. Status::Code::ISDIR = Exists, is a directory. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Does not exist. Status::Code::NOT_IMPLEMENTED = the directory check function is not implemented in your platform.
         Status::Code isDirectoryDefaultImplementation(std::string path);
     };
 };
