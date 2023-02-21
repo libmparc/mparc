@@ -71,3 +71,6 @@ thirdparty/*
 thirdparty/*/
 !thirdparty/CMakeLists.txt
 !thirdparty/.gitkeep
+
+# misc
+!LICENSE.APACHE2
