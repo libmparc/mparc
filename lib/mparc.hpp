@@ -23,6 +23,7 @@
 #include <mutex>
 #include <vector>
 #include <streambuf>
+#include <utility>
 
 #ifdef MXPSQL_MPARC_FIX11_CPP17
 #include <filesystem>
