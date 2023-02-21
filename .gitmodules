@@ -1,3 +1,9 @@
-[submodule "thirdparty-gitmodules/doxygen-awesome-css"]
-	path = thirdparty-gitmodules/doxygen-awesome-css
+[submodule "thirdparty/jsonlib"]
+	path = thirdparty/jsonlib
+	url = https://github.com/nlohmann/json
+[submodule "thirdparty/doxygen-awesome-css"]
+	path = thirdparty/doxygen-awesome-css
 	url = https://github.com/jothepro/doxygen-awesome-css.git
+[submodule "thirdparty/CLI11"]
+	path = thirdparty/CLI11
+	url = https://github.com/CLIUtils/CLI11
