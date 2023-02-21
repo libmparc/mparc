@@ -40,22 +40,35 @@ namespace MXPSQL::MPARC11{
 
     class Status{
         public:
-        enum Code : std::int64_t {
+        /// @brief Code enumeration for error values
+        enum Code : std::uint64_t {
+            /// @brief Ok, nothing is wrong
             OK=0,
 
+            /// @brief  The most generic error code
             GENERIC = 1 << 1,
+            /// @brief Internal error
             INTERNAL = 1 << 2,
+            /// @brief Not implemented at all
             NOT_IMPLEMENTED = 1 << 3,
+            /// @brief False return value
             FALSE = 1 << 4,
 
+            /// @brief Invalid value provided
             INVALID_VALUE = 1 << 5,
+            /// @brief Null value provided
             NULL_VALUE = 1 << 6,
 
+            /// @brief Key related error
             KEY = 1 << 7,
+            /// @brief Key exists
             KEY_EXISTS = 1 << 8,
+            /// @brief Key does not exists
             KEY_NOEXISTS = 1 << 9,
 
+            /// @brief File I/0 related error
             FERROR = 1 << 10,
+            /// @brief Is a directory
             ISDIR = 1 << 11
         };
 

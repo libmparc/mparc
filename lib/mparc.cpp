@@ -325,7 +325,7 @@ Status MPARC::copy(std::string name, std::string name2, bool overwrite){
 
     if(
         !(stat = push(name2, content, overwrite))
-    )  return stat
+    )  return stat;
 
     return stat;
 }
@@ -367,7 +367,7 @@ Status MPARC::rename(std::string name, std::string name2, bool overwrite){
         !(
             (stat = push(name2, content, overwrite))
         )
-    )  return stat
+    )  return stat;
 
     return stat;
 }
