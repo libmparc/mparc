@@ -7,3 +7,6 @@
 [submodule "thirdparty/CLI11"]
 	path = thirdparty/CLI11
 	url = https://github.com/CLIUtils/CLI11
+[submodule "thirdparty/b64lib"]
+	path = thirdparty/b64lib
+	url = https://github.com/tobiaslocker/base64
