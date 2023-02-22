@@ -1,1 +1,1 @@
--I./thirdparty/jsonlib/include -I./thirdparty/CLI11/include
+-I./thirdparty/jsonlib/include -I./thirdparty/CLI11/include -I./thirdparty/b64lib/include

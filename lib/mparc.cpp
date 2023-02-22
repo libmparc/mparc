@@ -62,6 +62,7 @@
 
 #include "mparc.hpp"
 #include "nlohmann/json.hpp"
+#include "base64.hpp"
 
 // NAMESPACE ALIASING
 namespace MPARC11 = MXPSQL::MPARC11;
@@ -461,6 +462,7 @@ Status MPARC::list(std::vector<std::string>& output){
 
 
 Status MPARC::construct(std::string& output){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     std::string archive = "";
     Status stat;
 
@@ -492,8 +494,9 @@ Status MPARC::construct(std::string& output){
 static Status construct_entries(MPARC& archive, std::string& output){
     std::stringstream ssb;
     std::vector<std::string> entries;
+    Status stat;
     {
-        Status stat = archive.list(entries);
+        stat = archive.list(entries);
         if(!stat){
             return stat;
         }
@@ -502,7 +505,13 @@ static Status construct_entries(MPARC& archive, std::string& output){
     for(std::string entry : entries){
         json jentry;
 
-        
+        std::string content;
+        {
+            stat = archive.peek(entry, &content, nullptr);
+            if(!stat){
+                return stat;
+            }
+        }
 
         ssb << jentry.dump() << std::endl;
     }
