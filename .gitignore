@@ -71,6 +71,14 @@ thirdparty/*
 thirdparty/*/
 !thirdparty/CMakeLists.txt
 !thirdparty/.gitkeep
+!thirdparty/descriptorfleg.txt
 
 # misc
-!LICENSE.APACHE2
+!LICENSE.*
+!LICENSE
+!*.sh
+!dotest.sh
+!makefile.dumb
+!Makefile.dumb
+!ccflegs.txt
+!ccflegs.txt

@@ -61,6 +61,7 @@
  */
 
 #include "mparc.hpp"
+#include "nlohmann/json.hpp"
 
 // NAMESPACE ALIASING
 namespace MPARC11 = MXPSQL::MPARC11;
@@ -70,9 +71,15 @@ using Status = MPARC11::Status;
 using MPARC = MPARC11::MPARC;
 using Entry = MPARC11::Entry;
 
+using json = nlohmann::json;
+
 #ifdef MXPSQL_MPARC_FIX11_CPP17
 namespace stdfs = std::filesystem;
 #endif
+
+
+// prototyping
+static Status construct_entries(MPARC& archive, std::string& output);
 
 
 // Utilities
@@ -98,13 +105,12 @@ Status::Code Utils::isDirectoryDefaultImplementation(std::string path){
 }
 
 
-
 // STATUS FUNCTIONS
 bool Status::isOK(){
     return getCode() == Status::Code::OK;
 }
 
-void Status::assert(bool throw_err=true){
+void Status::assertion(bool throw_err=true){
     if(!isOK()){
         if(throw_err){
             throw std::runtime_error(str(nullptr));
@@ -172,13 +178,12 @@ Status::operator bool(){
 
 
 // MAIN ARCHIVE STRUCTURE
-
 MPARC::MPARC(){};
 MPARC::MPARC(std::vector<std::string> entries){
     Status stat;
     for(std::string entry : entries){
         if(!(stat = push(entry, true))){
-            stat.assert(true);
+            stat.assertion(true);
         }
     }
 }
@@ -186,7 +191,7 @@ MPARC::MPARC(MPARC& other){
     std::vector<std::string> entries;
     Status stat;
     if(!(stat = other.list(entries))){
-        stat.assert(true);
+        stat.assertion(true);
     }
 }
 
@@ -452,4 +457,42 @@ Status MPARC::list(std::vector<std::string>& output){
     return Status(
         (this->my_code = Status::Code::OK)
     );
+}
+
+
+Status MPARC::construct(std::string& output){
+    std::string archive = "";
+    Status stat;
+
+    {
+        std::string header = "";
+        archive += header;
+    }
+    {
+        std::string entries = "";
+        if(!(stat = construct_entries(*this, entries))){
+            return (this->my_code = stat.getCode());
+        }
+        archive += entries;
+    }
+    {
+        std::string footer = "";
+        archive += footer;
+    }
+
+    archive = output;
+
+
+    return Status(
+        (this->my_code = Status::Code::OK)
+    );
+}
+
+// ARCHIVE BUILDER
+static Status construct_entries(MPARC& archive, std::string& output){
+    std::stringstream ssb;
+    for(std::string entry : archive.list()){
+        json jentry;
+    }
+    return Status();
 }

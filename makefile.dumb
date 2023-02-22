@@ -1,0 +1,82 @@
+CFLAGS=-std=c99 $(LDFLAGS) $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt)
+CXXFLAGS=-std=c++11 $(LDFLAGS) $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt)
+# If you need DMalloc, uncomment the line below
+# LDLIBS:=-ldmallocth
+
+# DMALLOC_PATH:="/mingw64/lib/libdmallocth.a"
+# Same thing, but above
+DMALLOC_PATH:=
+
+LIBDIR=./lib
+LIBcppFILE=$(LIBDIR)/mparc.cpp
+
+SRCDIR=./src
+MAINcppFILE=$(SRCDIR)/main.cpp
+
+LIBO:=mparc.o
+LIBA:=libmparc.a
+EXEC:=mparc.exe
+
+CC:=gcc
+CXX:=g++
+
+DEFAULT_GOAL:=all
+
+.PHONY: all  cls  $(LIBO) $(LIBA) $(EXEC)  docs  clean  mkar  mkat runconf
+
+all: cls $(EXEC) $(EXECXX)
+
+
+cls:
+	-@cls || clear || true
+
+
+$(LIBO): 
+	$(CXX) $(CXXFLAGS) $(LIBcppFILE) $(LDLIBS) $(LDFLAGS) -c -o $(LIBO)
+
+$(LIBA): mparc.o
+	ar rcs $(LIBA) $(LIBO) $(DMALLOC_PATH)
+
+$(EXEC): $(LIBA)
+	$(CXX) $(CXXFLAGS) $(MAINcppFILE) $(LIBA) $(LDLIBS) $(LDFLAGS) $(shell cat ./thirdparty/descriptorfleg.txt) -o ./$(EXEC)
+
+
+docs:
+	doxygen
+
+
+clean:
+	rm -rf *.o *.exe *.stackdump *.a
+
+	rm -rf *.mpar.* *.mpar *.struct *.struct.* 
+	rm -rf *.log *.log.* 
+
+	rm -rf configure configure~ Makefile config.status Makefile.in aclocal.m4 autom4te.cache 
+	rm -rf .deps/ mparc-*/ 
+	rm -rf missing install-sh depcomp compile config.sub config.guess
+
+	rm -rf *.sconsign.dblite .sconsign.dblite
+
+	rm -rf *.tar.* *.tar
+
+	rm -rf vgcore.*
+
+	rm -rf e/ mparc.exe/ 
+
+	rm -rf docs/ docs/htmldoc/ docs/latex/ docs/rtfdoc/ docs/man/ docs/xmldoc/ docs/docbook/
+
+
+mkar:
+	true
+#	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./my.mpar -c ./**/*.c ./**/*.h ./**/*.cpp ./**/*.hpp ./[Mm]akefile.dumb ./configure.ac ./[Mm]akefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
+#	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./mini.mpar -c ./misc/lsarah.txt ./misc/logobase.txt
+#	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./tiny.mpar -c ./misc/lsarah.txt
+
+
+mkat:
+	autoscan
+
+runconf:
+	autoconf
+	automake --add-missing
+	./configure
