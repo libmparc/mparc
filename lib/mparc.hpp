@@ -102,7 +102,7 @@ struct Entry {
 class Status {
 public:
     /// @brief Code enumeration for error values
-    enum Code : std::uint64_t {
+    enum Code : std::uint16_t {
         /// @brief Ok, nothing is wrong
         OK = 0,
 
@@ -172,6 +172,11 @@ public:
  */
 class MPARC {
 public:
+    /// @brief Separator between each entry in the entry list
+    static const char entries_entry_separator = '\n';
+    /// @brief Separator for the checksum and the content in each entry
+    static const char entry_checksum_content_separator = '%';
+
 private:
     /// @brief Internal storage
     std::map<std::string, Entry> entries;
