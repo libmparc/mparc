@@ -67,8 +67,8 @@ docs/xmldoc/
 docs/docbook/
 
 # third party modules
-thirdparty/*
-thirdparty/*/
+!thirdparty/*
+!thirdparty/*/
 !thirdparty/CMakeLists.txt
 !thirdparty/.gitkeep
 !thirdparty/descriptorfleg.txt

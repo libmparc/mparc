@@ -491,8 +491,23 @@ Status MPARC::construct(std::string& output){
 // ARCHIVE BUILDER
 static Status construct_entries(MPARC& archive, std::string& output){
     std::stringstream ssb;
-    for(std::string entry : archive.list()){
-        json jentry;
+    std::vector<std::string> entries;
+    {
+        Status stat = archive.list(entries);
+        if(!stat){
+            return stat;
+        }
+
     }
+    for(std::string entry : entries){
+        json jentry;
+
+        
+
+        ssb << jentry.dump() << std::endl;
+    }
+
+    output = ssb.str();
+
     return Status();
 }

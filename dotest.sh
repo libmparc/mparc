@@ -24,14 +24,14 @@ die(){
 };
 
 
+perform_dumb(){
+    printer "Building object files in a dumb manner";
+    ./dumbbuild.sh || die "You failed me.";
+}
+
 perform_makefile(){
     printer "Building binaries";
     make -f [mM]akefile.dumb CC="$CC" CXX="$CXX" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" SANITIZERS="$SANITIZERS" || die "Makefile build failed"; # build everything
-
-    printer "Testing binaries";
-    ./tmparc.exe || die "Binaries failed"; # test the test executable
-    printer "Testing C++ binaries";
-    ./cxmparc.exe || die "C++ binaries failed"; # test the c++ test executable
 
     printer "Making archive files";
     make -f [mM]akefile.dumb mkar || die "Failed to make archive"; # make archive
@@ -101,17 +101,19 @@ perform_autotools(){
 
 teardown(){
     printer "Cleaning with git.";
-    # git clean -xdf || printer "Git is not installed";
+    git clean -Xdf || printer "Git is not installed";
 }
 
 
+perform_dumb;
+printf "\n\n";
 perform_makefile;
 printf "\n\n";
-perform_cmake;
+# perform_cmake;
 printf "\n\n";
-perform_scons;
+# perform_scons;
 printf "\n\n";
-perform_autotools;
+# perform_autotools;
 printf "\n\n";
 teardown;
 

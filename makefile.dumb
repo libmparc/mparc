@@ -1,5 +1,5 @@
-CFLAGS=-std=c99 $(LDFLAGS) $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt)
-CXXFLAGS=-std=c++11 $(LDFLAGS) $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt)
+CFLAGS=-std=c99 $(LDFLAGS) $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt) $(shell cat ./thirdparty/descriptorfleg.txt)
+CXXFLAGS=-std=c++11 $(LDFLAGS) $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt) $(shell cat ./thirdparty/descriptorfleg.txt)
 # If you need DMalloc, uncomment the line below
 # LDLIBS:=-ldmallocth
 
@@ -38,7 +38,7 @@ $(LIBA): mparc.o
 	ar rcs $(LIBA) $(LIBO) $(DMALLOC_PATH)
 
 $(EXEC): $(LIBA)
-	$(CXX) $(CXXFLAGS) $(MAINcppFILE) $(LIBA) $(LDLIBS) $(LDFLAGS) $(shell cat ./thirdparty/descriptorfleg.txt) -o ./$(EXEC)
+	$(CXX) $(CXXFLAGS) $(MAINcppFILE) $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(EXEC)
 
 
 docs:
