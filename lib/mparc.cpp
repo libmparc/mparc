@@ -82,6 +82,7 @@ namespace stdfs = std::filesystem;
 
 // prototyping
 static Status construct_entries(MPARC& archive, std::string& output);
+static Status construct_header(MPARC& archive, std::string& output);
 
 
 // CRC32
@@ -550,6 +551,9 @@ Status MPARC::construct(std::string& output){
 
     {
         std::string header = "";
+        if(!(stat = construct_header(*this, header))){
+            return (this->my_code = stat.getCode());
+        }
         archive += header;
     }
     {
@@ -573,6 +577,13 @@ Status MPARC::construct(std::string& output){
 }
 
 // ARCHIVE BUILDER
+static Status construct_header(MPARC& archive, std::string& output){
+    Status stat;
+    ((void)archive);
+    ((void)output);
+    return stat;
+}
+
 static Status construct_entries(MPARC& archive, std::string& output){
     std::stringstream ssb;
     std::vector<std::string> entries;
@@ -595,7 +606,6 @@ static Status construct_entries(MPARC& archive, std::string& output){
         if(!stat){
             return stat;
         }
-
     }
 
     std::vector<jty> jentries;

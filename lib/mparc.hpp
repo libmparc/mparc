@@ -102,7 +102,7 @@ struct Entry {
 class Status {
 public:
     /// @brief Code enumeration for error values
-    enum Code : std::uint16_t {
+    enum Code : std::uint64_t {
         /// @brief Ok, nothing is wrong
         OK = 0,
 
