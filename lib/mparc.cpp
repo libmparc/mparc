@@ -264,6 +264,11 @@ Status::operator bool(){
 
 
 // MAIN ARCHIVE STRUCTURE
+const std::string MPARC::filename_field = "filename";
+const std::string MPARC::content_field = "content";
+
+const std::string MPARC::magic_number = "MXPSQL's Portable Archive";
+
 MPARC::MPARC(){};
 MPARC::MPARC(std::vector<std::string> entries){
     Status stat;
@@ -579,8 +584,17 @@ Status MPARC::construct(std::string& output){
 // ARCHIVE BUILDER
 static Status construct_header(MPARC& archive, std::string& output){
     Status stat;
+    std::stringstream ssb;
     ((void)archive);
-    ((void)output);
+    ssb << MPARC::magic_number;
+    {
+        json j = json::object();
+
+        ssb << MPARC::header_meta_magic_separator << j.dump();
+    }
+    ssb << MPARC::post_header_separator;
+
+    output = ssb.str();
     return stat;
 }
 
@@ -598,7 +612,7 @@ static Status construct_entries(MPARC& archive, std::string& output){
         json jlh = json::parse(slh);
         json jrh = json::parse(srh);
 
-        return jlh["filename"] > jrh["filename"];
+        return jlh[MPARC::filename_field] > jrh[MPARC::filename_field];
     };
 
     {
@@ -619,8 +633,8 @@ static Status construct_entries(MPARC& archive, std::string& output){
             }
         }
 
-        jentry["filename"] = b64::to_base64(entry);
-        jentry["content"] = b64::to_base64(content);
+        jentry[MPARC::filename_field] = b64::to_base64(entry);
+        jentry[MPARC::content_field] = b64::to_base64(content);
 
         std::string jdump = jentry.dump();
         jty jentriy;

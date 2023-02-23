@@ -172,10 +172,22 @@ public:
  */
 class MPARC {
 public:
+    /// @brief A marker used to separate the magic number from the JSON metadata storage
+    static const char header_meta_magic_separator = '$';
+    /// @brief A marker used to separate the header and the entries and footer.
+    static const char post_header_separator = '>';
     /// @brief Separator between each entry in the entry list
     static const char entries_entry_separator = '\n';
     /// @brief Separator for the checksum and the content in each entry
     static const char entry_checksum_content_separator = '%';
+
+    /// @brief The field's name for storing the file name
+    static const std::string filename_field;
+    /// @brief The field's name for storing the base64'd content
+    static const std::string content_field;
+
+    /// @brief The (long) magic number of the format
+    static const std::string magic_number;
 
 private:
     /// @brief Internal storage
