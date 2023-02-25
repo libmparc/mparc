@@ -23,6 +23,21 @@ int main(int argc, char* argv[]){
         )){
             stat.assertion(false);
         }
+
+        archive.clear();
+
+        if(!(
+            stat = archive.parse(fle)
+        )){
+            stat.assertion(false);
+        }
+
+        if(!(
+            stat = archive.construct(fle)
+        )){
+            stat.assertion(false);
+        }
+
         std::cout << fle << std::endl;
     }
 

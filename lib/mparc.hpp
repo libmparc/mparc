@@ -81,6 +81,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <cinttypes>
 
 #ifdef MXPSQL_MPARC_FIX11_CPP17
 #include <filesystem>
@@ -130,7 +131,17 @@ public:
         /// @brief File I/0 related error
         FERROR = 1 << 10,
         /// @brief Is a directory
-        ISDIR = 1 << 11
+        ISDIR = 1 << 11,
+
+        /// @brief Failed during construction
+        CONSTRUCT_FAIL = 1 << 12,
+
+        /// @brief Failed during parsing
+        PARSE_FAIL = 1 << 13,
+        /// @brief Not an archive
+        NOT_MPAR_ARCHIVE = 1 << 14,
+        /// @brief Checksum failed (either to obtain or check)
+        CHECKSUM_ERROR = 1 << 15
     };
 
 private:
@@ -172,6 +183,8 @@ public:
  */
 class MPARC {
 public:
+    /// @brief A marker used to separate the magic number from the version and custom metadata
+    static const char magic_number_separator = ';';
     /// @brief A marker used to separate the magic number from the JSON metadata storage
     static const char header_meta_magic_separator = '$';
     /// @brief A marker used to separate the header and the entries and footer.
@@ -180,14 +193,30 @@ public:
     static const char entries_entry_separator = '\n';
     /// @brief Separator for the checksum and the content in each entry
     static const char entry_checksum_content_separator = '%';
+    /// @brief A marker used to indicate the end of entries and separate it from the end of archive marker
+    static const char end_of_entries_separator = '@';
+    /// @brief A marker used to indicate the end of the archive
+    static const char end_of_archive_marker = '~';
 
     /// @brief The field's name for storing the file name
     static const std::string filename_field;
     /// @brief The field's name for storing the base64'd content
     static const std::string content_field;
+    /// @brief The field's name for storing the checksum (CRC32) of the raw (no base64) content of an entry.
+    static const std::string checksum_field;
+    /// @brief The field's name for stroring entry specific metadata. It can be ACLs, time of modification or whatever you need.
+    static const std::string meta_field;
+
+    /// @brief The field's name for indicating what encryption is applied. Located on the global metadata JSON section.
+    static const std::string encrypt_meta_field;
+    /// @brief The field's name for storing extra user defined things. Located on the global metadata JSON section.
+    static const std::string extra_meta_field;
 
     /// @brief The (long) magic number of the format
     static const std::string magic_number;
+
+    /// @brief A constant for the archive's version number
+    static const unsigned long long int mpar_version = 1;
 
 private:
     /// @brief Internal storage
@@ -196,6 +225,8 @@ private:
     std::recursive_mutex sync_mutex;
     /// @brief Internal error reporting
     Status::Code my_code = Status::Code::OK;
+    /// @brief Place to put extra data, found on the global JSON metadata section.
+    std::map<std::string, std::string> extra_meta_data;
 
     /// @brief Initialization function
     void init();
@@ -210,6 +241,10 @@ public:
     /// @brief Construct an archive by copying another one
     /// @param other that other one you want to copy from
     MPARC(MPARC &other);
+
+    /// @brief Clear the archive
+    /// @return Status::Code::OK = Success.
+    Status clear();
 
     /// @brief Does [name] exists?
     /// @param name the entry to check for existence
@@ -260,9 +295,18 @@ public:
     /// @return Status::Code::OK = Success, you got a file. Status::Code::KEY |
     /// Status::Code::KEY_NOEXISTS = Fail, it doesn't exist.
     Status peek(std::string name);
-    /// @return Status::Code::OK = Success. Status::Code::KEY |
-    /// Status::Code::KEY_NOEXISTS = Fail, it doesn't exist.
-    Status peek(std::string name, std::string *output_str, ByteArray *output_ba);
+    /// @brief Get the content of the entry
+    /// @param name The entry you want to get from
+    /// @param output The entry struct
+    /// @return Status::Code::OK = Success. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Fail, it doesn't exist
+    Status peek(std::string name, Entry& output);
+    /// @brief Get the content of the entry
+    /// @param name The entry you want to get from
+    /// @param output_str The content of the entry, represented as a string
+    /// @param output_ba The content of the entry, represented as a byte array
+    /// @param output_meta The extra user defined metadata of the entry
+    /// @return Status::Code::OK = Success. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Fail, it doesn't exist.
+    Status peek(std::string name, std::string *output_str, ByteArray *output_ba, std::map<std::string, std::string>* output_meta);
 
     /// @brief Swap [name] and [name2]
     /// @param name Name of the first entry to swap
@@ -295,11 +339,21 @@ public:
     /// @warning This function will clear your vector.
     Status list(std::vector<std::string> &output);
 
+    /// @brief Get a pointer to the map for the extra metadata
+    /// @param ptroutput Output where the pointer will be stored at
+    /// @return Status::Code::OK = Success.
+    Status get_extra_metadata_pointer(std::map<std::string, std::string>** ptroutput);
+
     /// @brief Construct the archive
     /// @param output Output string to store the archive. Output is untouched if
     /// an error occurs.
-    /// @return Status::Code::OK = Success.
+    /// @return Status::Code::OK = Success. Status::Code::CONSTRUCT_FAIL | *??? = Failure.
     Status construct(std::string &output);
+
+    /// @brief Parse the archive
+    /// @param input The archive string to be parsed
+    /// @return Status::Code::OK = Success. Status::Code::PARSE_FAIL | *??? = Failure.
+    Status parse(std::string input);
 
     operator bool();
     operator==(MPARC &other);

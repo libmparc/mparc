@@ -83,6 +83,9 @@ namespace stdfs = std::filesystem;
 // prototyping
 static Status construct_entries(MPARC& archive, std::string& output);
 static Status construct_header(MPARC& archive, std::string& output);
+static Status construct_footer(MPARC& archive, std::string& output);
+
+static Status parse_entries(MPARC& archive, std::string entry_input);
 
 
 // CRC32
@@ -201,7 +204,7 @@ void Status::assertion(bool throw_err=true){
             throw std::runtime_error(str(nullptr) + ": " + std::to_string(getCode()));
         }
         else{
-            std::cerr << "MPARC11[ABORT] " << str(nullptr) << std::to_string(getCode()) << std::endl;
+            std::cerr << "MPARC11[ABORT] " << str(nullptr) << " (" << std::to_string(getCode()) << ")" << std::endl;
             std::abort();
         }
     }
@@ -217,41 +220,47 @@ std::string Status::str(Status::Code* code = nullptr){
         cod = getCode();
     }
 
-    switch(cod){
-        case OK:
-            return "OK";
-        
-        case GENERIC:
-            return "A generic error has been detected.";
-        case INTERNAL:
-            return "An internal error has been detected.";
-        case NOT_IMPLEMENTED:
-            return "Not implemented.";
-        case FALSE:
-            return "False";
-
-        case INVALID_VALUE: {
-            if(cod & NULL_VALUE) return "A null value has been provided at an inappropriate time.";
-            return "An invalid value has been provided.";
-        }
-
-        case KEY: {
-            if(cod & KEY_EXISTS) return "The key exists.";
-            if(cod & KEY_NOEXISTS) return "The key does not exist.";
-            return "A generic/unknown key related error has been detected.";
-        }
-
-        case FERROR:
-            return "A File I/O related error has been detected.";
-        case ISDIR:
-            return "The object is a directory.";
-
-        default:
-            return "Unknown code";
+    if(cod & OK){
+        return "OK";
     }
-
-    // If we get to C++23, I will put std::unreachable here
-    return "END";
+    else if(cod & GENERIC) {
+        return "A generic error has been detected.";
+    }
+    else if(cod & INTERNAL) {
+        return "An internal error has been detected.";
+    }
+    else if(cod & NOT_IMPLEMENTED) {
+        return "Not implemented.";
+    }
+    else if(cod & FALSE) {
+        return "False";
+    }
+    else if(cod & INVALID_VALUE) {
+        if(cod & NULL_VALUE) return "A null value has been provided at an inappropriate time.";
+        return "An invalid value has been provided.";
+    }
+    else if(cod & KEY) {
+        if(cod & KEY_EXISTS) return "The key exists.";
+        if(cod & KEY_NOEXISTS) return "The key does not exist.";
+        return "A generic/unknown key related error has been detected.";
+    }
+    else if(cod & FERROR) {
+        return "A File I/O related error has been detected.";
+    }
+    else if(cod & ISDIR) {
+        return "The object is a directory.";
+    }
+    else if(cod & CONSTRUCT_FAIL) {
+        return "Archive failed during construction.";
+    }
+    else if (cod & PARSE_FAIL) {
+        if(cod & NOT_MPAR_ARCHIVE) return "What was parsed is not an MPAR archive.";
+        if(cod & CHECKSUM_ERROR) return "The checksum did not match or it was not obtained successfully.";
+        return "A generic parsing error has been detected.";
+    }
+    else{
+        return "Unknown code";
+    }
 }
 
 Status::Code Status::getCode(){
@@ -264,10 +273,15 @@ Status::operator bool(){
 
 
 // MAIN ARCHIVE STRUCTURE
-const std::string MPARC::filename_field = "filename";
-const std::string MPARC::content_field = "content";
+const std::string MPARC::filename_field = "filename"; // Compatibility with the C99 library
+const std::string MPARC::content_field = "blob"; // Compatibility with the C99 library
+const std::string MPARC::checksum_field = "crcsum"; // Compatibility with the C99 library
+const std::string MPARC::meta_field = "metadata";
 
-const std::string MPARC::magic_number = "MXPSQL's Portable Archive";
+const std::string MPARC::encrypt_meta_field = "encrypt"; // Compatibility with the C99 library
+const std::string MPARC::extra_meta_field = "extra";
+
+const std::string MPARC::magic_number = "MXPSQL's Portable Archive"; // Compatibility with the C99 library
 
 MPARC::MPARC(){};
 MPARC::MPARC(std::vector<std::string> entries){
@@ -288,6 +302,26 @@ MPARC::MPARC(MPARC& other){
 
 void MPARC::init(){
     std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+}
+
+
+Status MPARC::clear(){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    std::vector<std::string> ee;
+    Status stat;
+    if(!(stat = list(ee))){
+        return stat;
+    }
+
+    for(auto e : ee){
+        if(!(stat = pop(e))){
+            return stat;
+        }
+    }
+
+    return Status(
+        (this->my_code = Status::Code::OK)
+    );
 }
 
 
@@ -383,22 +417,55 @@ Status MPARC::peek(std::string name){
     );    
 }
 
-
-Status MPARC::peek(std::string name, std::string* output_str, ByteArray* output_ba){
+Status MPARC::peek(std::string name, Entry& output){
     std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     Status stat = peek(name);
     if(!stat) return stat;
 
-    if(!(stat = peek(name))){
+    if(!(stat = peek(name))) return stat;
+
+    try{
+        output = entries.at(name);
+    }
+    catch(...){
+        return (stat = Status(
+            (this->my_code = 
+                static_cast<Status::Code>(Status::Code::KEY | Status::Code::KEY_NOEXISTS)
+            )
+        ));
+    }
+
+    return Status(
+        (this->my_code = Status::Code::OK)  
+    );    
+}
+
+Status MPARC::peek(std::string name, std::string* output_str, ByteArray* output_ba, std::map<std::string, std::string>* output_meta){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    Status stat = peek(name);
+    if(!stat) return stat;
+
+    if(!(stat = peek(name))) return stat;
+
+    Entry entreh;
+    ByteArray ba;
+    std::map<std::string, std::string> meta;
+
+    if(!(stat = peek(name, entreh))){
         return stat;
     }
 
-    ByteArray ba = entries[name].content;
+    ba = entreh.content;
+    meta = entreh.metadata;
+    
     if(output_ba){
         *output_ba = ba;
     }
     if(output_str){
         *output_str = Utils::ByteArrayToString(ba);
+    }
+    if(output_meta){
+        *output_meta = meta;
     }
 
     return Status(
@@ -417,15 +484,15 @@ Status MPARC::swap(std::string name, std::string name2){
         )
     ) return stat;
 
-    std::string content1, content2;
+    Entry entreh, entreh2;
 
     if(
         !(
             (
-                stat = peek(name, &content1, nullptr)
+                stat = peek(name, entreh)
             ) &&
             (
-                stat = peek(name2, &content2, nullptr)
+                stat = peek(name2, entreh2)
             )
         )
     ) return stat;
@@ -444,10 +511,10 @@ Status MPARC::swap(std::string name, std::string name2){
     if(
         !(
             (
-                stat = push(name, content2, true)
+                stat = push(name, entreh2, true)
             ) &&
             (
-                stat = push(name2, content1, true)
+                stat = push(name2, entreh, true)
             )
         )
     ) return stat;
@@ -475,10 +542,10 @@ Status MPARC::copy(std::string name, std::string name2, bool overwrite){
         ) return stat;
     }
 
-    std::string content;
+    Entry entreh;
 
     if(
-        !(stat = peek(name, &content, nullptr))
+        !(stat = peek(name, entreh))
     ) return stat;
 
     if(
@@ -486,7 +553,7 @@ Status MPARC::copy(std::string name, std::string name2, bool overwrite){
     ) return stat;  
 
     if(
-        !(stat = push(name2, content, overwrite))
+        !(stat = push(name2, entreh, overwrite))
     )  return stat;
 
     return stat;
@@ -512,10 +579,10 @@ Status MPARC::rename(std::string name, std::string name2, bool overwrite){
         ) return stat;
     }
 
-    std::string content;
+    Entry entreh;
 
     if(
-        !(stat = peek(name, &content, nullptr))
+        !(stat = peek(name, entreh))
     ) return stat;
 
     if(
@@ -527,7 +594,7 @@ Status MPARC::rename(std::string name, std::string name2, bool overwrite){
 
     if(
         !(
-            (stat = push(name2, content, overwrite))
+            (stat = push(name2, entreh, overwrite))
         )
     )  return stat;
 
@@ -549,6 +616,15 @@ Status MPARC::list(std::vector<std::string>& output){
 }
 
 
+Status MPARC::get_extra_metadata_pointer(std::map<std::string, std::string>** ptroutput){
+    *ptroutput = &(this->extra_meta_data);
+
+    return Status(
+        (this->my_code = Status::Code::OK)
+    );
+}
+
+
 Status MPARC::construct(std::string& output){
     std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     std::string archive = "";
@@ -557,19 +633,22 @@ Status MPARC::construct(std::string& output){
     {
         std::string header = "";
         if(!(stat = construct_header(*this, header))){
-            return (this->my_code = stat.getCode());
+            return (this->my_code = static_cast<Status::Code>(Status::Code::CONSTRUCT_FAIL | stat.getCode()));
         }
         archive += header;
     }
     {
         std::string entries = "";
         if(!(stat = construct_entries(*this, entries))){
-            return (this->my_code = stat.getCode());
+            return (this->my_code = static_cast<Status::Code>(Status::Code::CONSTRUCT_FAIL | stat.getCode()));
         }
         archive += entries;
     }
     {
         std::string footer = "";
+        if(!(stat = construct_footer(*this, footer))){
+            return (this->my_code = static_cast<Status::Code>(Status::Code::CONSTRUCT_FAIL | stat.getCode()));
+        }
         archive += footer;
     }
 
@@ -581,14 +660,62 @@ Status MPARC::construct(std::string& output){
     );
 }
 
+Status MPARC::parse(std::string input){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+
+    Status stat;
+
+    std::string header = "";
+    std::string entries = "";
+    std::string footer = "";
+
+    // This section would be handled by a function that would perform steganography by searching for the archive if embedded in files, but it is not yet implemented.
+    std::string searchInput = input;
+
+    // find the header and footer marks
+    size_t header_marksep_pos = searchInput.find(MPARC::post_header_separator);
+    size_t footer_marksep_pos = searchInput.find(MPARC::end_of_entries_separator);
+
+    if(header_marksep_pos == std::string::npos || footer_marksep_pos == std::string::npos || header_marksep_pos >= footer_marksep_pos){
+        return Status(
+            (this->my_code = static_cast<Status::Code>(
+                Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE
+            ))
+        );
+    }
+
+    header = searchInput.substr(0, header_marksep_pos);
+    entries = searchInput.substr(header_marksep_pos+1, (footer_marksep_pos-header_marksep_pos-1));
+    footer = searchInput.substr(footer_marksep_pos+1, (input.size()-footer_marksep_pos));
+
+    if(!(stat = parse_entries(*this, entries))){
+        return (this->my_code = stat.getCode());
+    }
+
+    return Status(
+        (this->my_code = Status::Code::OK)
+    );
+}
+
+
+
 // ARCHIVE BUILDER
 static Status construct_header(MPARC& archive, std::string& output){
     Status stat;
     std::stringstream ssb;
     ((void)archive);
-    ssb << MPARC::magic_number;
+    ssb << MPARC::magic_number << MPARC::magic_number_separator << MPARC::mpar_version;
     {
         json j = json::object();
+
+        j[b64::to_base64(MPARC::encrypt_meta_field)] = json::array();
+
+        j[b64::to_base64(MPARC::extra_meta_field)] = json::object();
+        std::map<std::string, std::string>* extras = NULL;
+        archive.get_extra_metadata_pointer(&extras);
+        for(auto extra_pair : (*extras)){
+            j[b64::to_base64(MPARC::extra_meta_field)][b64::to_base64(extra_pair.first)] = b64::to_base64(extra_pair.second);
+        }
 
         ssb << MPARC::header_meta_magic_separator << j.dump();
     }
@@ -603,16 +730,13 @@ static Status construct_entries(MPARC& archive, std::string& output){
     std::vector<std::string> entries;
     Status stat;
 
-    using jty = std::pair<std::string, crc_t>;
+    using jty = std::pair<json, crc_t>;
 
     static auto sortcmp = [](const jty& lh, const jty rh){
-        std::string slh = lh.first;
-        std::string srh = rh.first;
+        json jlh = lh.first;
+        json jrh = rh.first;
 
-        json jlh = json::parse(slh);
-        json jrh = json::parse(srh);
-
-        return jlh[MPARC::filename_field] > jrh[MPARC::filename_field];
+        return jlh.at(MPARC::filename_field) > jrh.at(MPARC::filename_field);
     };
 
     {
@@ -625,41 +749,159 @@ static Status construct_entries(MPARC& archive, std::string& output){
     std::vector<jty> jentries;
     for(std::string entry : entries){
         json jentry;
-        std::string content;
+        Entry entreh;
         {
-            stat = archive.peek(entry, &content, nullptr);
+            stat = archive.peek(entry, entreh);
             if(!stat){
                 return stat;
             }
         }
 
-        jentry[MPARC::filename_field] = b64::to_base64(entry);
-        jentry[MPARC::content_field] = b64::to_base64(content);
+        std::string strcontent = Utils::ByteArrayToString(entreh.content);
 
-        std::string jdump = jentry.dump();
+        jentry[MPARC::filename_field] = b64::to_base64(entry);
+        jentry[MPARC::content_field] = b64::to_base64(strcontent);
+
+        {
+            jentry[MPARC::meta_field] = json::object();
+            for(auto meta : entreh.metadata){
+                jentry[MPARC::meta_field][b64::to_base64(meta.first)] = b64::to_base64(meta.second);
+            }
+        }
+
+        {
+            std::string csum = "";
+
+            crc_t crc = crc_init();
+
+            crc = crc_update(crc, strcontent.c_str(), strcontent.length());
+
+            crc = crc_finalize(crc);
+
+            csum = std::to_string(crc);
+
+            jentry[MPARC::checksum_field] = csum;
+        }
+
         jty jentriy;
         {
             crc_t crc = crc_init();
 
-            crc = crc_update(crc, jdump.c_str(), strlen(jdump.c_str()));
+            crc = crc_update(crc, jentry.dump().c_str(), strlen(jentry.dump().c_str()));
 
             crc = crc_finalize(crc);
 
-            jentriy = std::make_pair(jdump, crc);
+            jentriy = std::make_pair(jentry, crc);
         }
 
         jentries.push_back(jentriy);
     }
 
-    std::sort(jentries.begin(), jentries.end(), sortcmp);
+    try{
+        std::sort(jentries.begin(), jentries.end(), sortcmp);
+    }
+    catch(...){
+        return (stat = Status(Status::Code::CONSTRUCT_FAIL));
+    }
 
     {
         for(jty jenty : jentries){
-            ssb << jenty.second << MPARC::entry_checksum_content_separator << jenty.first << MPARC::entries_entry_separator;
+            ssb << jenty.second << MPARC::entry_checksum_content_separator << jenty.first.dump() << MPARC::entries_entry_separator;
         }
     }
+
+    ssb << MPARC::end_of_entries_separator;
 
     output = ssb.str();
 
     return stat;
+}
+
+static Status construct_footer(MPARC& archive, std::string& output){
+    (static_cast<void>(archive));
+
+    std::stringstream ssb;
+
+    ssb << MPARC::end_of_archive_marker;
+
+    output = ssb.str();
+
+    return Status(Status::Code::OK);
+}
+
+
+
+// ARCHIVE PARSER
+static Status parse_entries(MPARC& archive, std::string entry_input){
+    std::vector<std::string> lines;
+    {
+        std::stringstream ss(entry_input);
+        std::string str;
+        while(std::getline(ss, str, '\n')){
+            lines.push_back(str);
+        }
+    }
+
+    {
+        for(auto line : lines){
+            crc_t crc = 0;
+
+            size_t checksum_entry_marksep_pos = line.find(MPARC::entry_checksum_content_separator);
+            if(checksum_entry_marksep_pos == std::string::npos){
+                return Status(
+                    static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+                );
+            }
+
+            std::string checksum = line.substr(0, checksum_entry_marksep_pos);
+            std::string entry = line.substr(checksum_entry_marksep_pos+1, (line.size()-checksum_entry_marksep_pos));
+
+            if(sscanf(checksum.c_str(), "%" SCNuFAST32 "\n", &crc) < 1){
+                return Status(
+                    static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
+                );
+            }
+
+            {
+                crc_t crc_check_now = crc_init();
+                crc_check_now = crc_update(crc_check_now, entry.c_str(), strlen(entry.c_str()));
+                crc_check_now = crc_finalize(crc_check_now);
+
+                if(crc != crc_check_now){
+                    return Status(
+                        static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
+                    );
+                }
+            }
+
+            {
+                json j = json::parse(entry, nullptr, false);
+                if(j.is_discarded()){
+                    return Status(
+                        static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
+                    );
+                }
+
+                Entry entreh;
+                entreh.content = Utils::StringToByteArray(
+                    b64::to_base64(j.at(MPARC::content_field))
+                );
+
+                for(auto meta : j[MPARC::meta_field].items()){
+                    entreh.metadata[b64::from_base64(meta.key())] = b64::from_base64(meta.value());
+                }
+
+                Status stat;
+                if(!(
+                    stat = archive.push(b64::from_base64(
+                        j.at(MPARC::filename_field)
+                    ), entreh, true)
+                )){
+                    return stat;
+                }
+            }
+        }
+    }
+    ((void)archive);
+    return Status(Status::Code::OK);
 }
