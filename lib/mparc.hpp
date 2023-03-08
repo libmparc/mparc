@@ -204,6 +204,8 @@ public:
     static const std::string content_field;
     /// @brief The field's name for storing the checksum (CRC32) of the raw (no base64) content of an entry.
     static const std::string checksum_field;
+    /// @brief The field's name for storing the checksum (CRC32) of the contents of the entry after it has been processed (only Base64)
+    static const std::string processed_checksum_field;
     /// @brief The field's name for stroring entry specific metadata. It can be ACLs, time of modification or whatever you need.
     static const std::string meta_field;
 

@@ -276,6 +276,7 @@ Status::operator bool(){
 const std::string MPARC::filename_field = "filename"; // Compatibility with the C99 library
 const std::string MPARC::content_field = "blob"; // Compatibility with the C99 library
 const std::string MPARC::checksum_field = "crcsum"; // Compatibility with the C99 library
+const std::string MPARC::processed_checksum_field = "crcsum.processed";
 const std::string MPARC::meta_field = "metadata";
 
 const std::string MPARC::encrypt_meta_field = "encrypt"; // Compatibility with the C99 library
@@ -759,16 +760,6 @@ static Status construct_entries(MPARC& archive, std::string& output){
 
         std::string strcontent = Utils::ByteArrayToString(entreh.content);
 
-        jentry[MPARC::filename_field] = b64::to_base64(entry);
-        jentry[MPARC::content_field] = b64::to_base64(strcontent);
-
-        {
-            jentry[MPARC::meta_field] = json::object();
-            for(auto meta : entreh.metadata){
-                jentry[MPARC::meta_field][b64::to_base64(meta.first)] = b64::to_base64(meta.second);
-            }
-        }
-
         {
             std::string csum = "";
 
@@ -781,6 +772,32 @@ static Status construct_entries(MPARC& archive, std::string& output){
             csum = std::to_string(crc);
 
             jentry[MPARC::checksum_field] = csum;
+        }
+
+        jentry[MPARC::filename_field] = b64::to_base64(entry);
+        jentry[MPARC::content_field] = b64::to_base64(strcontent);
+
+
+        {
+            std::string csum = "";
+            std::string b64content = jentry.at(MPARC::content_field);
+
+            crc_t crc = crc_init();
+
+            crc = crc_update(crc, b64content.c_str(), b64content.length());
+
+            crc = crc_finalize(crc);
+
+            csum = std::to_string(crc);
+
+            jentry[MPARC::processed_checksum_field] = csum;
+        }
+
+        {
+            jentry[MPARC::meta_field] = json::object();
+            for(auto meta : entreh.metadata){
+                jentry[MPARC::meta_field][b64::to_base64(meta.first)] = b64::to_base64(meta.second);
+            }
         }
 
         jty jentriy;
@@ -856,7 +873,7 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
             std::string checksum = line.substr(0, checksum_entry_marksep_pos);
             std::string entry = line.substr(checksum_entry_marksep_pos+1, (line.size()-checksum_entry_marksep_pos));
 
-            if(sscanf(checksum.c_str(), "%" SCNuFAST32 "\n", &crc) < 1){
+            if(sscanf(checksum.c_str(), "%" SCNuFAST32, &crc) < 1){
                 return Status(
                     static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
                 );
@@ -882,10 +899,64 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
                     );
                 }
 
+                std::string processed_b64_str = j.at(MPARC::content_field);;
+
+                {
+                    crc_t processed_checksum = 0;
+                    crc_t calculated_checksum = crc_init();
+
+                    std::string pstr = processed_b64_str;
+
+                    calculated_checksum = crc_update(calculated_checksum, pstr.c_str(), pstr.length());
+
+                    calculated_checksum = crc_finalize(calculated_checksum);
+
+
+                    {
+                        std::string strsum = j.at(MPARC::processed_checksum_field);
+
+                        if(sscanf(strsum.c_str(), "%" SCNuFAST32, &processed_checksum) < 1){
+                            return Status(
+                                static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
+                            );
+                        }
+                    }
+
+                    if(processed_checksum != calculated_checksum){
+                        return Status(
+                            static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
+                        );
+                    }
+                }
+
+                std::string raw_unprocessed_str = b64::from_base64(processed_b64_str);
                 Entry entreh;
-                entreh.content = Utils::StringToByteArray(
-                    b64::to_base64(j.at(MPARC::content_field))
-                );
+                entreh.content = Utils::StringToByteArray(raw_unprocessed_str);
+
+                {
+                    crc_t unprocessed_checksum = 0;
+                    crc_t calculated_checksum = crc_init();
+
+                    calculated_checksum = crc_update(calculated_checksum, raw_unprocessed_str.c_str(), raw_unprocessed_str.length());
+
+                    calculated_checksum = crc_finalize(calculated_checksum);
+
+                    {
+                        std::string upstrsum = j.at(MPARC::checksum_field);
+
+                        if(sscanf(upstrsum.c_str(), "%" SCNuFAST32, &unprocessed_checksum) < 1){
+                            return Status(
+                                static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
+                            );
+                        }
+                    }
+
+                    if(unprocessed_checksum != calculated_checksum){
+                        return Status(
+                            static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
+                        );
+                    }
+                }
 
                 for(auto meta : j[MPARC::meta_field].items()){
                     entreh.metadata[b64::from_base64(meta.key())] = b64::from_base64(meta.value());
