@@ -375,7 +375,7 @@ Status MPARC::push(std::string name, bool overwrite){
     std::string content;
 
     {
-        std::ifstream ifs(name);
+        std::ifstream ifs(name, std::ios::binary);
         if(!ifs.is_open() || !ifs.good()){
             return Status(Status::Code::FERROR);
         }
@@ -671,6 +671,7 @@ Status MPARC::parse(std::string input){
     std::string footer = "";
 
     // This section would be handled by a function that would perform steganography by searching for the archive if embedded in files, but it is not yet implemented.
+    // Maybe never will, maybe will be implemented, I don't know, lets see later.
     std::string searchInput = input;
 
     // find the header and footer marks
@@ -696,6 +697,31 @@ Status MPARC::parse(std::string input){
     return Status(
         (this->my_code = Status::Code::OK)
     );
+}
+
+Status MPARC::get_status(Status& output){
+    output = this->my_code;
+    return Status::Code::OK;
+}
+
+Status MPARC::isOK(){
+    Status stat;
+    get_status(stat);
+    return(
+        (stat.isOK()) ?
+        Status::Code::OK :
+        Status::Code::FALSE
+    );
+}
+
+
+
+MPARC::operator bool(){
+    return ((this->isOK() == Status::Code::OK) ? true : false);
+}
+
+MPARC::operator void*(){
+    return ((this->isOK() == Status::Code::OK) ? const_cast<MPARC*>(this) : nullptr);
 }
 
 

@@ -107,9 +107,9 @@ public:
         /// @brief Ok, nothing is wrong
         OK = 0,
 
-        /// @brief    The most generic error code
+        /// @brief The most generic error code
         GENERIC = 1 << 1,
-        /// @brief Internal error
+        /// @brief Internal error, not returned for now
         INTERNAL = 1 << 2,
         /// @brief Not implemented at all
         NOT_IMPLEMENTED = 1 << 3,
@@ -357,7 +357,23 @@ public:
     /// @return Status::Code::OK = Success. Status::Code::PARSE_FAIL | *??? = Failure.
     Status parse(std::string input);
 
+
+    /// @brief Get the status stored internally
+    /// @param output The status that is stored internally
+    /// @return Status::Code::OK = Success.
+    /// @note Does not change the internal status
+    Status get_status(Status& output);
+    /// @brief Is the internal status OK?
+    /// @return Status::Code::OK = Internally OK. Status::Code::FALSE = Internally Not OK.
+    /// @note Does not change the internal status
+    Status isOK();
+
+    /// @brief A boolean operator
     operator bool();
+    /// @brief An operator used to get a void thing
+    operator void*();
+    /// @brief Compare this archive instance to another one
+    /// @param other That other one
     operator==(MPARC &other);
 };
 
