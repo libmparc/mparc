@@ -631,21 +631,21 @@ Status MPARC::construct(std::string& output){
     std::string archive = "";
     Status stat;
 
-    {
+    { // Construct the header
         std::string header = "";
         if(!(stat = construct_header(*this, header))){
             return (this->my_code = static_cast<Status::Code>(Status::Code::CONSTRUCT_FAIL | stat.getCode()));
         }
         archive += header;
     }
-    {
+    { // Construct the tnreis
         std::string entries = "";
         if(!(stat = construct_entries(*this, entries))){
             return (this->my_code = static_cast<Status::Code>(Status::Code::CONSTRUCT_FAIL | stat.getCode()));
         }
         archive += entries;
     }
-    {
+    { // Construct the footer
         std::string footer = "";
         if(!(stat = construct_footer(*this, footer))){
             return (this->my_code = static_cast<Status::Code>(Status::Code::CONSTRUCT_FAIL | stat.getCode()));
@@ -678,6 +678,7 @@ Status MPARC::parse(std::string input){
     size_t header_marksep_pos = searchInput.find(MPARC::post_header_separator);
     size_t footer_marksep_pos = searchInput.find(MPARC::end_of_entries_separator);
 
+    // Check if either both marker exist and that the header marker position is before the footer marker position
     if(header_marksep_pos == std::string::npos || footer_marksep_pos == std::string::npos || header_marksep_pos >= footer_marksep_pos){
         return Status(
             (this->my_code = static_cast<Status::Code>(
@@ -686,10 +687,12 @@ Status MPARC::parse(std::string input){
         );
     }
 
+    // Slice the strings into their parts
     header = searchInput.substr(0, header_marksep_pos);
     entries = searchInput.substr(header_marksep_pos+1, (footer_marksep_pos-header_marksep_pos-1));
     footer = searchInput.substr(footer_marksep_pos+1, (input.size()-footer_marksep_pos));
 
+    // Parse the entries
     if(!(stat = parse_entries(*this, entries))){
         return (this->my_code = stat.getCode());
     }
@@ -729,14 +732,20 @@ MPARC::operator void*(){
 // ARCHIVE BUILDER
 static Status construct_header(MPARC& archive, std::string& output){
     Status stat;
+    // String builder
     std::stringstream ssb;
-    ((void)archive);
+
+    // Build the initial metadata
     ssb << MPARC::magic_number << MPARC::magic_number_separator << MPARC::mpar_version;
+
+    // Build the extra JSON metadata
     {
         json j = json::object();
 
+        // Encryption field
         j[b64::to_base64(MPARC::encrypt_meta_field)] = json::array();
 
+        // Extra user defined metadata
         j[b64::to_base64(MPARC::extra_meta_field)] = json::object();
         std::map<std::string, std::string>* extras = NULL;
         archive.get_extra_metadata_pointer(&extras);
@@ -744,8 +753,10 @@ static Status construct_header(MPARC& archive, std::string& output){
             j[b64::to_base64(MPARC::extra_meta_field)][b64::to_base64(extra_pair.first)] = b64::to_base64(extra_pair.second);
         }
 
+        // Finally put the JSON
         ssb << MPARC::header_meta_magic_separator << j.dump();
     }
+    // Cap it off
     ssb << MPARC::post_header_separator;
 
     output = ssb.str();
@@ -757,8 +768,10 @@ static Status construct_entries(MPARC& archive, std::string& output){
     std::vector<std::string> entries;
     Status stat;
 
+    // A typedef to make it less verbose
     using jty = std::pair<json, crc_t>;
 
+    // Sort function
     static auto sortcmp = [](const jty& lh, const jty rh){
         json jlh = lh.first;
         json jrh = rh.first;
@@ -766,6 +779,7 @@ static Status construct_entries(MPARC& archive, std::string& output){
         return jlh.at(MPARC::filename_field) > jrh.at(MPARC::filename_field);
     };
 
+    // List the archive
     {
         stat = archive.list(entries);
         if(!stat){
@@ -773,10 +787,12 @@ static Status construct_entries(MPARC& archive, std::string& output){
         }
     }
 
+    // Loop over the entries
     std::vector<jty> jentries;
     for(std::string entry : entries){
         json jentry;
         Entry entreh;
+        // Read the entry
         {
             stat = archive.peek(entry, entreh);
             if(!stat){
@@ -784,9 +800,10 @@ static Status construct_entries(MPARC& archive, std::string& output){
             }
         }
 
+        // Get the contents
         std::string strcontent = Utils::ByteArrayToString(entreh.content);
 
-        {
+        { // Unprocessed checksum calculate
             std::string csum = "";
 
             crc_t crc = crc_init();
@@ -800,11 +817,12 @@ static Status construct_entries(MPARC& archive, std::string& output){
             jentry[MPARC::checksum_field] = csum;
         }
 
+        // Put in the obvious ones (filename, contents)
         jentry[MPARC::filename_field] = b64::to_base64(entry);
         jentry[MPARC::content_field] = b64::to_base64(strcontent);
 
 
-        {
+        { // Put in the checksum after it is processed
             std::string csum = "";
             std::string b64content = jentry.at(MPARC::content_field);
 
@@ -819,7 +837,7 @@ static Status construct_entries(MPARC& archive, std::string& output){
             jentry[MPARC::processed_checksum_field] = csum;
         }
 
-        {
+        { // Add the user defined metadata thing
             jentry[MPARC::meta_field] = json::object();
             for(auto meta : entreh.metadata){
                 jentry[MPARC::meta_field][b64::to_base64(meta.first)] = b64::to_base64(meta.second);
@@ -827,7 +845,7 @@ static Status construct_entries(MPARC& archive, std::string& output){
         }
 
         jty jentriy;
-        {
+        { // Calculate the JSON's checksum, not the invidual content
             crc_t crc = crc_init();
 
             crc = crc_update(crc, jentry.dump().c_str(), strlen(jentry.dump().c_str()));
@@ -840,7 +858,7 @@ static Status construct_entries(MPARC& archive, std::string& output){
         jentries.push_back(jentriy);
     }
 
-    try{
+    try{ // Sort the JSONs
         std::sort(jentries.begin(), jentries.end(), sortcmp);
     }
     catch(...){
@@ -848,11 +866,13 @@ static Status construct_entries(MPARC& archive, std::string& output){
     }
 
     {
+        // Dump the entries
         for(jty jenty : jentries){
             ssb << jenty.second << MPARC::entry_checksum_content_separator << jenty.first.dump() << MPARC::entries_entry_separator;
         }
     }
 
+    // Cap it
     ssb << MPARC::end_of_entries_separator;
 
     output = ssb.str();
@@ -865,6 +885,7 @@ static Status construct_footer(MPARC& archive, std::string& output){
 
     std::stringstream ssb;
 
+    // Just one character
     ssb << MPARC::end_of_archive_marker;
 
     output = ssb.str();
@@ -877,7 +898,7 @@ static Status construct_footer(MPARC& archive, std::string& output){
 // ARCHIVE PARSER
 static Status parse_entries(MPARC& archive, std::string entry_input){
     std::vector<std::string> lines;
-    {
+    { // Read line by line
         std::stringstream ss(entry_input);
         std::string str;
         while(std::getline(ss, str, '\n')){
@@ -885,39 +906,47 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
         }
     }
 
-    {
+    { // Loop over each line
         for(auto line : lines){
-            crc_t crc = 0;
+            std::string entry = "";
+            { // Parse the checksum of the current JSON entry (not including the checksum)
+                crc_t crc = 0;
 
-            size_t checksum_entry_marksep_pos = line.find(MPARC::entry_checksum_content_separator);
-            if(checksum_entry_marksep_pos == std::string::npos){
-                return Status(
-                    static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
-                );
-            }
+                // Check for the presence of the checksum and get its position
+                size_t checksum_entry_marksep_pos = line.find(MPARC::entry_checksum_content_separator);
+                if(checksum_entry_marksep_pos == std::string::npos){
+                    return Status(
+                        static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+                    );
+                }
 
-            std::string checksum = line.substr(0, checksum_entry_marksep_pos);
-            std::string entry = line.substr(checksum_entry_marksep_pos+1, (line.size()-checksum_entry_marksep_pos));
+                // Grab the checksum and the actual entry
+                std::string checksum = line.substr(0, checksum_entry_marksep_pos);
+                entry = line.substr(checksum_entry_marksep_pos+1, (line.size()-checksum_entry_marksep_pos));
 
-            if(sscanf(checksum.c_str(), "%" SCNuFAST32, &crc) < 1){
-                return Status(
-                    static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
-                );
-            }
-
-            {
-                crc_t crc_check_now = crc_init();
-                crc_check_now = crc_update(crc_check_now, entry.c_str(), strlen(entry.c_str()));
-                crc_check_now = crc_finalize(crc_check_now);
-
-                if(crc != crc_check_now){
+                // Grab the actual checksum value
+                if(sscanf(checksum.c_str(), "%" SCNuFAST32, &crc) < 1){
                     return Status(
                         static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
                     );
                 }
+
+                { // Calculate and check the checksum
+                    crc_t crc_check_now = crc_init();
+                    crc_check_now = crc_update(crc_check_now, entry.c_str(), strlen(entry.c_str()));
+                    crc_check_now = crc_finalize(crc_check_now);
+
+                    if(crc != crc_check_now){
+                        return Status(
+                            static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
+                        );
+                    }
+                }
             }
 
-            {
+            { // Parse the JSON entry
+
+                // Parse it and check for errors
                 json j = json::parse(entry, nullptr, false);
                 if(j.is_discarded()){
                     return Status(
@@ -925,12 +954,14 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
                     );
                 }
 
+                // Grab the processed base64 string
                 std::string processed_b64_str = j.at(MPARC::content_field);;
 
-                {
+                { // Calculate the processed (base64'd) string's checksum
                     crc_t processed_checksum = 0;
                     crc_t calculated_checksum = crc_init();
 
+                    // Calculate
                     std::string pstr = processed_b64_str;
 
                     calculated_checksum = crc_update(calculated_checksum, pstr.c_str(), pstr.length());
@@ -938,7 +969,7 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
                     calculated_checksum = crc_finalize(calculated_checksum);
 
 
-                    {
+                    { // Grab the checksum from the entry and parse it
                         std::string strsum = j.at(MPARC::processed_checksum_field);
 
                         if(sscanf(strsum.c_str(), "%" SCNuFAST32, &processed_checksum) < 1){
@@ -948,6 +979,7 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
                         }
                     }
 
+                    // Check
                     if(processed_checksum != calculated_checksum){
                         return Status(
                             static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
@@ -955,21 +987,25 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
                     }
                 }
 
+                // Unprocessed string grab
                 std::string raw_unprocessed_str = b64::from_base64(processed_b64_str);
                 Entry entreh;
                 entreh.content = Utils::StringToByteArray(raw_unprocessed_str);
 
-                {
+                { // Calculate the checksum of the unprocessed (no base64) string
                     crc_t unprocessed_checksum = 0;
                     crc_t calculated_checksum = crc_init();
 
+                    // Calculate
                     calculated_checksum = crc_update(calculated_checksum, raw_unprocessed_str.c_str(), raw_unprocessed_str.length());
 
                     calculated_checksum = crc_finalize(calculated_checksum);
 
                     {
+                        // Grab the checksum from the entry
                         std::string upstrsum = j.at(MPARC::checksum_field);
 
+                        // Parse and scan it
                         if(sscanf(upstrsum.c_str(), "%" SCNuFAST32, &unprocessed_checksum) < 1){
                             return Status(
                                 static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
@@ -977,6 +1013,7 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
                         }
                     }
 
+                    // Check
                     if(unprocessed_checksum != calculated_checksum){
                         return Status(
                             static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
@@ -984,10 +1021,12 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
                     }
                 }
 
+                // Set the metadata
                 for(auto meta : j[MPARC::meta_field].items()){
                     entreh.metadata[b64::from_base64(meta.key())] = b64::from_base64(meta.value());
                 }
 
+                // Push it in
                 Status stat;
                 if(!(
                     stat = archive.push(b64::from_base64(
@@ -999,6 +1038,5 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
             }
         }
     }
-    ((void)archive);
     return Status(Status::Code::OK);
 }
