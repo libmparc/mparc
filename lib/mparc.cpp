@@ -79,12 +79,15 @@ namespace b64 = base64;
 namespace stdfs = std::filesystem;
 #endif
 
+// Variables
+static const MPARC::version_type EXTENSIBILITY_UPDATE_VERSION = 2;
 
 // prototyping
 static Status construct_entries(MPARC& archive, std::string& output);
 static Status construct_header(MPARC& archive, std::string& output);
 static Status construct_footer(MPARC& archive, std::string& output);
 
+static Status parse_header(MPARC& archive, std::string header_input);
 static Status parse_entries(MPARC& archive, std::string entry_input);
 
 
@@ -179,6 +182,21 @@ std::string Utils::ByteArrayToString(ByteArray bytearr){
     return std::string(bytearr.begin(), bytearr.end());
 }
 
+bool Utils::VersionTypeToString(MPARC::version_type input, std::string& output){
+    output = std::to_string(input);
+    return true;
+}
+
+bool Utils::StringToVersionType(std::string input, MPARC::version_type& output){
+    try{
+        output = std::stoull(input);
+        return true;
+    }
+    catch(...){
+        return false;
+    }
+}
+
 Status::Code Utils::isDirectoryDefaultImplementation(std::string path){
     #ifdef MXPSQL_MPARC_FIX11_CPP17
     return (
@@ -256,6 +274,7 @@ std::string Status::str(Status::Code* code = nullptr){
     else if (cod & PARSE_FAIL) {
         if(cod & NOT_MPAR_ARCHIVE) return "What was parsed is not an MPAR archive.";
         if(cod & CHECKSUM_ERROR) return "The checksum did not match or it was not obtained successfully.";
+        if(cod & VERSION_ERROR) return "The version either was too new or it was not obtained successfully.";
         return "A generic parsing error has been detected.";
     }
     else{
@@ -672,11 +691,13 @@ Status MPARC::parse(std::string input){
 
     // This section would be handled by a function that would perform steganography by searching for the archive if embedded in files, but it is not yet implemented.
     // Maybe never will, maybe will be implemented, I don't know, lets see later.
+    // I realized that the function would require to be extremly smart at finding the archive, it cannpt be some "find a character" thing.
+    // "Scan a block to see if it is an archive, then move one character if not an archive, put it in if its an archive" would be nice, but inefficient
     std::string searchInput = input;
 
     // find the header and footer marks
     size_t header_marksep_pos = searchInput.find(MPARC::post_header_separator);
-    size_t footer_marksep_pos = searchInput.find(MPARC::end_of_entries_separator);
+    size_t footer_marksep_pos = searchInput.find_last_of(MPARC::end_of_entries_separator);
 
     // Check if either both marker exist and that the header marker position is before the footer marker position
     if(header_marksep_pos == std::string::npos || footer_marksep_pos == std::string::npos || header_marksep_pos >= footer_marksep_pos){
@@ -691,6 +712,11 @@ Status MPARC::parse(std::string input){
     header = searchInput.substr(0, header_marksep_pos);
     entries = searchInput.substr(header_marksep_pos+1, (footer_marksep_pos-header_marksep_pos-1));
     footer = searchInput.substr(footer_marksep_pos+1, (input.size()-footer_marksep_pos));
+
+    // Parse the header
+    if(!(stat = parse_header(*this, header))){
+        return (this->my_code = stat.getCode());
+    }
 
     // Parse the entries
     if(!(stat = parse_entries(*this, entries))){
@@ -736,7 +762,12 @@ static Status construct_header(MPARC& archive, std::string& output){
     std::stringstream ssb;
 
     // Build the initial metadata
-    ssb << MPARC::magic_number << MPARC::magic_number_separator << MPARC::mpar_version;
+    ssb << MPARC::magic_number << MPARC::magic_number_separator;
+    {
+        std::string ver = "";
+        Utils::VersionTypeToString(MPARC::mpar_version, ver);
+        ssb << ver;
+    }
 
     // Build the extra JSON metadata
     {
@@ -896,6 +927,93 @@ static Status construct_footer(MPARC& archive, std::string& output){
 
 
 // ARCHIVE PARSER
+static Status parse_header(MPARC& archive, std::string header_input){
+    ((void)archive);
+
+    std::string magic = "";
+    std::string vf_other = "";
+
+    { // Separate the magic number and the usable content and then test it
+        size_t magic_separator_pos = header_input.find(MPARC::magic_number_separator); // Grab the magic separator
+        if(magic_separator_pos == std::string::npos){ // Check if it exists
+            return Status(
+                static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+            );
+        }
+        // Extract the magic number and the other useful ones
+        magic = header_input.substr(0, magic_separator_pos);
+        vf_other = header_input.substr(magic_separator_pos+1, std::string::npos);
+
+        if(magic != MPARC::magic_number){
+            return Status(
+                static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+            );
+        }
+    }
+
+    {
+        std::string version = "";
+        std::string meta = "";
+        { // Separate the version and the metadata and then grab it
+            size_t vm_header_meta_separator_pos = vf_other.find(MPARC::header_meta_magic_separator); // Grab the metadata and version separator
+            if(vm_header_meta_separator_pos == std::string::npos){ // Check if it exists
+                return Status(
+                    static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+                );
+            }
+
+            // Extract the version and the metadata
+            version = vf_other.substr(0, vm_header_meta_separator_pos);
+            meta = vf_other.substr(vm_header_meta_separator_pos+1, std::string::npos);
+        }
+
+        { // test the version
+            MPARC::version_type ck_ver = 0;
+            if(!Utils::StringToVersionType(version, ck_ver) || (ck_ver != MPARC::mpar_version)){
+                return Status(
+                    static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::VERSION_ERROR)
+                );
+            }
+
+            archive.loaded_version = ck_ver;
+        }
+
+        { // Parse the metadata
+            json j = json::parse(meta, nullptr, false);
+            if(j.is_discarded()){
+                return Status(
+                    static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+                );
+            }
+
+            if(j.contains(b64::to_base64(MPARC::encrypt_meta_field))){ // encryption thingy
+                std::vector<std::string> encrypt_algos = j.at(b64::to_base64(MPARC::encrypt_meta_field));
+            }
+            else{
+                return Status(
+                    static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+                );
+            }
+
+            if(archive.loaded_version >= EXTENSIBILITY_UPDATE_VERSION){ // Extra global metadata, only if version 2 is reached
+                if(!j.contains(b64::to_base64(MPARC::extra_meta_field))){ // check if the field is available
+                    return Status(
+                        static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+                    );
+                }
+
+                std::map<std::string, std::string>* extras = NULL;
+                archive.get_extra_metadata_pointer(&extras);
+
+                for(auto meta : j[b64::to_base64(MPARC::extra_meta_field)].items()){
+                    (*extras)[b64::from_base64(meta.key())] = b64::from_base64(meta.value());
+                }
+            }
+        }
+    }
+    return Status::Code::OK;
+}
+
 static Status parse_entries(MPARC& archive, std::string entry_input){
     std::vector<std::string> lines;
     { // Read line by line
@@ -906,8 +1024,12 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
         }
     }
 
-    { // Loop over each line
+    { // Loop over each line        
         for(auto line : lines){
+            if(line.empty() || line.length() < 1){ // skip empty line
+                continue;
+            }
+
             std::string entry = "";
             { // Parse the checksum of the current JSON entry (not including the checksum)
                 crc_t crc = 0;
@@ -954,36 +1076,56 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
                     );
                 }
 
+                if(
+                    !(
+                        j.contains(MPARC::content_field) && 
+                        j.contains(MPARC::checksum_field) &&
+                        j.contains(MPARC::filename_field)
+                    )
+                ){
+                    return Status(
+                        static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+                    );
+                }
+
                 // Grab the processed base64 string
-                std::string processed_b64_str = j.at(MPARC::content_field);;
+                std::string processed_b64_str = j.at(MPARC::content_field);
 
-                { // Calculate the processed (base64'd) string's checksum
-                    crc_t processed_checksum = 0;
-                    crc_t calculated_checksum = crc_init();
+                if(archive.loaded_version >= EXTENSIBILITY_UPDATE_VERSION){ // Check if archive is version 2 or more
+                    if(!j.contains(MPARC::processed_checksum_field)){ // check if the field is available
+                        return Status(
+                            static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+                        );
+                    }
 
-                    // Calculate
-                    std::string pstr = processed_b64_str;
+                    { // Calculate the processed (base64'd) string's checksum
+                        crc_t processed_checksum = 0;
+                        crc_t calculated_checksum = crc_init();
 
-                    calculated_checksum = crc_update(calculated_checksum, pstr.c_str(), pstr.length());
+                        // Calculate
+                        std::string pstr = processed_b64_str;
 
-                    calculated_checksum = crc_finalize(calculated_checksum);
+                        calculated_checksum = crc_update(calculated_checksum, pstr.c_str(), pstr.length());
+
+                        calculated_checksum = crc_finalize(calculated_checksum);
 
 
-                    { // Grab the checksum from the entry and parse it
-                        std::string strsum = j.at(MPARC::processed_checksum_field);
+                        { // Grab the checksum from the entry and parse it
+                            std::string strsum = j.at(MPARC::processed_checksum_field);
 
-                        if(sscanf(strsum.c_str(), "%" SCNuFAST32, &processed_checksum) < 1){
+                            if(sscanf(strsum.c_str(), "%" SCNuFAST32, &processed_checksum) < 1){
+                                return Status(
+                                    static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
+                                );
+                            }
+                        }
+
+                        // Check
+                        if(processed_checksum != calculated_checksum){
                             return Status(
                                 static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
                             );
                         }
-                    }
-
-                    // Check
-                    if(processed_checksum != calculated_checksum){
-                        return Status(
-                            static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::CHECKSUM_ERROR)
-                        );
                     }
                 }
 
@@ -1021,9 +1163,16 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
                     }
                 }
 
-                // Set the metadata
-                for(auto meta : j[MPARC::meta_field].items()){
-                    entreh.metadata[b64::from_base64(meta.key())] = b64::from_base64(meta.value());
+                if(archive.loaded_version >= EXTENSIBILITY_UPDATE_VERSION){ // check if archive is version 2 or more
+                    if(!j.contains(MPARC::meta_field)){ // check if the field is available
+                        return Status(
+                            static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+                        );
+                    }
+                    // Set the metadata
+                    for(auto meta : j[MPARC::meta_field].items()){
+                        entreh.metadata[b64::from_base64(meta.key())] = b64::from_base64(meta.value());
+                    }
                 }
 
                 // Push it in

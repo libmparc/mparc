@@ -141,7 +141,9 @@ public:
         /// @brief Not an archive
         NOT_MPAR_ARCHIVE = 1 << 14,
         /// @brief Checksum failed (either to obtain or check)
-        CHECKSUM_ERROR = 1 << 15
+        CHECKSUM_ERROR = 1 << 15,
+        /// @brief Version check failed (either too new or just failed to grab)
+        VERSION_ERROR = 1 << 16
     };
 
 private:
@@ -183,6 +185,11 @@ public:
  */
 class MPARC {
 public:
+    /// @brief A typedef/using/alias for the version number
+    using version_type = unsigned long long int;
+
+public:
+
     /// @brief A marker used to separate the magic number from the version and custom metadata
     static const char magic_number_separator = ';';
     /// @brief A marker used to separate the magic number from the JSON metadata storage
@@ -218,7 +225,7 @@ public:
     static const std::string magic_number;
 
     /// @brief A constant for the archive's version number
-    static const unsigned long long int mpar_version = 1;
+    static const version_type mpar_version = 2;
 
 private:
     /// @brief Internal storage
@@ -232,6 +239,11 @@ private:
 
     /// @brief Initialization function
     void init();
+
+public:
+    /// @brief Currently loaded version
+    /// @note End users/developers should not mess with this, only the library should modify this
+    version_type loaded_version = mpar_version;
 
 public:
     /// @brief Construct an empty archive
@@ -387,6 +399,17 @@ ByteArray StringToByteArray(std::string content);
 /// @param bytearr Your bytearray
 /// @return Your string
 std::string ByteArrayToString(ByteArray bytearr);
+
+/// @brief Convert a version type integer to a string
+/// @param input Input version type integer
+/// @param output The string representation
+/// @return true = success, false = fail
+bool VersionTypeToString(MPARC::version_type input, std::string& output);
+/// @brief Convert a string to the version type
+/// @param input Input string
+/// @param output version type integer
+/// @return true = success, false = fail
+bool StringToVersionType(std::string input, MPARC::version_type& output);
 
 /// @brief The default implementation for checking if [path] is a directory.
 /// Used in the push function
