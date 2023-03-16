@@ -2,9 +2,9 @@ name: Shell Script Testing CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "depot11", "predepot11" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "depot11", "predepot11" ]
   schedule:
     - cron: '18 23 * * 5'
   workflow_dispatch: {}

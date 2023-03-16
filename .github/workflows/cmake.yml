@@ -2,9 +2,9 @@ name: CMake CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "depot11", "predepot11" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "depot11", "predepot11" ]
   schedule: 
     - cron: '21 * * * 5'
   workflow_dispatch: {}
