@@ -14,8 +14,10 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# set others
-set(USE_FETCHCONTENT_ALL "Fetch content everything" ON)
+# set/option others
+option(USE_FETCHCONTENT_ALL "Fetch content everything" OFF)
+option(USE_EXTERNAL_ALL "External usage the libraries (???)" OFF)
+option(USE_EXTERNAL_JSON "No external ones" OFF)
 
 # include some magic ???
 include(GNUInstallDirs)

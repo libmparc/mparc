@@ -41,6 +41,7 @@ mparc-*/
 # cmake
 # build/ is our cmake output directory
 build/
+b/
 
 # scons
 *.sconsign.dblite
