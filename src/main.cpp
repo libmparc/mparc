@@ -19,10 +19,13 @@ int main(int argc, char* argv[]){
     {
         std::string fle;
         if(!(
-            stat = archive.construct(fle)
+            stat = archive.construct(fle, 1)
         )){
             stat.assertion(false);
         }
+
+        std::cerr << "archive:" << std::endl;
+        std::cout << fle << std::endl;
 
         archive.clear();
 
@@ -38,7 +41,16 @@ int main(int argc, char* argv[]){
             stat.assertion(false);
         }
 
+        std::cerr << "archive1:" << std::endl;
         std::cout << fle << std::endl;
+
+        archive.clear();
+
+        if(!(
+            stat = archive.parse(fle)
+        )){
+            stat.assertion(false);
+        }
     }
 
     return EXIT_SUCCESS;

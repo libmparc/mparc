@@ -83,12 +83,15 @@ namespace stdfs = std::filesystem;
 static const MPARC::version_type EXTENSIBILITY_UPDATE_VERSION = 2;
 
 // prototyping
-static Status construct_entries(MPARC& archive, std::string& output);
-static Status construct_header(MPARC& archive, std::string& output);
-static Status construct_footer(MPARC& archive, std::string& output);
+static Status construct_entries(MPARC& archive, std::string& output, MPARC::version_type ver);
+static Status construct_header(MPARC& archive, std::string& output, MPARC::version_type ver);
+static Status construct_footer(MPARC& archive, std::string& output, MPARC::version_type ver);
 
 static Status parse_header(MPARC& archive, std::string header_input);
 static Status parse_entries(MPARC& archive, std::string entry_input);
+static Status parse_footer(MPARC& archive, std::string footer_input);
+
+[[noreturn]] static inline void my_unreachable(...);
 
 
 // CRC32
@@ -278,6 +281,7 @@ std::string Status::str(Status::Code* code = nullptr){
         return "A generic parsing error has been detected.";
     }
     else{
+        my_unreachable();
         return "Unknown code";
     }
 }
@@ -302,6 +306,8 @@ const std::string MPARC::encrypt_meta_field = "encrypt"; // Compatibility with t
 const std::string MPARC::extra_meta_field = "extra";
 
 const std::string MPARC::magic_number = "MXPSQL's Portable Archive"; // Compatibility with the C99 library
+
+std::map<std::string, std::string> MPARC::dummy_extra_metadata;
 
 MPARC::MPARC(){};
 MPARC::MPARC(std::vector<std::string> entries){
@@ -418,7 +424,7 @@ Status MPARC::pop(std::string name){
     }
 
     entries.erase(entries.find(name));
-
+    
     return Status(
         (this->my_code = Status::Code::OK)  
     );
@@ -636,49 +642,62 @@ Status MPARC::list(std::vector<std::string>& output){
 }
 
 
-Status MPARC::get_extra_metadata_pointer(std::map<std::string, std::string>** ptroutput){
-    *ptroutput = &(this->extra_meta_data);
+Status MPARC::extra_metadata_setter_getter(std::map<std::string, std::string>& output, std::map<std::string, std::string>& input){
+    if(std::addressof(input) != std::addressof(MPARC::dummy_extra_metadata)) this->extra_meta_data = input;
+    
+    if(std::addressof(output) != std::addressof(MPARC::dummy_extra_metadata)) output = this->extra_meta_data;
 
     return Status(
-        (this->my_code = Status::Code::OK)
+        this->my_code = Status::Code::OK
     );
 }
 
 
-Status MPARC::construct(std::string& output){
+Status MPARC::construct(std::string& output, MPARC::version_type ver){
     std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
-    std::string archive = "";
+    std::stringstream archive;
     Status stat;
+
+    if(ver < 1 || ver > MPARC::mpar_version){
+        return Status(
+            static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::VERSION_ERROR)
+        );
+    }
 
     { // Construct the header
         std::string header = "";
-        if(!(stat = construct_header(*this, header))){
+        if(!(stat = construct_header(*this, header, ver))){
             return (this->my_code = static_cast<Status::Code>(Status::Code::CONSTRUCT_FAIL | stat.getCode()));
         }
-        archive += header;
+        archive << header;
     }
     { // Construct the tnreis
         std::string entries = "";
-        if(!(stat = construct_entries(*this, entries))){
+        if(!(stat = construct_entries(*this, entries, ver))){
             return (this->my_code = static_cast<Status::Code>(Status::Code::CONSTRUCT_FAIL | stat.getCode()));
         }
-        archive += entries;
+        archive << entries;
     }
     { // Construct the footer
         std::string footer = "";
-        if(!(stat = construct_footer(*this, footer))){
+        if(!(stat = construct_footer(*this, footer, ver))){
             return (this->my_code = static_cast<Status::Code>(Status::Code::CONSTRUCT_FAIL | stat.getCode()));
         }
-        archive += footer;
+        archive << footer;
     }
 
-    output = archive;
+    output = archive.str();
 
 
     return Status(
         (this->my_code = Status::Code::OK)
     );
 }
+
+Status MPARC::construct(std::string &output){
+    return construct(output, MPARC::mpar_version);
+}
+
 
 Status MPARC::parse(std::string input){
     std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
@@ -723,6 +742,11 @@ Status MPARC::parse(std::string input){
         return (this->my_code = stat.getCode());
     }
 
+    // Parse the footer
+    if(!(stat = parse_footer(*this, footer))){
+        return (this->my_code = stat.getCode());
+    }
+
     return Status(
         (this->my_code = Status::Code::OK)
     );
@@ -755,8 +779,30 @@ MPARC::operator void*(){
 
 
 
+
+// UTILITIES
+[[noreturn]] static inline void my_unreachable(...){
+    #if defined(__cpp_lib_unreachable) && __cpp_lib_unreachable >= 202202L
+        std::unreachable();
+    #else
+
+        #ifdef __GNUC__ // GCC, Clang, ICC
+            __builtin_unreachable();
+        #elif defined(_MSC_VER) // MSVC
+            __assume(false);
+        #else // NULL / ABORT
+            int* f = NULL;
+            *f = 21;
+            std::abort();
+        #endif
+
+    #endif
+}
+
+
+
 // ARCHIVE BUILDER
-static Status construct_header(MPARC& archive, std::string& output){
+static Status construct_header(MPARC& archive, std::string& output, MPARC::version_type ver){
     Status stat;
     // String builder
     std::stringstream ssb;
@@ -764,9 +810,9 @@ static Status construct_header(MPARC& archive, std::string& output){
     // Build the initial metadata
     ssb << MPARC::magic_number << MPARC::magic_number_separator;
     {
-        std::string ver = "";
-        Utils::VersionTypeToString(MPARC::mpar_version, ver);
-        ssb << ver;
+        std::string shadow_ver = "";
+        Utils::VersionTypeToString(ver, shadow_ver);
+        ssb << shadow_ver;
     }
 
     // Build the extra JSON metadata
@@ -776,12 +822,13 @@ static Status construct_header(MPARC& archive, std::string& output){
         // Encryption field
         j[b64::to_base64(MPARC::encrypt_meta_field)] = json::array();
 
-        // Extra user defined metadata
-        j[b64::to_base64(MPARC::extra_meta_field)] = json::object();
-        std::map<std::string, std::string>* extras = NULL;
-        archive.get_extra_metadata_pointer(&extras);
-        for(auto extra_pair : (*extras)){
-            j[b64::to_base64(MPARC::extra_meta_field)][b64::to_base64(extra_pair.first)] = b64::to_base64(extra_pair.second);
+        if(ver >= EXTENSIBILITY_UPDATE_VERSION){// Extra user defined metadata
+            j[b64::to_base64(MPARC::extra_meta_field)] = json::object();
+            std::map<std::string, std::string> extras;
+            archive.extra_metadata_setter_getter(extras, MPARC::dummy_extra_metadata);
+            for(auto extra_pair : extras){
+                j[b64::to_base64(MPARC::extra_meta_field)][b64::to_base64(extra_pair.first)] = b64::to_base64(extra_pair.second);
+            }
         }
 
         // Finally put the JSON
@@ -794,7 +841,7 @@ static Status construct_header(MPARC& archive, std::string& output){
     return stat;
 }
 
-static Status construct_entries(MPARC& archive, std::string& output){
+static Status construct_entries(MPARC& archive, std::string& output, MPARC::version_type ver){
     std::stringstream ssb;
     std::vector<std::string> entries;
     Status stat;
@@ -853,7 +900,7 @@ static Status construct_entries(MPARC& archive, std::string& output){
         jentry[MPARC::content_field] = b64::to_base64(strcontent);
 
 
-        { // Put in the checksum after it is processed
+        if(ver >= EXTENSIBILITY_UPDATE_VERSION){ // Put in the checksum after it is processed
             std::string csum = "";
             std::string b64content = jentry.at(MPARC::content_field);
 
@@ -868,7 +915,7 @@ static Status construct_entries(MPARC& archive, std::string& output){
             jentry[MPARC::processed_checksum_field] = csum;
         }
 
-        { // Add the user defined metadata thing
+        if(ver >= EXTENSIBILITY_UPDATE_VERSION){ // Add the user defined metadata thing
             jentry[MPARC::meta_field] = json::object();
             for(auto meta : entreh.metadata){
                 jentry[MPARC::meta_field][b64::to_base64(meta.first)] = b64::to_base64(meta.second);
@@ -911,8 +958,9 @@ static Status construct_entries(MPARC& archive, std::string& output){
     return stat;
 }
 
-static Status construct_footer(MPARC& archive, std::string& output){
+static Status construct_footer(MPARC& archive, std::string& output, MPARC::version_type ver){
     (static_cast<void>(archive));
+    (static_cast<void>(ver));
 
     std::stringstream ssb;
 
@@ -969,7 +1017,7 @@ static Status parse_header(MPARC& archive, std::string header_input){
 
         { // test the version
             MPARC::version_type ck_ver = 0;
-            if(!Utils::StringToVersionType(version, ck_ver) || (ck_ver != MPARC::mpar_version)){
+            if(!Utils::StringToVersionType(version, ck_ver) || (ck_ver > MPARC::mpar_version)){
                 return Status(
                     static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::VERSION_ERROR)
                 );
@@ -1002,12 +1050,12 @@ static Status parse_header(MPARC& archive, std::string header_input){
                     );
                 }
 
-                std::map<std::string, std::string>* extras = NULL;
-                archive.get_extra_metadata_pointer(&extras);
+                std::map<std::string, std::string> extras;
 
                 for(auto meta : j[b64::to_base64(MPARC::extra_meta_field)].items()){
-                    (*extras)[b64::from_base64(meta.key())] = b64::from_base64(meta.value());
+                    extras[b64::from_base64(meta.key())] = b64::from_base64(meta.value());
                 }
+                archive.extra_metadata_setter_getter(MPARC::dummy_extra_metadata, extras);
             }
         }
     }
@@ -1186,6 +1234,17 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
                 }
             }
         }
+    }
+    return Status(Status::Code::OK);
+}
+
+static Status parse_footer(MPARC& archive, std::string footer_input){
+    (static_cast<void>(archive));
+    size_t footer_pos = footer_input.find(MPARC::end_of_archive_marker);
+    if(footer_pos == std::string::npos || footer_input[footer_pos] != MPARC::end_of_archive_marker) {
+        return Status(
+            static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+        );
     }
     return Status(Status::Code::OK);
 }

@@ -82,6 +82,7 @@
 #include <utility>
 #include <vector>
 #include <cinttypes>
+#include <memory>
 
 #ifdef MXPSQL_MPARC_FIX11_CPP17
 #include <filesystem>
@@ -227,6 +228,9 @@ public:
     /// @brief A constant for the archive's version number
     static const version_type mpar_version = 2;
 
+    /// @brief A dummy object used to indicate that you don't want to set the map in the extra metadata setter/getter function. You can change it all you want, this object shall never be used by the library.
+    static std::map<std::string, std::string> dummy_extra_metadata;
+
 private:
     /// @brief Internal storage
     std::map<std::string, Entry> entries;
@@ -354,14 +358,23 @@ public:
     Status list(std::vector<std::string> &output);
 
     /// @brief Get a pointer to the map for the extra metadata
-    /// @param ptroutput Output where the pointer will be stored at
+    /// @param output What is in the extra metadata map. Pass the dummy map if you don't want to read from the map
+    /// @param input Set map value thing? Pass the dummy map if you don't want to set it
     /// @return Status::Code::OK = Success.
-    Status get_extra_metadata_pointer(std::map<std::string, std::string>** ptroutput);
+    Status extra_metadata_setter_getter(std::map<std::string, std::string>& output, std::map<std::string, std::string>& input);
 
-    /// @brief Construct the archive
+    /// @brief Construct the archive, but you can specify which version to use
+    /// @param output Output string to store the archive. Output is untouched if
+    /// @param ver Version of the archive to construct with
+    /// an error occurs.
+    /// @return Status::Code::OK = Success. Status::Code::CONSTRUCT_FAIL | *??? = Failure.
+    Status construct(std::string &output, version_type ver);
+    /// @brief Construct the archive, but uses the currently specified mpar_version
     /// @param output Output string to store the archive. Output is untouched if
     /// an error occurs.
     /// @return Status::Code::OK = Success. Status::Code::CONSTRUCT_FAIL | *??? = Failure.
+    /// @see construct
+    /// @see mpar_version
     Status construct(std::string &output);
 
     /// @brief Parse the archive
