@@ -16,7 +16,7 @@ on:
     branches: [ "master", "depot11", "predepot11" ]
   pull_request:
     branches: [ "master", "depot11", "predepot11" ]
-    
+
   schedule:
     - cron: '18 21 * * 6'
   workflow_dispatch: {}
@@ -65,9 +65,9 @@ jobs:
     #   If the Autobuild fails above, remove it and uncomment the following three lines.
     #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
 
-    # - run: |
-    #   echo "Run, Build Application using script"
-    #   ./location_of_script_within_repo/buildscript.sh
+    - run: |
+      echo "Run, Build Application using script"
+      ./dotest.sh
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

@@ -39,6 +39,7 @@ $(LIBA): mparc.o
 
 $(EXEC): $(LIBA)
 	$(CXX) $(CXXFLAGS) $(MAINcppFILE) $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(EXEC)
+	chmod a+x ./$(EXEC)
 
 
 docs:

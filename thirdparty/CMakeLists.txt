@@ -1,0 +1,38 @@
+if(USE_EXTERNAL_ALL)
+  set(USE_EXTERNAL_JSON "Use JSON from an external source" ON)
+  set(USE_EXTERNAL_B64 "Use an External Base64 Library" ON)
+  set(USE_EXTERNAL_CLI11 "Use an external CLI11 instance" ON)
+elseif(USE_FETCHCONTENT_ALL)
+  set(USE_FETCHCONTENT_JSON "Use JSON from a fetched source" ON)
+  set(USE_FETCHCONTENT_B64 "Use a fetched Base64 Library" ON)
+  set(USE_FETCHCONTENT_CLI11 "Use a fetched CLI11 instance" ON)
+endif()
+
+if(USE_EXTERNAL_JSON)
+  find_package(nlohmann_json 3.2.0 REQUIRED)
+elseif(USE_FETCHCONTENT_JSON)
+  FetchContent_Declare(json
+      GIT_REPOSITORY https://github.com/nlohmann/json
+      GIT_TAG v3.11.2
+  )
+  FetchContent_MakeAvailable(json)
+else()
+  set(JSON_BuildTests OFF CACHE INTERNAL "")
+  add_subdirectory(nlohmann_json)
+endif()
+
+if(USE_EXTERNAL_B64)
+  find_package(base64 REQUIRED)
+elseif(USE_FETCHCONTENT_B64)
+else()
+  set(JSON_BuildTests OFF CACHE INTERNAL "")
+  add_subdirectory(base64)
+endif()
+
+if(USE_EXTERNAL_CLI11)
+  find_package(CLI11 3.2.0 REQUIRED)
+elseif(USE_FETCHCONTENT_CLI11)
+else()
+  set(JSON_BuildTests OFF CACHE INTERNAL "")
+  add_subdirectory(CLI11)
+endif()
