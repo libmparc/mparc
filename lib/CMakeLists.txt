@@ -44,8 +44,8 @@ list(GET DL_STAT 1 DL_STAT_MSG)
 if(NOT "${DL_STAT_CODE}" EQUAL "0")
     message(FATAL_ERROR "Error fetching: ${DL_STAT_MSG}")
 endif()
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/base64.hpp")
-    message(FATAL_ERROR "F: \"${CMAKE_SOURCE_DIR}/base64.hpp\" does not 'EXISTS'")
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/base64.hpp" AND NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/base64.hpp")
+    message(FATAL_ERROR "F: \"${CMAKE_SOURCE_DIR}/base64.hpp\" does not 'EXISTS' OR \"${CMAKE_SOURCE_DIR}/base64.hpp\" 'IS_DIRECTORY'")
 endif()
 
 # continue again
