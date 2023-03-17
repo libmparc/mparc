@@ -37,6 +37,14 @@ include(FetchContent)
 file(DOWNLOAD https://raw.githubusercontent.com/tobiaslocker/base64/db7c6834bd4f733899bd93218926247a659d8924/include/base64.hpp "${CMAKE_SOURCE_DIR}/base64.hpp" SHOW_PROGRESS)
 
 
+# Test some stuff
+SUBDIRLIST(subdirs "${CMAKE_SOURCE_DIR}")
+FOREACH(subdir ${SUBDIRS})
+    message(INFO "DIR|${CMAKE_SOURCE_DIR}> ${subdir}")
+ENDFOREACH()
+
+# continue again
+
 FetchContent_Declare(json
 GIT_REPOSITORY https://github.com/nlohmann/json
 GIT_TAG v3.11.2
@@ -53,10 +61,3 @@ set_property(TARGET MPARC PROPERTY CXX_STANDARD_REQUIRED TRUE)
 
 # install
 install(TARGETS MPARC DESTINATION CMAKE_INSTALL_LIBDIR)
-
-
-# Test some stuff
-SUBDIRLIST(subdirs "${CMAKE_SOURCE_DIR}")
-FOREACH(subdir ${SUBDIRS})
-    message(INFO "DIR|${CMAKE_SOURCE_DIR}> ${subdir}")
-ENDFOREACH()
