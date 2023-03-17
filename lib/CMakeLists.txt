@@ -34,14 +34,16 @@ include(FetchContent)
 # GIT_REPOSITORY https://github.com/tobiaslocker/base64
 # GIT_TAG db7c6834bd4f733899bd93218926247a659d8924
 # )
-file(DOWNLOAD https://raw.githubusercontent.com/tobiaslocker/base64/db7c6834bd4f733899bd93218926247a659d8924/include/base64.hpp "${CMAKE_SOURCE_DIR}/base64.hpp" SHOW_PROGRESS)
-
-
-# Test some stuff
-SUBDIRLIST(subdirs "${CMAKE_SOURCE_DIR}")
-FOREACH(subdir ${SUBDIRS})
-    message(INFO "DIR|${CMAKE_SOURCE_DIR}> ${subdir}")
-ENDFOREACH()
+file(DOWNLOAD https://raw.githubusercontent.com/tobiaslocker/base64/db7c6834bd4f733899bd93218926247a659d8924/include/base64.hpp 
+"${CMAKE_SOURCE_DIR}/base64.hpp" 
+SHOW_PROGRESS 
+STATUS DL_STAT
+)
+list(GET DL_STAT 0 DL_STAT_CODE)
+list(GET DL_STAT 1 DL_STAT_MSG)
+if(NOT "${DL_STAT_CODE}" EQUAL "0")
+    message(FATAL_ERROR "Error fetching: ${DL_STAT_MSG}")
+endif()
 
 # continue again
 
