@@ -24,9 +24,16 @@ die(){
 };
 
 
+construct(){
+    printer "GIT THING???";
+    git submodule update --recursive --init --remote;
+}
+
+
 perform_dumb(){
     printer "Building object files in a dumb manner";
     chmod a+x ./dumbbuild.sh || die "I can't get the dumb build to run";
+    ls thirdparty
     ./dumbbuild.sh || die "You failed me.";
 }
 
@@ -106,6 +113,7 @@ teardown(){
 }
 
 
+construct;
 perform_dumb;
 printf "\n\n";
 perform_makefile;
