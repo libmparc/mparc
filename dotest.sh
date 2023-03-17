@@ -33,7 +33,6 @@ construct(){
 perform_dumb(){
     printer "Building object files in a dumb manner";
     chmod a+x ./dumbbuild.sh || die "I can't get the dumb build to run";
-    ls thirdparty
     ./dumbbuild.sh || die "You failed me.";
 }
 

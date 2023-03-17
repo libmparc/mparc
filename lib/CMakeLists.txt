@@ -1,5 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 
+# Utilities
+MACRO(SUBDIRLIST result curdir)
+  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
+  SET(dirlist "")
+  FOREACH(child ${children})
+    IF(IS_DIRECTORY ${curdir}/${child})
+      LIST(APPEND dirlist ${child})
+    ENDIF()
+  ENDFOREACH()
+  SET(${result} ${dirlist})
+ENDMACRO()
+
 # Fix behavior of CMAKE_C_STANDARD when targeting macOS.
 if(POLICY CMP0025)
     cmake_policy(SET CMP0025 NEW)
@@ -24,6 +36,7 @@ include(FetchContent)
 # )
 file(DOWNLOAD https://raw.githubusercontent.com/tobiaslocker/base64/db7c6834bd4f733899bd93218926247a659d8924/include/base64.hpp "${CMAKE_SOURCE_DIR}/base64.hpp" SHOW_PROGRESS)
 
+
 FetchContent_Declare(json
 GIT_REPOSITORY https://github.com/nlohmann/json
 GIT_TAG v3.11.2
@@ -40,3 +53,10 @@ set_property(TARGET MPARC PROPERTY CXX_STANDARD_REQUIRED TRUE)
 
 # install
 install(TARGETS MPARC DESTINATION CMAKE_INSTALL_LIBDIR)
+
+
+# Test some stuff
+SUBDIRLIST(subdirs "${CMAKE_SOURCE_DIR}")
+FOREACH(subdir ${SUBDIRS})
+    message(INFO "DIR|${CMAKE_SOURCE_DIR}> ${subdir}")
+ENDFOREACH()
