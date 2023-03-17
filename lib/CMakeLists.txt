@@ -15,12 +15,28 @@ set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
 # include some magic ???
 include(GNUInstallDirs)
+include(FetchContent)
+
+# add external libraries
+# FetchContent_Declare(b64
+# GIT_REPOSITORY https://github.com/tobiaslocker/base64
+# GIT_TAG db7c6834bd4f733899bd93218926247a659d8924
+# )
+file(DOWNLOAD https://raw.githubusercontent.com/tobiaslocker/base64/db7c6834bd4f733899bd93218926247a659d8924/include/base64.hpp "${CMAKE_SOURCE_DIR}/base64.hpp" SHOW_PROGRESS)
+
+FetchContent_Declare(json
+GIT_REPOSITORY https://github.com/nlohmann/json
+GIT_TAG v3.11.2
+)
+FetchContent_MakeAvailable(json)
 
 # add library
-add_library(MPARC ./mparc.cpp)
+add_library(MPARC ./mparc.cpp) # Main one
+target_link_libraries(MPARC PRIVATE nlohmann_json::nlohmann_json)
 
 # enforce post-target-definition property configurations
 set_property(TARGET MPARC PROPERTY C_STANDARD_REQUIRED TRUE)
+set_property(TARGET MPARC PROPERTY CXX_STANDARD_REQUIRED TRUE)
 
 # install
 install(TARGETS MPARC DESTINATION CMAKE_INSTALL_LIBDIR)

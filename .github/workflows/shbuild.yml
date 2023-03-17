@@ -34,6 +34,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install scons
         sudo apt-get install ninja-build
+        sudo apt-get install git
 
     - name: Run test script
       run: bash ./dotest.sh

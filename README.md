@@ -4,4 +4,4 @@ I want to reqeire MPARC under C++11 because the C99 Version is spaghetti.
 
 To view the C99 version, see the predepot11 branch.
 
-Anyways. This version is safer than the C99 version at the cost of portability.
+Anyways. This version is safer than the C99 version at the cost of portability and no longer single file too.
