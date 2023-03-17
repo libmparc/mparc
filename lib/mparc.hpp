@@ -399,7 +399,7 @@ public:
     operator void*();
     /// @brief Compare this archive instance to another one
     /// @param other That other one
-    operator==(MPARC &other);
+    bool operator==(MPARC &other);
 };
 
 namespace Utils {
