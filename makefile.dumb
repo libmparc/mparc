@@ -38,7 +38,7 @@ $(LIBA): mparc.o
 	ar rcs $(LIBA) $(LIBO) $(DMALLOC_PATH)
 
 $(EXEC): $(LIBA)
-	$(CXX) $(CXXFLAGS) $(MAINcppFILE) $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(EXEC)
+	$(CXX) $(CXXFLAGS) $(MAINcppFILE) -DMPARC_X_DOTEST $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(EXEC)
 	chmod a+x ./$(EXEC)
 
 

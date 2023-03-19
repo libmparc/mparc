@@ -83,6 +83,7 @@
 #include <vector>
 #include <cinttypes>
 #include <memory>
+#include <locale>
 
 #ifdef MXPSQL_MPARC_FIX11_CPP17
 #include <filesystem>
@@ -163,6 +164,10 @@ public:
     /// code, else use the value of the code pointer.
     /// @return The string representation.
     std::string str(Code *code);
+    /// @brief Get a string representation of the code
+    /// @return The string representation.
+    /// @see str
+    std::string str();
     /// @brief Is code OK?
     /// @return Is code OK?
     bool isOK();
@@ -192,19 +197,21 @@ public:
 public:
 
     /// @brief A marker used to separate the magic number from the version and custom metadata
-    static const char magic_number_separator = ';';
+    static constexpr const char magic_number_separator = ';';
     /// @brief A marker used to separate the magic number from the JSON metadata storage
-    static const char header_meta_magic_separator = '$';
+    static constexpr const char header_meta_magic_separator = '$';
     /// @brief A marker used to separate the header and the entries and footer.
-    static const char post_header_separator = '>';
+    static constexpr const char post_header_separator = '>';
     /// @brief Separator between each entry in the entry list
-    static const char entries_entry_separator = '\n';
+    static constexpr const char entries_entry_separator = '\n';
+    /// @brief A marker used to indicate a comment
+    static constexpr const char comment_marker = '#';
     /// @brief Separator for the checksum and the content in each entry
-    static const char entry_checksum_content_separator = '%';
+    static constexpr const char entry_checksum_content_separator = '%';
     /// @brief A marker used to indicate the end of entries and separate it from the end of archive marker
-    static const char end_of_entries_separator = '@';
+    static constexpr const char end_of_entries_separator = '@';
     /// @brief A marker used to indicate the end of the archive
-    static const char end_of_archive_marker = '~';
+    static constexpr const char end_of_archive_marker = '~';
 
     /// @brief The field's name for storing the file name
     static const std::string filename_field;
@@ -226,7 +233,7 @@ public:
     static const std::string magic_number;
 
     /// @brief A constant for the archive's version number
-    static const version_type mpar_version = 2;
+    static constexpr const version_type mpar_version = 2;
 
     /// @brief A dummy object used to indicate that you don't want to set the map in the extra metadata setter/getter function. You can change it all you want, this object shall never be used by the library.
     static std::map<std::string, std::string> dummy_extra_metadata;
@@ -240,6 +247,8 @@ private:
     Status::Code my_code = Status::Code::OK;
     /// @brief Place to put extra data, found on the global JSON metadata section.
     std::map<std::string, std::string> extra_meta_data;
+    /// @brief The currently loaded locale. Used for parsing.
+    std::locale locale = std::locale::classic();
 
     /// @brief Initialization function
     void init();
@@ -380,6 +389,7 @@ public:
     /// @brief Parse the archive
     /// @param input The archive string to be parsed
     /// @return Status::Code::OK = Success. Status::Code::PARSE_FAIL | *??? = Failure.
+    /// @note Whitespace parsing is influenced by the locale
     Status parse(std::string input);
 
 
@@ -392,6 +402,15 @@ public:
     /// @return Status::Code::OK = Internally OK. Status::Code::FALSE = Internally Not OK.
     /// @note Does not change the internal status
     Status isOK();
+
+    /// @brief Set the locale to be used.
+    /// @param loc The locale to be used
+    /// @return Status::Code::OK = Success.
+    Status set_locale(std::locale loc);
+    /// @brief Get the locale that is currently being used
+    /// @param locput The locale that is being used is stored into that reference
+    /// @return Status::Code::OK = Success.
+    Status get_locale(std::locale& locput);
 
     /// @brief A boolean operator
     operator bool();

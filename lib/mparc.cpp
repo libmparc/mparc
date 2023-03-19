@@ -222,10 +222,10 @@ bool Status::isOK(){
 void Status::assertion(bool throw_err=true){
     if(!isOK()){
         if(throw_err){
-            throw std::runtime_error(str(nullptr) + ": " + std::to_string(getCode()));
+            throw std::runtime_error(str() + ": " + std::to_string(getCode()));
         }
         else{
-            std::cerr << "MPARC11[ABORT] " << str(nullptr) << " (" << std::to_string(getCode()) << ")" << std::endl;
+            std::cerr << "MPARC11[ABORT] " << str() << " (" << std::to_string(getCode()) << ")" << std::endl;
             std::abort();
         }
     }
@@ -284,6 +284,10 @@ std::string Status::str(Status::Code* code = nullptr){
         my_unreachable();
         return "Unknown code";
     }
+}
+
+std::string Status::str(){
+    return str(nullptr);
 }
 
 Status::Code Status::getCode(){
@@ -643,6 +647,7 @@ Status MPARC::list(std::vector<std::string>& output){
 
 
 Status MPARC::extra_metadata_setter_getter(std::map<std::string, std::string>& output, std::map<std::string, std::string>& input){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     if(std::addressof(input) != std::addressof(MPARC::dummy_extra_metadata)) this->extra_meta_data = input;
     
     if(std::addressof(output) != std::addressof(MPARC::dummy_extra_metadata)) output = this->extra_meta_data;
@@ -695,6 +700,7 @@ Status MPARC::construct(std::string& output, MPARC::version_type ver){
 }
 
 Status MPARC::construct(std::string &output){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     return construct(output, MPARC::mpar_version);
 }
 
@@ -752,18 +758,38 @@ Status MPARC::parse(std::string input){
     );
 }
 
+
 Status MPARC::get_status(Status& output){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     output = this->my_code;
     return Status::Code::OK;
 }
 
 Status MPARC::isOK(){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     Status stat;
     get_status(stat);
     return(
         (stat.isOK()) ?
         Status::Code::OK :
         Status::Code::FALSE
+    );
+}
+
+
+Status MPARC::set_locale(std::locale loc){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    this->locale = loc;
+    return Status(
+        (this->my_code = Status::Code::OK)
+    );
+}
+
+Status MPARC::get_locale(std::locale& locput){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    locput = this->locale;
+    return Status(
+        (this->my_code = Status::Code::OK)
     );
 }
 
@@ -1074,7 +1100,23 @@ static Status parse_entries(MPARC& archive, std::string entry_input){
 
     { // Loop over each line        
         for(auto line : lines){
-            if(line.empty() || line.length() < 1){ // skip empty line
+            { // Trim early whitespace
+                std::locale locale;
+                archive.get_locale(locale);
+                auto it =  std::find_if_not(line.begin(), line.end(), 
+                    [&locale](char ch){ 
+                        return std::isspace<char>(ch, locale); 
+                    }
+                );
+                line.erase(line.begin(), it);
+            }
+
+            if(
+                (line[0] == MPARC::comment_marker) // skip comments
+                ||
+                (line.empty() || line.length() < 1) // skip empty line
+            )
+            {
                 continue;
             }
 
