@@ -16,15 +16,16 @@ MAINcppFILE=$(SRCDIR)/main.cpp
 LIBO:=mparc.o
 LIBA:=libmparc.a
 EXEC:=mparc.exe
+TEXEC:=tmparc.exe
 
 CC:=gcc
 CXX:=g++
 
 DEFAULT_GOAL:=all
 
-.PHONY: all  cls  $(LIBO) $(LIBA) $(EXEC)  docs  clean  mkar  mkat runconf
+.PHONY: all  cls  $(LIBO) $(LIBA) $(TEXEC) $(EXEC)  docs  clean  mkar  mkat runconf
 
-all: cls $(EXEC) $(EXECXX)
+all: cls $(TEXEC) $(EXEC)
 
 
 cls:
@@ -37,8 +38,12 @@ $(LIBO):
 $(LIBA): mparc.o
 	ar rcs $(LIBA) $(LIBO) $(DMALLOC_PATH)
 
+$(TEXEC): $(LIBA)
+	$(CXX) $(CXXFLAGS) $(MAINcppFILE) -DMPARC_X_DOTEST $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(TEXEC)
+	chmod a+x ./$(TEXEC)
+
 $(EXEC): $(LIBA)
-	$(CXX) $(CXXFLAGS) $(MAINcppFILE) -DMPARC_X_DOTEST $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(EXEC)
+	$(CXX) $(CXXFLAGS) $(MAINcppFILE) $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(EXEC)
 	chmod a+x ./$(EXEC)
 
 

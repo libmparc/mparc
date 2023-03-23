@@ -846,7 +846,13 @@ static Status construct_header(MPARC& archive, std::string& output, MPARC::versi
         json j = json::object();
 
         // Encryption field
-        j[b64::to_base64(MPARC::encrypt_meta_field)] = json::array();
+        {
+            std::string encrypt_field = ((ver >= EXTENSIBILITY_UPDATE_VERSION)
+                ? b64::to_base64(MPARC::encrypt_meta_field)
+                : MPARC::encrypt_meta_field
+            );
+            j[encrypt_field] = json::array();
+        }
 
         if(ver >= EXTENSIBILITY_UPDATE_VERSION){// Extra user defined metadata
             j[b64::to_base64(MPARC::extra_meta_field)] = json::object();
@@ -1060,13 +1066,20 @@ static Status parse_header(MPARC& archive, std::string header_input){
                 );
             }
 
-            if(j.contains(b64::to_base64(MPARC::encrypt_meta_field))){ // encryption thingy
-                std::vector<std::string> encrypt_algos = j.at(b64::to_base64(MPARC::encrypt_meta_field));
-            }
-            else{
-                return Status(
-                    static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+            {
+                std::string encrypt_field = ((archive.loaded_version >= EXTENSIBILITY_UPDATE_VERSION)
+                    ? b64::to_base64(MPARC::encrypt_meta_field)
+                    : MPARC::encrypt_meta_field
                 );
+
+                if(j.contains(encrypt_field)){ // encryption thingy
+                    std::vector<std::string> encrypt_algos = j.at(encrypt_field);
+                }
+                else{
+                    return Status(
+                        static_cast<Status::Code>(Status::Code::PARSE_FAIL | Status::Code::NOT_MPAR_ARCHIVE)
+                    );
+                }
             }
 
             if(archive.loaded_version >= EXTENSIBILITY_UPDATE_VERSION){ // Extra global metadata, only if version 2 is reached

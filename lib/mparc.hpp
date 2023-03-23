@@ -250,6 +250,11 @@ private:
     /// @brief The currently loaded locale. Used for parsing.
     std::locale locale = std::locale::classic();
 
+    /// @brief The key used to perform ROT encryption and decryption
+    std::vector<int> ROT_key;
+    /// @brief The key used to perform XOR encryption and decryption
+    std::string XOR_key;
+
     /// @brief Initialization function
     void init();
 
