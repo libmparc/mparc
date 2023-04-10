@@ -107,6 +107,8 @@ perform_autotools(){
 }
 
 teardown(){
+    printer "Cleaning with makefile.";
+    make -f [Mm]akefile.dumb clean || printer "Make failed to do it's job.";
     printer "Cleaning with git.";
     git clean -Xdf || printer "Git is not installed";
 }
