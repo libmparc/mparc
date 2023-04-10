@@ -85,3 +85,4 @@ docs/docbook/
 !Makefile.dumb
 !ccflegs.txt
 !ccflegs.txt
+*.ignore

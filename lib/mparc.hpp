@@ -145,7 +145,16 @@ public:
         /// @brief Checksum failed (either to obtain or check)
         CHECKSUM_ERROR = 1 << 15,
         /// @brief Version check failed (either too new or just failed to grab)
-        VERSION_ERROR = 1 << 16
+        VERSION_ERROR = 1 << 16,
+
+        /// @brief An error during encryption/decryption
+        CRYPT_ERROR = 1 << 17,
+        /// @brief Encryption not enabled 
+        CRYPT_NONE = 1 << 18,
+        /// @brief A misuse of the encryption algorithm was detected
+        CRYPT_MISUSE = 1 << 19,
+        /// @brief A cryptography failure
+        CRYPT_FAIL = 1 << 20
     };
 
 private:
@@ -196,6 +205,17 @@ public:
 
 public:
 
+    /// @brief The bad/default version
+    static constexpr const MPARC::version_type NO_VERSION = 0; 
+    /// @brief The early version without metadata and processed checksum
+    static constexpr const MPARC::version_type INITIAL_VERSION = 1; 
+    /// @brief The version that adds the processed checksum and metadata
+    static constexpr const MPARC::version_type EXTENSIBILITY_UPDATE_VERSION = 2; 
+    /// @brief The version that adds the first Fletcher32 component
+    static constexpr const MPARC::version_type FLETCHER32_INITIAL_UPDATE_VERSION = 3; 
+    /// @brief The version that adds Camellia encryption support
+    static constexpr const MPARC::version_type CAMELLIA_UPDATE_VERSION = 4; 
+
     /// @brief A marker used to separate the magic number from the version and custom metadata
     static constexpr const char magic_number_separator = ';';
     /// @brief A marker used to separate the magic number from the JSON metadata storage
@@ -217,9 +237,11 @@ public:
     static const std::string filename_field;
     /// @brief The field's name for storing the base64'd content
     static const std::string content_field;
-    /// @brief The field's name for storing the checksum (CRC32) of the raw (no base64) content of an entry.
+    /// @brief The field's name for storing the checksum (CRC32) of the raw (no Base64 and encryption) content of an entry.
     static const std::string checksum_field;
-    /// @brief The field's name for storing the checksum (CRC32) of the contents of the entry after it has been processed (only Base64)
+    /// @brief The field's name for storing the checksum (Fletcher32) of the raw (no Base64 and encryption) content of an entry. This is the Fletcher32 version.
+    static const std::string fletcher_checksum_field;
+    /// @brief The field's name for storing the checksum (CRC32) of the contents of the entry after it has been processed (Base64 and encryption)
     static const std::string processed_checksum_field;
     /// @brief The field's name for stroring entry specific metadata. It can be ACLs, time of modification or whatever you need.
     static const std::string meta_field;
@@ -233,7 +255,7 @@ public:
     static const std::string magic_number;
 
     /// @brief A constant for the archive's version number
-    static constexpr const version_type mpar_version = 2;
+    static const constexpr version_type mpar_version = CAMELLIA_UPDATE_VERSION;
 
     /// @brief A dummy object used to indicate that you don't want to set the map in the extra metadata setter/getter function. You can change it all you want, this object shall never be used by the library.
     static std::map<std::string, std::string> dummy_extra_metadata;
@@ -242,7 +264,7 @@ private:
     /// @brief Internal storage
     std::map<std::string, Entry> entries;
     /// @brief Safety mutex
-    std::recursive_mutex sync_mutex;
+    mutable std::recursive_mutex sync_mutex;
     /// @brief Internal error reporting
     Status::Code my_code = Status::Code::OK;
     /// @brief Place to put extra data, found on the global JSON metadata section.
@@ -251,9 +273,12 @@ private:
     std::locale locale = std::locale::classic();
 
     /// @brief The key used to perform ROT encryption and decryption
-    std::vector<int> ROT_key;
+    std::vector<int> ROT_key{};
     /// @brief The key used to perform XOR encryption and decryption
-    std::string XOR_key;
+    std::string XOR_key = "";
+    /// @brief The key used to perform Camellia encryption and decryption
+    /// @note Due to the implementation, the length must be below 256 bits/32 bytes.
+    std::string Camellia_k = "";
 
     /// @brief Initialization function
     void init();
@@ -407,6 +432,33 @@ public:
     /// @return Status::Code::OK = Internally OK. Status::Code::FALSE = Internally Not OK.
     /// @note Does not change the internal status
     Status isOK();
+
+    /// @brief Set the encryption key for XOR encryption
+    /// @param key The key to be used. If empty, disables XOR encryption.
+    /// @return Status::Code::OK = OK.
+    Status set_xor_encryption(std::string key);
+    /// @brief Get the encryption key for XOR encryption
+    /// @param okey The key currently used. If empty, XOR encryption is disabled.
+    /// @return Status::Code::OK = OK.
+    Status get_xor_encryption(std::string& okey);
+    /// @brief Set the encryption key for ROT encryption.
+    /// @param key The key to be used. If empty, disables ROT encryption.
+    /// @return Status::Code::OK = OK.
+    Status set_rot_encryption(std::vector<int> key);
+    /// @brief Get the encryption key for ROT encryption.
+    /// @param okey The key currently used. If empty, ROT encryption is disabled.
+    /// @return Status::Code::OK = OK.
+    Status get_rot_encryption(std::vector<int>& okey);
+    /// @brief Set the encryption key for the Camellia encryption
+    /// @param key The key to be used. If empty, Camellia encryption is disabled.
+    /// @return Status::Code::OK = OK.
+    /// @note This encryption requires the key to be below 256 bits/32 bytes. If the key does not allign with 128, 192 or 256 bits, it will be padded according to the next highest one.
+    /// @warning This encryption method is currently broken.
+    Status set_camellia_encryption(std::string key);
+    /// @brief Get the encryption key for the Camellia encryption
+    /// @param key The key currently used. If empty, Camellia encryption is disabled.
+    /// @return Status::Code::OK = OK.
+    Status get_camellia_encryption(std::string& okey);
 
     /// @brief Set the locale to be used.
     /// @param loc The locale to be used

@@ -159,15 +159,41 @@ int exec_main(int argc, char* argv[]){
     bool list = false;
     bool create = false;
     bool verbose = false;
+    MPARC11::MPARC::version_type tep = MPARC11::MPARC::mpar_version;
+    std::string xor_k;
+    std::vector<int> rot_k;
+    std::string camellia_k = "";
     appParser.add_option("-f,--file", filename, "Which file?")->required();
-    appParser.add_flag("-v,--verbose", verbose, "Verbose mode");
-    {
-        auto list_opt = appParser.add_flag("-t,-l,--list", list, "List the archive?");
-        auto create_opt = appParser.add_flag("-c,--create", create, "Create an archive?");
+    appParser.add_option("-^,--set-version", tep, "Version of the archive to construct");
+    appParser.add_flag("-V,--verbose", verbose, "Verbose mode");
+    { // Encryption
+        auto xor_opt = appParser.add_option("-X,--xor", xor_k, "XOR encryption key go here.");
+        auto rot_opt = appParser.add_option("-R,--rot", rot_k, "ROT ecnryption key go here.")->delimiter(',');
+        auto camellia_opt = appParser.add_option("-C,--camellia", camellia_k, "Camellia encryption key go here (below 256 bits/32 bytes in size).")->delimiter(',');
 
-        list_opt->excludes(create_opt);
-        
-        create_opt->excludes(list_opt);
+        (static_cast<void>(xor_opt));
+        (static_cast<void>(rot_opt));
+        (static_cast<void>(camellia_opt));
+    }
+    { // Operations
+        std::vector<CLI::Option*> opts;
+        {
+            auto list_opt = appParser.add_flag("-t,-l,--list", list, "List the archive?");
+            auto create_opt = appParser.add_flag("-c,--create", create, "Create an archive?");
+
+            opts.push_back(list_opt);
+            opts.push_back(create_opt);
+        }
+
+        for(std::vector<CLI::Option*>::size_type i = 0; i < opts.size(); i++){
+            for(std::vector<CLI::Option*>::size_type j = 0; j < opts.size(); j++){
+                if(j != i){
+                    auto iopt = opts[i];
+                    auto jopt = opts[j];
+                    iopt->excludes(jopt);
+                }
+            }
+        }
     }
 
     try {
@@ -176,18 +202,32 @@ int exec_main(int argc, char* argv[]){
         return appParser.exit(e);
     }
 
+    {
+        archive.set_xor_encryption(xor_k);
+        archive.set_rot_encryption(rot_k);
+
+        if(camellia_k.size() > 256){
+            if(!(stat = archive.set_camellia_encryption(camellia_k)).isOK()){
+                std::cerr << "Camellia encryption misuse detected (key bit length can only be below 256 bits/32 bytes long)." << std::endl;
+                return EXIT_FAILURE;
+            }
+        }
+    }
+
     if(list){
         std::string file = "";
         if(!read_archive(filename, file)){
             return EXIT_FAILURE;
         }
 
+        if(verbose) std::cout << "Parsing archive..." << std::endl;
         stat = archive.parse(file);
         if(!stat.isOK()){
             std::cerr << "Failure to parse archive: " << stat.str() << std::endl;
             return EXIT_FAILURE;
         }
 
+        if(verbose) std::cout << "Listing archive..." << std::endl;
         std::vector<std::string> lists;
         stat = archive.list(lists);
         if(!stat.isOK()){
@@ -209,6 +249,7 @@ int exec_main(int argc, char* argv[]){
                 std::cout << "C> " << file << std::endl;
             }
 
+            if(verbose) std::cout << "Pushing entries to archive" << std::endl;
             stat = archive.push(file, true);
             if(!stat.isOK()){
                 std::cerr << "Failure to push '" << file << "' to archive: " << stat.str() << std::endl;
@@ -216,7 +257,8 @@ int exec_main(int argc, char* argv[]){
             }
         }
 
-        stat = archive.construct(file);
+        if(verbose) std::cout << "Constructing archive '" << filename << "'" << std::endl;
+        stat = archive.construct(file, tep);
         if(!stat.isOK()){
             std::cerr << "Failure to construct archive: " << stat.str() << std::endl;
             return EXIT_FAILURE;
