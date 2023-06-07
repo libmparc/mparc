@@ -85,8 +85,28 @@
 #include <memory>
 #include <locale>
 
-#ifdef MXPSQL_MPARC_FIX11_CPP17
+// fslib chooser
+#if defined(MXPSQL_MPARC_CGI_CPPFS) && false && 0 
+// cppfs support is currently disabled as its interface is so different
+
+// cginternals cppfs
+// from https://github.com/cginternals/cppfs
+
+#define MXPSQL_MPARC_FSLIB 3
+
+#elif defined(MXPSQL_MPARC_GHCFS)
+
+// GHCFS fslib
+// from https://github.com/gulrak/filesystem
+#define MXPSQL_MPARC_FSLIB 2
+#include <ghc/filesystem.hpp>
+
+#elif defined(MXPSQL_MPARC_FIX11_CPP17) && defined(MXPSQL_MPARC_CPP17FS)
+
+// C++17 fslib
+#define MXPSQL_MPARC_FSLIB 1
 #include <filesystem>
+
 #endif
 
 namespace MXPSQL {
@@ -97,10 +117,10 @@ using ByteArray = std::vector<unsigned char>;
 /// @brief A representation of an entry
 struct Entry {
     /// @brief Content of the entry, if applicable
-    ByteArray content;
+    ByteArray content{};
     /// @brief Extra metadata
     std::map<std::string, std::string> metadata;
-};
+}; // eantraeh
 
 class Status {
 public:
@@ -155,7 +175,7 @@ public:
         CRYPT_MISUSE = 1 << 19,
         /// @brief A cryptography failure
         CRYPT_FAIL = 1 << 20
-    };
+    }; // enumerations
 
 private:
     /// @brief Internal code
@@ -168,12 +188,12 @@ public:
     /// @param code The code
     Status(Code code) : stat_code(code) {}
 
-    /// @brief Get a string representation of the code
+    /// @brief Get a string representation of the passed code
     /// @param code The code that you want to use. If nullptr, use the internal
     /// code, else use the value of the code pointer.
     /// @return The string representation.
     std::string str(Code *code);
-    /// @brief Get a string representation of the code
+    /// @brief Get a string representation of the current status object
     /// @return The string representation.
     /// @see str
     std::string str();
@@ -185,25 +205,24 @@ public:
     Code getCode();
     /// @brief Assert whether the status is OK. If not, it either throws a
     /// std::runtime_error or calls abort();
-    /// @param throw_err If true, instruct to throw std::runtime_error. If false,
-    /// abort();
+    /// @param throw_err If true, instruct to throw std::runtime_error. If false, abort();
     void assertion(bool throw_err);
 
     /// @brief An alias for isOK
     /// @see isOK
     operator bool();
-};
+}; // Status class
 
 /**
  * @brief The class, which is also the archive
  *
  */
 class MPARC {
-public:
+public: // tipes
     /// @brief A typedef/using/alias for the version number
     using version_type = unsigned long long int;
 
-public:
+public: // statiks
 
     /// @brief The bad/default version
     static constexpr const MPARC::version_type NO_VERSION = 0; 
@@ -257,10 +276,10 @@ public:
     /// @brief A constant for the archive's version number
     static const constexpr version_type mpar_version = CAMELLIA_UPDATE_VERSION;
 
-    /// @brief A dummy object used to indicate that you don't want to set the map in the extra metadata setter/getter function. You can change it all you want, this object shall never be used by the library.
+    /// @brief A dummy object (map) used to indicate that you don't want to set the map in the extra metadata setter/getter function. You can change it all you want, this object shall never be used by the library I gurantee you.
     static std::map<std::string, std::string> dummy_extra_metadata;
 
-private:
+private: // storags
     /// @brief Internal storage
     std::map<std::string, Entry> entries;
     /// @brief Safety mutex
@@ -283,12 +302,12 @@ private:
     /// @brief Initialization function
     void init();
 
-public:
+public: // public, but suppoused to be internal
     /// @brief Currently loaded version
-    /// @note End users/developers should not mess with this, only the library should modify this
+    /// @note End users/developers should not mess with this, only the library should modify this.
     version_type loaded_version = mpar_version;
 
-public:
+public: // methodes
     /// @brief Construct an empty archive
     MPARC();
     /// @brief Construct an archive from a list of strings
@@ -453,7 +472,7 @@ public:
     /// @param key The key to be used. If empty, Camellia encryption is disabled.
     /// @return Status::Code::OK = OK.
     /// @note This encryption requires the key to be below 256 bits/32 bytes. If the key does not allign with 128, 192 or 256 bits, it will be padded according to the next highest one.
-    /// @warning This encryption method is currently broken.
+    /// @warning This encryption method is currently broken. Do not use it for now until this notice is removed.
     Status set_camellia_encryption(std::string key);
     /// @brief Get the encryption key for the Camellia encryption
     /// @param key The key currently used. If empty, Camellia encryption is disabled.
@@ -476,7 +495,7 @@ public:
     /// @brief Compare this archive instance to another one
     /// @param other That other one
     bool operator==(MPARC &other);
-};
+}; // Main class
 
 namespace Utils {
 
@@ -508,6 +527,32 @@ bool StringToVersionType(std::string input, MPARC::version_type& output);
 /// exist. Status::Code::NOT_IMPLEMENTED = the directory check function is not
 /// implemented in your platform.
 Status::Code isDirectoryDefaultImplementation(std::string path);
+/// @brief The default implementation for scanning a directory named [path].
+/// Used in the scan directory function (TBA)
+/// @param path The path to scan
+/// @param out What the scanner saw
+/// @return Status::Code::OK = Scanner scanned fine. Status::Code::FERROR = Failed to scan directory. 
+/// Status::Code::FALSE = Is a file, not directory, U developer or user STOOBID.
+// Status::Code::KEY | Status::Code::KEY_NOEXISTS = Does not exist that path is.
+/// exist. Status::Code::NOT_IMPLEMENTED = the directory scanner function is not
+/// implemented in your platform.
+Status::Code scanDirectoryDefaultImplementation(std::string path, std::vector<std::string>& out);
+/// @brief The default implementation for making a new directory.
+/// Used in the extract function
+/// @param path The path to make the folder for
+/// @param overwrite ignore if the folder exist, overwriting anything inside it.
+/// @return Status::Code::OK = Directory made fine. Status::Code::FERROR = Failed to make directory.
+/// is a directory. Status::Code::KEY | Status::Code::KEY_EXISTS = That path exists (only if no overwrite).
+/// Status::Code::NOT_IMPLEMENTED = the directory maker function is not
+/// implemented in your platform.
+Status::Code makeDirectoryDefaultImplementation(std::string path, bool overwrite);
+/// @brief The default implementation for splitting a path into dirname and basename.
+/// Used in the extract function
+/// @param path The path to split into dirname and basename
+/// @param dirname Dirname output of path
+/// @param basename Basename output of path
+/// @return Status::Code::OK = Path split fine. Status::Code::NOT_IMPLEMENTED = the path splitter is not implemnted in your platform.
+Status::Code fileSplitterDefaultImplementation(std::string path, std::string& dirname, std::string& basename);
 
 }; // namespace Utils
 }; // namespace MPARC11

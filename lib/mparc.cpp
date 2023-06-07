@@ -181,8 +181,15 @@ using Entry = MPARC11::Entry;
 using json = nlohmann::json;
 namespace b64 = base64;
 
-#ifdef MXPSQL_MPARC_FIX11_CPP17
-namespace stdfs = std::filesystem;
+
+#ifdef MXPSQL_MPARC_FSLIB
+    #if MXPSQL_MPARC_FSLIB == 1
+        namespace stdfs = std::filesystem;
+        namespace fslib = stdfs;
+    #elif MXPSQL_MPARC_FSLIB == 2
+        namespace ghcfs = ghc::filesystem;
+        namespace fslib = ghcfs;
+    #endif
 #endif
 
 // TYPIST
@@ -2171,12 +2178,17 @@ bool Utils::StringToVersionType(std::string input, MPARC::version_type& output){
 }
 
 Status::Code Utils::isDirectoryDefaultImplementation(std::string path){
-    #ifdef MXPSQL_MPARC_FIX11_CPP17
-    return (
-        stdfs::is_directory(stdfs::path(path)) ?
-        Status::Code::OK :
-        Status::Code::ISDIR
-    );
+    #ifdef MXPSQL_MPARC_FSLIB
+        #if MXPSQL_MPARC_FSLIB == 1 // C++17 fs
+        return (
+            fslib::is_directory(fslib::path(path)) ?
+            Status::Code::OK :
+            Status::Code::ISDIR
+        );
+        #else
+        (static_cast<void>(path));
+        return Status::Code::NOT_IMPLEMENTED;
+        #endif
     #else
     (static_cast<void>(path));
     return Status::Code::NOT_IMPLEMENTED;
@@ -2204,12 +2216,7 @@ void Status::assertion(bool throw_err=true){
 std::string Status::str(Status::Code* code){
     Status::Code cod = Status::Code::OK;
 
-    if(code){
-        cod = *code;
-    }
-    else{
-        cod = getCode();
-    }
+    cod = (code ? (*code) : getCode());
 
     if(cod & OK){
         return "OK";
