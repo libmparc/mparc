@@ -74,9 +74,10 @@ clean:
 
 mkar:
 	true
-#	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./my.mpar -c ./**/*.c ./**/*.h ./**/*.cpp ./**/*.hpp ./[Mm]akefile.dumb ./configure.ac ./[Mm]akefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
-#	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./mini.mpar -c ./misc/lsarah.txt ./misc/logobase.txt
-#	./mparc2.exe CMD -v $(MPARCFLAGS) -f ./tiny.mpar -c ./misc/lsarah.txt
+	# ./mparc.exe -V $(MPARCFLAGS) -f ./my.mpar -c ./**/*.cpp ./**/*.hpp ./[Mm]akefile.dumb ./configure.ac ./[Mm]akefile.am ./CMakeLists.txt ./LICENSE ./LICENSE.* ./*.swigi
+	./mparc.exe -V $(MPARCFLAGS) -f ./my.mpar -c ./**/*.cpp ./**/*.hpp ./[Mm]akefile.dumb ./CMakeLists.txt ./LICENSE ./LICENSE.*
+	# ./mparc.exe -V $(MPARCFLAGS) -f ./mini.mpar -c ./misc/lsarah.txt ./misc/logobase.txt
+	# ./mparc.exe -V $(MPARCFLAGS) -f ./tiny.mpar -c ./misc/lsarah.txt
 
 
 mkat:

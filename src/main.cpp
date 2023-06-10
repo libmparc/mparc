@@ -216,13 +216,8 @@ int exec_main(int argc, char* argv[]){
     }
 
     if(list){
-        std::string file = "";
-        if(!read_archive(filename, file)){
-            return EXIT_FAILURE;
-        }
-
         if(verbose) std::cout << "Parsing archive..." << std::endl;
-        stats = archive.parse(file);
+        stats = archive.read(filename);
         if(!stats.isOK()){
             std::cerr << "Failure to parse archive: " << stats.str() << std::endl;
             return EXIT_FAILURE;
@@ -242,8 +237,6 @@ int exec_main(int argc, char* argv[]){
         }
     }
     else if(create){
-        std::string file = "";
-
         std::vector<std::string> files = appParser.remaining(false);
         for(std::string file : files){
             if(verbose){
@@ -259,14 +252,12 @@ int exec_main(int argc, char* argv[]){
         }
 
         if(verbose) std::cout << "Constructing archive '" << filename << "'" << std::endl;
-        stats = archive.construct(file, tep);
+        stats = archive.write(filename);
         if(!stats.isOK()){
             MPARC11::Status::Code cod = stats.getCode();
             std::cerr << "Failure to construct archive: " << stats.str(&cod, MPARC11::Status::StrFilter::CONSTRUCT_FAILS) << std::endl;
             return EXIT_FAILURE;
         }
-
-        write_archive(filename, file);
     }
     else{
         std::cerr << "What are you doing with '" << filename << "'?";

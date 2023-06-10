@@ -1245,13 +1245,59 @@ namespace{
        }
        *keysize = 16;
        return CRYPT_OK;
-}
+    }
+
+    int xtea_encrypt_block(const std::vector<unsigned char>& block, std::vector<unsigned char>& ciphertext, symmetric_key* skey) {
+        std::vector<unsigned char> encrypted_block(block.size());
+        int encrypt_result = xtea_ecb_encrypt(block.data(), encrypted_block.data(), skey);
+        if (encrypt_result != CRYPT_OK) {
+            return encrypt_result;
+        }
+        ciphertext.insert(ciphertext.end(), encrypted_block.begin(), encrypted_block.end());
+        return encrypt_result;
+    }
+    
+    int xtea_decrypt_block(const std::vector<unsigned char>& ciphertext, std::vector<unsigned char>& block, symmetric_key* skey) {
+        std::vector<unsigned char> decrypted_block(ciphertext.size());
+        int decrypt_result = xtea_ecb_decrypt(ciphertext.data(), decrypted_block.data(), skey);
+        if (decrypt_result != CRYPT_OK) {
+            return decrypt_result;
+        }
+        block.insert(block.end(), decrypted_block.begin(), decrypted_block.end());
+        return decrypt_result;
+    }
+    
+    int xtea_encrypt(const std::string& plaintext, std::vector<unsigned char>& ciphertext, symmetric_key* skey, int block_size) {
+        std::vector<unsigned char> padded_plaintext;
+    
+        pad_plaintext(plaintext, padded_plaintext, block_size);
+    
+        for (size_t i = 0; i < padded_plaintext.size(); i += block_size) {
+            std::vector<unsigned char> block(padded_plaintext.begin() + i, padded_plaintext.begin() + i + block_size);
+            int rc = xtea_encrypt_block(block, ciphertext, skey);
+            if (rc != CRYPT_OK) return rc;
+        }
+        return CRYPT_OK;
+    }
+    
+    int xtea_decrypt(const std::vector<unsigned char>& ciphertext, std::string& plaintext, symmetric_key* skey, int block_size) {
+        std::vector<unsigned char> padded_plaintext;
+    
+        for (size_t i = 0; i < ciphertext.size(); i += block_size) {
+            std::vector<unsigned char> block(ciphertext.begin() + i, ciphertext.begin() + i + block_size);
+            int rc = xtea_decrypt_block(block, padded_plaintext, skey);
+            if (rc != CRYPT_OK) return rc;
+        }
+    
+        unpad_plaintext(padded_plaintext, plaintext);
+        return CRYPT_OK;
+    }
 
 
     void do_nothing_crypt(){ // Store unused encryption
         (static_cast<void>(xtea_setup));
-        (static_cast<void>(xtea_ecb_encrypt));
-        (static_cast<void>(xtea_ecb_decrypt));
+        (static_cast<void>(xtea_encrypt));
+        (static_cast<void>(xtea_decrypt));
         (static_cast<void>(xtea_done));
         (static_cast<void>(xtea_keysize));
     }
@@ -1816,6 +1862,47 @@ Status MPARC::construct(std::string &output){
     return construct(output, MPARC::mpar_version);
 }
 
+Status MPARC::write(std::ostream& strem){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    std::string file;
+    Status code = construct(file);
+    if(code.isOK()){
+        strem << file;
+    }
+    return Status(
+        (this->my_code = code.getCode())
+    );
+}
+
+Status MPARC::write(std::string filepath){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    std::ofstream fstrem(filepath, std::ios::binary);
+    if(!fstrem.is_open() || !fstrem.good()) {
+        fstrem.close();
+        return Status(
+            (this->my_code = Status::Code::FERROR)  
+        );
+    }
+
+    Status code = write(fstrem);
+    if(!code.isOK()){
+        return Status(
+            (this->my_code = code.getCode())  
+        );
+    }
+
+    if(!fstrem.is_open() || !fstrem.good()) {
+        fstrem.close();
+        return Status(
+            (this->my_code = Status::Code::FERROR)  
+        );
+    }
+
+    return Status(
+        (this->my_code = Status::Code::OK)
+    );
+}
+
 
 Status MPARC::parse(std::string input){
     std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
@@ -1865,6 +1952,45 @@ Status MPARC::parse(std::string input){
     // Parse the footer
     if(!(stat = parse_footer(*this, footer))){
         return (this->my_code = stat.getCode());
+    }
+
+    return Status(
+        (this->my_code = Status::Code::OK)
+    );
+}
+
+Status MPARC::read(std::istream& stram){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    std::ostringstream foss;
+    foss << stram.rdbuf();
+    Status code = parse(foss.str());
+    return Status(
+        (this->my_code = code.getCode())
+    );
+}
+
+Status MPARC::read(std::string filepath){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    std::ifstream fstrem(filepath, std::ios::binary);
+    if(!fstrem.is_open() || !fstrem.good()) {
+        fstrem.close();
+        return Status(
+            (this->my_code = Status::Code::FERROR)  
+        );
+    }
+
+    Status code = read(fstrem);
+    if(!code.isOK()){
+        return Status(
+            (this->my_code = code.getCode())  
+        );
+    }
+
+    if(!fstrem.is_open() || !fstrem.good()) {
+        fstrem.close();
+        return Status(
+            (this->my_code = Status::Code::FERROR)  
+        );
     }
 
     return Status(

@@ -453,12 +453,29 @@ public: // methodes
     /// @see construct
     /// @see mpar_version
     Status construct(std::string &output);
+    /// @brief Write to a stream
+    /// @param output The stream to write to.
+    /// @return Status::Code::OK = Success. Status::Code::CONSTRUCT_FAIL | *??? = Failure.
+    /// @note Does not write to stream if construction failed.
+    Status write(std::ostream& strem);
+    /// @brief Write to a file
+    /// @param output The path to the target file
+    /// @return Status::Code::OK = Success. Status::Code::CONSTRUCT_FAIL | *??? = Failure. Status::Code::FERROR = File I/O error.
+    Status write(std::string filepath);
 
     /// @brief Parse the archive
     /// @param input The archive string to be parsed
     /// @return Status::Code::OK = Success. Status::Code::PARSE_FAIL | *??? = Failure.
     /// @note Whitespace parsing is influenced by the locale
     Status parse(std::string input);
+    /// @brief Read the archive from a stream
+    /// @param stram The stream to read from
+    /// @return Status::Code::OK = Success. Status::Code::PARSE_FAIL | *??? = Failure.
+    Status read(std::istream& stram);
+    /// @brief Read the archive from a file
+    /// @param filepath The file to read from
+    /// @return Status::Code::OK = Success. Status::Code::PARSE_FAIL | *??? = Failure. Status::Code::FERROR = File I/O error.
+    Status read(std::string filepath);
 
 
     /// @brief Get the status stored internally
