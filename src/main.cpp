@@ -13,22 +13,22 @@ namespace MPARC11 = MXPSQL::MPARC11;
 /// @return 1/0/?
 int test_main(int argc, char* argv[]){
     MPARC11::MPARC archive;
-    MPARC11::Status stat;
+    MPARC11::Status stats;
 
     for(int i = 1; i < argc; i++){
-        if(!(stat = archive.push(
+        if(!(stats = archive.push(
             std::string(argv[i]), true
         ))){
-            stat.assertion(false);
+            stats.assertion(false);
         }
     }
 
     {
         std::string fle;
         if(!(
-            stat = archive.construct(fle, 1)
+            stats = archive.construct(fle, 1)
         )){
-            stat.assertion(false);
+            stats.assertion(false);
         }
 
         std::cerr << "archive:" << std::endl;
@@ -37,15 +37,15 @@ int test_main(int argc, char* argv[]){
         archive.clear();
 
         if(!(
-            stat = archive.parse(fle)
+            stats = archive.parse(fle)
         )){
-            stat.assertion(false);
+            stats.assertion(false);
         }
 
         if(!(
-            stat = archive.construct(fle)
+            stats = archive.construct(fle)
         )){
-            stat.assertion(false);
+            stats.assertion(false);
         }
 
         std::cerr << "archive1:" << std::endl;
@@ -54,9 +54,9 @@ int test_main(int argc, char* argv[]){
         archive.clear();
 
         if(!(
-            stat = archive.parse(fle)
+            stats = archive.parse(fle)
         )){
-            stat.assertion(false);
+            stats.assertion(false);
         }
     }
 
@@ -147,7 +147,7 @@ int exec_main(int argc, char* argv[]){
     (static_cast<void>(argv));
 
     MPARC11::MPARC archive;
-    MPARC11::Status stat;
+    MPARC11::Status stats;
 
     CLI::App appParser{"MPAR Archive Editor"};
 
@@ -169,7 +169,7 @@ int exec_main(int argc, char* argv[]){
     { // Encryption
         auto xor_opt = appParser.add_option("-X,--xor", xor_k, "XOR encryption key go here.");
         auto rot_opt = appParser.add_option("-R,--rot", rot_k, "ROT ecnryption key go here.")->delimiter(',');
-        auto camellia_opt = appParser.add_option("-C,--camellia", camellia_k, "Camellia encryption key go here (below 256 bits/32 bytes in size).")->delimiter(',');
+        auto camellia_opt = appParser.add_option("-C,--camellia", camellia_k, "Camellia encryption key go here (below 256 bits/32 bytes in size).");
 
         (static_cast<void>(xor_opt));
         (static_cast<void>(rot_opt));
@@ -185,7 +185,7 @@ int exec_main(int argc, char* argv[]){
             opts.push_back(create_opt);
         }
 
-        for(std::vector<CLI::Option*>::size_type i = 0; i < opts.size(); i++){
+        for(std::vector<CLI::Option*>::size_type i = 0; i < opts.size(); i++){ // Auto excluder
             for(std::vector<CLI::Option*>::size_type j = 0; j < opts.size(); j++){
                 if(j != i){
                     auto iopt = opts[i];
@@ -206,8 +206,9 @@ int exec_main(int argc, char* argv[]){
         archive.set_xor_encryption(xor_k);
         archive.set_rot_encryption(rot_k);
 
-        if(camellia_k.size() > 256){
-            if(!(stat = archive.set_camellia_encryption(camellia_k)).isOK()){
+        if(camellia_k != ""){
+            std::cout << "Camellia encryption set!" << std::endl;
+            if(!(stats = archive.set_camellia_encryption(camellia_k)).isOK()){
                 std::cerr << "Camellia encryption misuse detected (key bit length can only be below 256 bits/32 bytes long)." << std::endl;
                 return EXIT_FAILURE;
             }
@@ -221,17 +222,17 @@ int exec_main(int argc, char* argv[]){
         }
 
         if(verbose) std::cout << "Parsing archive..." << std::endl;
-        stat = archive.parse(file);
-        if(!stat.isOK()){
-            std::cerr << "Failure to parse archive: " << stat.str() << std::endl;
+        stats = archive.parse(file);
+        if(!stats.isOK()){
+            std::cerr << "Failure to parse archive: " << stats.str() << std::endl;
             return EXIT_FAILURE;
         }
 
         if(verbose) std::cout << "Listing archive..." << std::endl;
         std::vector<std::string> lists;
-        stat = archive.list(lists);
-        if(!stat.isOK()){
-            std::cerr << "Failure to list archive: " << stat.str() << std::endl;
+        stats = archive.list(lists);
+        if(!stats.isOK()){
+            std::cerr << "Failure to list archive: " << stats.str() << std::endl;
             return EXIT_FAILURE;
         }
 
@@ -250,17 +251,18 @@ int exec_main(int argc, char* argv[]){
             }
 
             if(verbose) std::cout << "Pushing entries to archive" << std::endl;
-            stat = archive.push(file, true);
-            if(!stat.isOK()){
-                std::cerr << "Failure to push '" << file << "' to archive: " << stat.str() << std::endl;
+            stats = archive.push(file, true);
+            if(!stats.isOK()){
+                std::cerr << "Failure to push '" << file << "' to archive: " << stats.str() << std::endl;
                 return EXIT_FAILURE;
             }
         }
 
         if(verbose) std::cout << "Constructing archive '" << filename << "'" << std::endl;
-        stat = archive.construct(file, tep);
-        if(!stat.isOK()){
-            std::cerr << "Failure to construct archive: " << stat.str() << std::endl;
+        stats = archive.construct(file, tep);
+        if(!stats.isOK()){
+            MPARC11::Status::Code cod = stats.getCode();
+            std::cerr << "Failure to construct archive: " << stats.str(&cod, MPARC11::Status::StrFilter::CONSTRUCT_FAILS) << std::endl;
             return EXIT_FAILURE;
         }
 

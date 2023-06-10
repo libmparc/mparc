@@ -157,25 +157,39 @@ public:
 
         /// @brief Failed during construction
         CONSTRUCT_FAIL = 1 << 12,
+        /// @brief Failed at header
+        CONSTRUCT_HEADER = 1 << 13,
+        /// @brief Failed at entries
+        CONSTRUCT_ENTRIES = 1 << 14,
+        /// @brief Failed at footer
+        CONSTRUCT_FOOTER = 1 << 15,
 
         /// @brief Failed during parsing
-        PARSE_FAIL = 1 << 13,
+        PARSE_FAIL = 1 << 15,
         /// @brief Not an archive
-        NOT_MPAR_ARCHIVE = 1 << 14,
+        NOT_MPAR_ARCHIVE = 1 << 16,
         /// @brief Checksum failed (either to obtain or check)
-        CHECKSUM_ERROR = 1 << 15,
+        CHECKSUM_ERROR = 1 << 17,
         /// @brief Version check failed (either too new or just failed to grab)
-        VERSION_ERROR = 1 << 16,
+        VERSION_ERROR = 1 << 18,
 
         /// @brief An error during encryption/decryption
-        CRYPT_ERROR = 1 << 17,
+        CRYPT_ERROR = 1 << 19,
         /// @brief Encryption not enabled 
-        CRYPT_NONE = 1 << 18,
-        /// @brief A misuse of the encryption algorithm was detected
-        CRYPT_MISUSE = 1 << 19,
+        CRYPT_NONE = 1 << 20,
         /// @brief A cryptography failure
-        CRYPT_FAIL = 1 << 20
+        CRYPT_FAIL = 1 << 21,
+        /// @brief A misuse of cryptography features were detected
+        CRYPT_MISUSE = 1 << 22
     }; // enumerations
+
+    /// @brief Filter enum for specifying filters in the str method
+    enum StrFilter {
+        /// @brief No filter
+        NONE = 1 << 1,
+        /// @brief Filter out CONSTRUCT_ errors
+        CONSTRUCT_FAILS = 1 << 2
+    };
 
 private:
     /// @brief Internal code
@@ -188,11 +202,17 @@ public:
     /// @param code The code
     Status(Code code) : stat_code(code) {}
 
+    /// @brief Get a string representation of the passed code with filter
+    /// @param code The code that you want to use. If nullptr, use the internal
+    /// @param filt What code tyo filter out
+    /// code, else use the value of the code pointer.
+    /// @return The string representation.
+    std::string str(Code *code, StrFilter filt);
     /// @brief Get a string representation of the passed code
     /// @param code The code that you want to use. If nullptr, use the internal
     /// code, else use the value of the code pointer.
     /// @return The string representation.
-    std::string str(Code *code);
+    std::string str(Code* code);
     /// @brief Get a string representation of the current status object
     /// @return The string representation.
     /// @see str
@@ -296,7 +316,6 @@ private: // storags
     /// @brief The key used to perform XOR encryption and decryption
     std::string XOR_key = "";
     /// @brief The key used to perform Camellia encryption and decryption
-    /// @note Due to the implementation, the length must be below 256 bits/32 bytes.
     std::string Camellia_k = "";
 
     /// @brief Initialization function
