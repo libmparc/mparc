@@ -3,11 +3,11 @@ name: CMake CI
 on:
   push:
     branches: [ "master"
-    # , "depot11", "predepot11" 
+    , "depot11", "predepot11" 
     ]
   pull_request:
     branches: [ "master"
-    # , "depot11", "predepot11" 
+    , "depot11", "predepot11" 
     ]
   schedule: 
     - cron: '21 * * * 5'

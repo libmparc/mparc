@@ -136,7 +136,7 @@ public:
         /// @brief Not implemented at all
         NOT_IMPLEMENTED = 1 << 3,
         /// @brief False return value
-        FALSE = 1 << 4,
+        FALSEV = 1 << 4,
 
         /// @brief Invalid value provided
         INVALID_VALUE = 1 << 5,
@@ -567,12 +567,13 @@ Status::Code isDirectoryDefaultImplementation(std::string path);
 /// Used in the scan directory function (TBA)
 /// @param path The path to scan
 /// @param out What the scanner saw
+/// @param recursive Should the scanner recursively scan?
 /// @return Status::Code::OK = Scanner scanned fine. Status::Code::FERROR = Failed to scan directory. 
 /// Status::Code::FALSE = Is a file, not directory, U developer or user STOOBID.
 // Status::Code::KEY | Status::Code::KEY_NOEXISTS = Does not exist that path is.
 /// exist. Status::Code::NOT_IMPLEMENTED = the directory scanner function is not
 /// implemented in your platform.
-Status::Code scanDirectoryDefaultImplementation(std::string path, std::vector<std::string>& out);
+Status::Code scanDirectoryDefaultImplementation(std::string path, std::vector<std::string>& out, bool recursive);
 /// @brief The default implementation for making a new directory.
 /// Used in the extract function
 /// @param path The path to make the folder for

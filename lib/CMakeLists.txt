@@ -25,6 +25,8 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
+set(B64_PATH "${CMAKE_CURRENT_SOURCE_DIR}/base64.hpp")
+
 # include some magic ???
 include(GNUInstallDirs)
 include(FetchContent)
@@ -35,17 +37,18 @@ include(FetchContent)
 # GIT_TAG db7c6834bd4f733899bd93218926247a659d8924
 # )
 file(DOWNLOAD https://raw.githubusercontent.com/tobiaslocker/base64/db7c6834bd4f733899bd93218926247a659d8924/include/base64.hpp 
-"${CMAKE_SOURCE_DIR}/base64.hpp" 
+"${B64_PATH}" 
 SHOW_PROGRESS 
 STATUS DL_STAT
 )
+message(INFO "${B64_PATH} downloaded")
 list(GET DL_STAT 0 DL_STAT_CODE)
 list(GET DL_STAT 1 DL_STAT_MSG)
 if(NOT "${DL_STAT_CODE}" EQUAL "0")
     message(FATAL_ERROR "Error fetching: ${DL_STAT_MSG}")
 endif()
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/base64.hpp" AND NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/base64.hpp")
-    message(FATAL_ERROR "F: \"${CMAKE_SOURCE_DIR}/base64.hpp\" does not 'EXISTS' OR \"${CMAKE_SOURCE_DIR}/base64.hpp\" 'IS_DIRECTORY'")
+if(NOT EXISTS "${B64_PATH}" AND NOT IS_DIRECTORY "${B64_PATH}")
+    message(FATAL_ERROR "F: \"${B64_PATH}\" does not 'EXISTS' OR \"${B64_PATH}\" 'IS_DIRECTORY'")
 endif()
 
 # continue again

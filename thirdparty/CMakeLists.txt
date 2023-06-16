@@ -1,7 +1,0 @@
-if(USE_EXTERNAL_CLI11)
-  find_package(CLI11 REQUIRED)
-elseif(USE_FETCHCONTENT_CLI11)
-else()
-  add_subdirectory(CLI11)
-  include_directories(CLI11/include)
-endif()

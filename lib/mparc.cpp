@@ -65,6 +65,34 @@
 #include "base64.hpp"
 
 
+// OS dependent stuff
+#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
+    #define PLATFORM_WINDOWS
+#elif defined(__linux__) || defined(__unix) || defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+    #define PLATFORM_POSIX
+#elif defined(__hpux)
+    #define PLATFORM_POSIX
+#elif defined(_AIX)
+    #define PLATFORM_POSIX
+#elif defined(__sun) && defined(__SVR4)
+    #define PLATFORM_POSIX
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
+    #define PLATFORM_POSIX
+#else
+    #define PLATFORM_NONE
+#endif
+
+#if defined(PLATFORM_WINDOWS)
+#include <windows.h>
+#include <fileapi.h>
+#elif defined(PLATFORM_POSIX)
+#include <unistd.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <fcntl.h>
+#endif
+
+
 
 // NAMESPACE ALIASING
 namespace MPARC11 = MXPSQL::MPARC11;
@@ -1341,19 +1369,194 @@ bool Utils::StringToVersionType(std::string input, MPARC::version_type& output){
 
 Status::Code Utils::isDirectoryDefaultImplementation(std::string path){
     #ifdef MXPSQL_MPARC_FSLIB
-        #if MXPSQL_MPARC_FSLIB == 1 // C++17 fs
-        return (
-            fslib::is_directory(fslib::path(path)) ?
-            Status::Code::OK :
-            Status::Code::ISDIR
-        );
+        #if MXPSQL_MPARC_FSLIB == 1 || MXPSQL_MPARC_FSLIB == 2 // C++17 fs
+        try{
+            return (
+                fslib::is_directory(fslib::path(path)) ?
+                Status::Code::OK :
+                Status::Code::ISDIR
+            );
+        }
+        catch(fslib::filesystem_error){
+            return Status::Code::FERROR;
+        }
         #else
         (static_cast<void>(path));
         return Status::Code::NOT_IMPLEMENTED;
         #endif
     #else
-    (static_cast<void>(path));
-    return Status::Code::NOT_IMPLEMENTED;
+        #if defined(PLATFORM_WINDOWS)
+
+        DWORD attributes = GetFileAttributesA(path.c_str());
+        return (
+            (attributes != INVALID_FILE_ATTRIBUTES) ?
+            (
+                ( (attributes & FILE_ATTRIBUTE_DIRECTORY) ? Status::Code::ISDIR : Status::Code::OK )
+            ) : Status::Code::FERROR
+        );
+
+        #elif defined(PLATFORM_POSIX)
+
+        struct stat path_stat;
+        if(stat(path, &path_stat) != 0) return Status::Code::FERROR;
+        return (
+            (S_ISDIR(path_stat.st_mode)) ? Status::Code::ISDIR : Status::Code::OK
+        );
+
+        #endif
+    #endif
+}
+
+Status::Code Utils::scanDirectoryDefaultImplementation(std::string path, std::vector<std::string>& out, bool recursive){
+    #ifdef MXPSQL_MPARC_FSLIB
+        #if MXPSQL_MPARC_FSLIB == 1 || MXPSQL_MPARC_FSLIB == 2 // C++17 fs
+        try{
+            if(recursive){
+                for(const fslib::directory_entry& dir_entry : fslib::recursive_directory_iterator(path)){
+                    out.push_back(dir_entry.path().string());
+                }
+            }
+            else{
+                for(const fslib::directory_entry& dir_entry : fslib::directory_iterator(path)){
+                    out.push_back(dir_entry.path().string());
+                }
+            }
+        }
+        catch(fslib::filesystem_error){
+            return Status::Code::FERROR;
+        }
+        return Status::Code::OK;
+        #else
+        (static_cast<void>(path));
+        (static_cast<void>(out));
+        (static_cast<void>(recursive));
+        return Status::Code::NOT_IMPLEMENTED;
+        #endif
+    #else
+
+    std::function<Status::Code(std::string)> readDirRecursive;
+
+        #if defined(PLATFORM_WINDOWS)
+
+        readDirRecursive = [&](const std::string& dir) {
+            std::string searchPath = path + "\\*.*";
+            WIN32_FIND_DATAA fileData;
+            HANDLE hFind = FindFirstFileA(searchPath.c_str(), &fileData);
+    
+            if (hFind != INVALID_HANDLE_VALUE)
+            {
+                do
+                {
+                    std::string fileName = fileData.cFileName;
+                    if (fileName != "." && fileName != "..")
+                    {
+                        std::string fullPath = dir + "\\" + fileName;
+                        if (fileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                        {
+                            if (recursive)
+                            {
+                                readDirRecursive(fullPath);
+                            }
+                        }
+                        else
+                        {
+                            out.push_back(fullPath);
+                        }
+                    }
+                } while (FindNextFileA(hFind, &fileData));
+    
+                FindClose(hFind);
+
+                return Status::Code::OK;
+            }
+            else{
+                return Status::Code::FERROR;
+            }
+        };
+
+        #elif defined(PLATFORM_POSIX)
+
+        readDirRecursive = [&](const std::string& dir) {
+            DIR* dirp = opendir(dir.c_str());
+            if (dirp == nullptr) {
+                return Status::FERROR;
+            }
+        
+            struct dirent* entry;
+            while ((entry = readdir(dirp)) != nullptr) {
+                std::string fileName = entry->d_name;
+                if (fileName != "." && fileName != "..") {
+                    std::string fullPath = dir + "/" + fileName;
+                    if (entry->d_type == DT_DIR) {
+                        if (recursive) {
+                            Status::Code status = readDirRecursive(fullPath);
+                            if (status != Status::Code::OK) {
+                                closedir(dirp);
+                                return status;
+                            }
+                        }
+                    }
+                    else {
+                        out.push_back(fullPath);
+                    }
+                }
+            }
+        
+            closedir(dirp);
+            return Status::Code::OK;
+        };
+
+        #else
+
+        readDirRecursive = [&](const std::string& dir){
+            (static_cast<void>(dir));
+            return Status::Code::NOT_IMPLEMENTED;
+        };
+        
+        #endif
+
+    return readDirRecursive(path);
+
+    #endif
+}
+
+Status::Code Utils::makeDirectoryDefaultImplementation(std::string path, bool overwrite){
+    (static_cast<void>(overwrite));
+    return Status::Code::NOT_IMPLEMENTED; // DISABLE THIS
+
+    #ifdef MXPSQL_MPARC_FSLIB
+        #if MXPSQL_MPARC_FSLIB == 1 || MXPSQL_MPARC_FSLIB == 2 // C++17 fs
+        try{
+            return (
+                fslib::create_directory(fslib::path(path)) ?
+                Status::Code::OK :
+                Status::Code::FERROR
+            );
+        }
+        catch(fslib::filesystem_error){
+            return Status::Code::FERROR;
+        }
+        #else
+        (static_cast<void>(path));
+        return Status::Code::NOT_IMPLEMENTED;
+        #endif
+    #else
+        #if defined(PLATFORM_WINDOWS)
+
+        int status = CreateDirectoryA(path.c_str(), NULL);
+        return (
+            (status == 0) ? Status::Code::FERROR :
+            Status::Code::OK
+        );
+
+        #elif defined(PLATFORM_POSIX)
+
+        return (
+            (mkdir(path.c_str(), 0777) == 0) ? Status::Code::OK :
+            Status::Code::FERROR
+        )
+
+        #endif
     #endif
 }
 
@@ -2012,7 +2215,7 @@ Status MPARC::isOK(){
     return(
         (stat.isOK()) ?
         Status::Code::OK :
-        Status::Code::FALSE
+        Status::Code::FALSEV
     );
 }
 
