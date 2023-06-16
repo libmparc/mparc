@@ -49,12 +49,13 @@ perform_makefile(){
 
 perform_cmake(){
     # you can set this
-    CMAKE_BUILD_DIR=${CMAKE_BUILD_DIR:="./cmk"};
+    CMAKE_BUILD_DIR=${CMAKE_BUILD_DIR:="./cmk_build"};
     CURRENT_PRE_CMAKE_BUILD_DIR=`pwd`;
 
     # test if dir exists
     if test -d "$CMAKE_BUILD_DIR"; then
-        die "CMake build directory $CMAKE_BUILD_DIR already exists, please remove it ($CMAKE_BUILD_DIR)";
+        # die "CMake build directory $CMAKE_BUILD_DIR already exists, please remove it ($CMAKE_BUILD_DIR)";
+        rm -rf "$CMAKE_BUILD_DIR";
     fi
 
     printer "Making and going into CMake build directory $CMAKE_BUILD_DIR";
@@ -65,7 +66,7 @@ perform_cmake(){
     printer "Generating a Makefile project from CMake";
     cmake .. -G "Unix Makefiles"; # sudo make me a makefile
     printer "Running the generated makefile";
-    make; # run makefile
+    cmake --build .;
 
     printer "Cleaning CMake artifacts for the Ninja build"
     rm -rf *;
@@ -73,7 +74,7 @@ perform_cmake(){
     printer "Generating a Ninja project from CMake";
     cmake .. -G "Ninja"; # sudo make me a build.ninja
     printer "Running the generated build.ninja file";
-    ninja; # run ninja, run build.ninja
+    cmake --build .;
 
 
     printer "Going out of CMake build directory";
@@ -96,6 +97,7 @@ perform_scons(){
 
 perform_autotools(){
     printer "DO ME GLORY AUTOTOOLS!!!";
+    printer "Also you need to pull in the modules maybe.";
 
     aclocal || die "No autotools"; # Aclocal for aclocal.m4
     autoconf || die "No"; # Autoconf
@@ -119,11 +121,11 @@ perform_dumb;
 printf "\n\n";
 perform_makefile;
 printf "\n\n";
-# perform_cmake;
+perform_cmake;
 printf "\n\n";
 # perform_scons;
 printf "\n\n";
-# perform_autotools;
+# perform_autotools; # no autotools for now
 printf "\n\n";
 teardown;
 
