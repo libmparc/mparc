@@ -1398,7 +1398,7 @@ Status::Code Utils::isDirectoryDefaultImplementation(std::string path){
         #elif defined(PLATFORM_POSIX)
 
         struct stat path_stat;
-        if(stat(path, &path_stat) != 0) return Status::Code::FERROR;
+        if(stat(path.c_str(), &path_stat) != 0) return Status::Code::FERROR;
         return (
             (S_ISDIR(path_stat.st_mode)) ? Status::Code::ISDIR : Status::Code::OK
         );
@@ -1554,7 +1554,7 @@ Status::Code Utils::makeDirectoryDefaultImplementation(std::string path, bool ov
         return (
             (mkdir(path.c_str(), 0777) == 0) ? Status::Code::OK :
             Status::Code::FERROR
-        )
+        );
 
         #endif
     #endif
@@ -1599,7 +1599,7 @@ std::string Status::str(Status::Code* code, Status::StrFilter filt){
     else if(cod & NOT_IMPLEMENTED) {
         return "Not implemented.";
     }
-    else if(cod & FALSE) {
+    else if(cod & FALSEV) {
         return "False";
     }
     else if(cod & INVALID_VALUE) {
