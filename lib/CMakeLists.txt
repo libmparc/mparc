@@ -59,9 +59,20 @@ GIT_TAG v3.11.2
 )
 FetchContent_MakeAvailable(json)
 
+FetchContent_Declare(aes
+GIT_REPOSITORY https://github.com/kokke/tiny-AES-c
+GIT_TAG f06ac37fc31dfdaca2e0d9bec83f90d5663c319b
+)
+# FetchContent_MakeAvailable(aes) # For future to implement AES
+
 # add library
-add_library(MPARC ./mparc.cpp) # Main one
+add_library(MPARC ./mparc.cpp ./mparc.cwrap.cpp) # Main one
 target_link_libraries(MPARC PRIVATE nlohmann_json::nlohmann_json)
+# target_link_libraries(MPARC PRIVATE tiny-aes)
+
+if (WIN32)
+    target_link_libraries(MPARC PRIVATE user32.lib shell32.lib shlwapi.lib pathcch.lib) # include system libraries
+endif (WIN32)
 
 # enforce post-target-definition property configurations
 set_property(TARGET MPARC PROPERTY C_STANDARD_REQUIRED TRUE)

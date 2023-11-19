@@ -1,5 +1,18 @@
-CFLAGS=-std=c99 $(LDFLAGS) $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt) $(shell cat ./thirdparty/descriptorfleg.txt)
-CXXFLAGS=-std=c++11 $(LDFLAGS) $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt) $(shell cat ./thirdparty/descriptorfleg.txt)
+#!/usr/bin/env make -f
+# makefile.dumb
+# The dumb makefile build
+# Its called this, because its dumb compared compared to autotools makefile
+
+
+LDFLAGS:=$(LDFLAGS)
+
+ifeq ($(OS),Windows_NT)
+	LDFLAGS:=$(LDFLAGS) -L/usr/lib/w32api -luser32 -lshell32 -lshlwapi -lpathcch
+endif
+
+CFLAGS=-std=c99 $(CFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt) $(shell cat ./thirdparty/descriptorfleg.txt)
+CXXFLAGS=-std=c++11 $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt) $(shell cat ./thirdparty/descriptorfleg.txt)
+ARFLAGS=rcs
 # If you need DMalloc, uncomment the line below
 # LDLIBS:=-ldmallocth
 
@@ -9,11 +22,13 @@ DMALLOC_PATH:=
 
 LIBDIR=./lib
 LIBcppFILE=$(LIBDIR)/mparc.cpp
+LIBcwrapcppFILE=$(LIBDIR)/mparc.cwrap.cpp
 
 SRCDIR=./src
 MAINcppFILE=$(SRCDIR)/main.cpp
 
 LIBO:=mparc.o
+LIBwO:=mparc.w.o
 LIBA:=libmparc.a
 EXEC:=mparc.exe
 TEXEC:=tmparc.exe
@@ -23,23 +38,29 @@ CXX:=g++
 
 DEFAULT_GOAL:=all
 
-.PHONY: all  cls  $(LIBO) $(LIBA) $(TEXEC) $(EXEC)  docs  clean  mkar  mkat runconf
 
-all: cls $(TEXEC) $(EXEC)
+
+.PHONY: all  $(EXEC) $(TEXEC) docs  clean  mkar  mkat runconf
+
+all: cls $(EXEC)
+
 
 
 cls:
 	-@cls || clear || true
 
 
-$(LIBO): 
-	$(CXX) $(CXXFLAGS) $(LIBcppFILE) $(LDLIBS) $(LDFLAGS) -c -o $(LIBO)
+$(LIBO): $(LIBcppFILE)
+	$(CXX) $(CXXFLAGS) $< $(LDLIBS) $(LDFLAGS) -c -o $@
 
-$(LIBA): mparc.o
-	ar rcs $(LIBA) $(LIBO) $(DMALLOC_PATH)
+$(LIBwO): $(LIBcwrapcppFILE)
+	$(CXX) $(CXXFLAGS) $< $(LDLIBS) $(LDFLAGS) -c -o $@
+
+$(LIBA): $(LIBO) $(LIBwO)
+	$(AR) $(ARFLAGS) $@ $(LIBO) $(LIBwO)
 
 $(TEXEC): $(LIBA)
-	$(CXX) $(CXXFLAGS) $(MAINcppFILE) -DMPARC_X_DOTEST $(LIBA) $(LDLIBS) $(LDFLAGS) -o ./$(TEXEC)
+	$(CXX) $(CXXFLAGS) $(MAINcppFILE) -DMPARC_X_DOTEST $(LIBA) $(LDFLAGS) $(LDLIBS) -o ./$(TEXEC)
 	chmod a+x ./$(TEXEC)
 
 $(EXEC): $(LIBA)
