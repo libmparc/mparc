@@ -68,23 +68,16 @@
 #define MXPSQL_MPARC_FIX11_CPP17 true
 #endif
 
-#include <algorithm>
 #include <cstdint>
-#include <cstdlib>
-#include <fstream>
 #include <functional>
 #include <iostream>
 #include <map>
 #include <mutex>
-#include <sstream>
 #include <stdexcept>
 #include <streambuf>
 #include <string>
 #include <utility>
 #include <vector>
-#include <cinttypes>
-#include <memory>
-#include <locale>
 
 #ifndef MXPSQL_MPARC_NOFSLIB
     // fslib chooser
@@ -414,6 +407,9 @@ public: // statiks
     /// @brief A constant for the archive's version number
     static const constexpr version_type mpar_version = SECURE_UPDATE_VERSION;
 
+    /// @brief A constant to indicate the block sized required for encryption
+    static const constexpr int encrypt_block_size = 16;
+
     /// @brief A dummy object (map) used to indicate that you don't want to set the map in the extra metadata setter/getter function. You can change it all you want, this object shall never be used by the library I gurantee you.
     static std::map<std::string, std::string> dummy_extra_metadata;
 
@@ -449,9 +445,9 @@ public: // methodes
     /// @brief Construct an empty archive
     MPARC();
     /// @brief Construct an archive from a list of strings
-    /// @param entries the list of strings that mention the names of the file you
+    /// @param ventries the list of strings that mention the names of the file you
     /// want to copy
-    MPARC(std::vector<std::string> entries);
+    MPARC(std::vector<std::string> ventries);
     /// @brief Construct an archive by copying another one
     /// @param other that other one you want to copy from
     MPARC(MPARC &other);
@@ -506,8 +502,7 @@ public: // methodes
     /// @brief Basically an alias of exists
     /// @param name Name of the entry to check
     /// @see exists
-    /// @return Status::Code::OK = Success, you got a file. Status::Code::KEY |
-    /// Status::Code::KEY_NOEXISTS = Fail, it doesn't exist.
+    /// @return Status::Code::OK = Success, you got a file. Status::Code::KEY | Status::Code::KEY_NOEXISTS = Fail, it doesn't exist.
     Status peek(std::string name);
     /// @brief Get the content of the entry
     /// @param name The entry you want to get from
@@ -557,6 +552,11 @@ public: // methodes
     /// @return Status::Code::OK = Success.
     /// @warning This function will clear your vector.
     Status list(std::vector<std::string> &output);
+    /// @brief List all the files, but into a map. 
+    /// @param output Output map
+    /// @return Status::code::OK = Success. Status::Code::INTERNAL = Something went wrong internally (Most likely that a key that seems to exist actually does not exist. This is due to using the other list function).
+    /// @warning This function will clear your map
+    Status list(std::map<std::string, Entry> &output);
 
     /// @brief Get a pointer to the map for the extra metadata
     /// @param output What is in the extra metadata map. Pass the dummy map if you don't want to read from the map
@@ -565,23 +565,26 @@ public: // methodes
     Status extra_metadata(std::map<std::string, std::string>& output, std::map<std::string, std::string>& input);
 
     /// @brief Construct the archive, but you can specify which version to use
-    /// @param output Output string to store the archive. Output is untouched if
+    /// @param output Output string to store the archive. Output is untouched if an error occurs.
     /// @param ver Version of the archive to construct with
-    /// an error occurs.
+    /// @param worker_threads How many workers to summon for construction. If set to 1, effectively runs on the calling thread (No workers). If set to 0, use as much threads as possible. If set to negative, the same effect as being set to 1.
     /// @return Status::Code::OK = Success. Status::Code::CONSTRUCT_FAIL | *??? = Failure.
-    Status construct(std::string &output, version_type ver);
+    /// @todo Work out the kinks of the std::async based worker parallelism (it hangs), meanwhile use 1 workers.
+    Status construct(std::string &output, version_type ver, int worker_threads=1);
     /// @brief Construct the archive, but uses the currently specified mpar_version
-    /// @param output Output string to store the archive. Output is untouched if
-    /// an error occurs.
+    /// @param output Output string to store the archive. Output is untouched if an error occurs.
+    /// @param worker_threads How many workers to summon for construction.
     /// @return Status::Code::OK = Success. Status::Code::CONSTRUCT_FAIL | *??? = Failure.
     /// @see construct
     /// @see mpar_version
-    Status construct(std::string &output);
+    /// @todo Allow parallel/concurrent construction of archive thru the backbone of the construct method.
+    Status construct(std::string &output, int worker_threads=1);
     /// @brief Write to a stream
     /// @param output The stream to write to.
+    /// @param worker_threads How many workers to summon for construction.
     /// @return Status::Code::OK = Success. Status::Code::CONSTRUCT_FAIL | *??? = Failure.
     /// @note Does not write to stream if construction failed.
-    Status write(std::ostream& strem);
+    Status write(std::ostream& strem, int worker_threads=1);
     /// @brief Write to a file
     /// @param output The path to the target file
     /// @return Status::Code::OK = Success. Status::Code::CONSTRUCT_FAIL | *??? = Failure. Status::Code::FERROR = File I/O error.

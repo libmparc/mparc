@@ -10,9 +10,9 @@ ifeq ($(OS),Windows_NT)
 	LDFLAGS:=$(LDFLAGS) -L/usr/lib/w32api -luser32 -lshell32 -lshlwapi -lpathcch
 endif
 
-CFLAGS=-std=c99 $(CFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt) $(shell cat ./thirdparty/descriptorfleg.txt)
-CXXFLAGS=-std=c++11 $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt) $(shell cat ./thirdparty/descriptorfleg.txt)
-ARFLAGS=rcs
+CFLAGS:=-std=c99 $(CFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt) $(shell cat ./thirdparty/descriptorfleg.txt)
+CXXFLAGS:=-std=c++11 $(CPPFLAGS) $(SANITIZERS) $(shell cat ccflegs.txt) $(shell cat ./thirdparty/descriptorfleg.txt)
+ARFLAGS:=rcs
 # If you need DMalloc, uncomment the line below
 # LDLIBS:=-ldmallocth
 

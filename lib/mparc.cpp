@@ -61,6 +61,16 @@
  * limitations under the License.
  */
 
+#include <cinttypes>
+#include <memory>
+#include <locale>
+#include <future>
+#include <thread>
+#include <sstream>
+#include <cstdlib>
+#include <fstream>
+#include <algorithm>
+
 #include "mparc.hpp"
 #include "nlohmann/json.hpp"
 #include "base64.hpp"
@@ -139,7 +149,7 @@ static MPARC::directory_scanner _scanner = Utils::scanDirectoryDefaultImplementa
 
 
 // prototyping
-static Status construct_entries(MPARC& archive, std::string& output, MPARC::version_type ver);
+static Status construct_entries(MPARC& archive, std::string& output, MPARC::version_type ver, int worker_threads=1);
 static Status construct_header(MPARC& archive, std::string& output, MPARC::version_type ver);
 static Status construct_footer(MPARC& archive, std::string& output, MPARC::version_type ver);
 
@@ -703,18 +713,18 @@ MPARC::MPARC(){
     UNUSED((_mkcheck));
     UNUSED((_scanner));
 };
-MPARC::MPARC(std::vector<std::string> entries){
+MPARC::MPARC(std::vector<std::string> ventries){
     Status stat;
-    for(std::string entry : entries){
+    for(std::string entry : ventries){
         if(!(stat = push(entry, true))){
             stat.assertion(true);
         }
     }
 }
 MPARC::MPARC(MPARC& other){
-    std::vector<std::string> entries;
+    std::vector<std::string> ventries;
     Status stat;
-    if(!(stat = other.list(entries))){
+    if(!(stat = other.list(ventries))){
         stat.assertion(true);
     }
 }
@@ -1062,6 +1072,37 @@ Status MPARC::list(std::vector<std::string>& output){
     );
 }
 
+Status MPARC::list(std::map<std::string, Entry> &output){
+    std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
+    Status pk;
+    output.clear();
+
+    {
+        std::vector<std::string> es;
+        {
+            if(!(pk = list(es)).isOK()){
+                return Status(
+                    (this->my_code = pk.getCode())
+                );
+            }
+        }
+        for(auto e : es){
+            Entry entreh;
+            pk = peek(e, entreh);
+            if(!pk.isOK()){
+                return Status(
+                    (this->my_code = pk.getCode())
+                );
+            }
+            output[e] = entreh;
+        }
+    }
+
+    return Status(
+        (this->my_code = Status::Code::OK)
+    );
+}
+
 
 Status MPARC::extra_metadata(std::map<std::string, std::string>& output, std::map<std::string, std::string>& input){
     std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
@@ -1075,7 +1116,7 @@ Status MPARC::extra_metadata(std::map<std::string, std::string>& output, std::ma
 }
 
 
-Status MPARC::construct(std::string& output, MPARC::version_type ver){
+Status MPARC::construct(std::string& output, MPARC::version_type ver, int worker_threads){
     std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     std::stringstream archive;
     Status stat;
@@ -1094,11 +1135,11 @@ Status MPARC::construct(std::string& output, MPARC::version_type ver){
         archive << header;
     }
     { // Construct the tnreis
-        std::string entries = "";
-        if(!(stat = construct_entries(*this, entries, ver))){
+        std::string aentries = "";
+        if(!(stat = construct_entries(*this, aentries, ver, worker_threads))){
             return (this->my_code = static_cast<Status::Code>(Status::Code::CONSTRUCT_FAIL | Status::Code::CONSTRUCT_ENTRIES | stat.getCode()));
         }
-        archive << entries;
+        archive << aentries;
     }
     { // Construct the footer
         std::string footer = "";
@@ -1116,15 +1157,15 @@ Status MPARC::construct(std::string& output, MPARC::version_type ver){
     );
 }
 
-Status MPARC::construct(std::string &output){
+Status MPARC::construct(std::string &output, int worker_threads){
     std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
-    return construct(output, MPARC::mpar_version);
+    return construct(output, MPARC::mpar_version, worker_threads);
 }
 
-Status MPARC::write(std::ostream& strem){
+Status MPARC::write(std::ostream& strem, int worker_threads){
     std::unique_lock<std::recursive_mutex> ulock(sync_mutex);
     std::string file;
-    Status code = construct(file);
+    Status code = construct(file, worker_threads);
     if(code.isOK()){
         strem << file;
     }
@@ -1169,7 +1210,7 @@ Status MPARC::extract(bool absolute, std::string directory, process_handler hand
 
     Status stat;
 
-    std::vector<std::string> entries;
+    std::vector<std::string> ventries;
     stat = list(entries);
     if(!stat.isOK()){
         return Status(
@@ -1177,7 +1218,7 @@ Status MPARC::extract(bool absolute, std::string directory, process_handler hand
         );
     }
 
-    for(auto filename : entries){
+    for(auto filename : ventries){
         if(handler) handler(filename, false); // Invoke the handler pre-processing.
 
         ByteArray fbytes;
@@ -1285,7 +1326,7 @@ ParseReturn MPARC::parse(std::string input){
     ParseReturn stat;
 
     std::string header = "";
-    std::string entries = "";
+    std::string aentries = "";
     std::string footer = "";
 
     // This section would be handled by a function that would perform steganography by searching for the archive if embedded in files, but it is not yet implemented.
@@ -1315,7 +1356,7 @@ ParseReturn MPARC::parse(std::string input){
 
     // Slice the strings into their parts
     header = searchInput.substr(0, header_marksep_pos);
-    entries = searchInput.substr(header_marksep_pos+1, (footer_marksep_pos-header_marksep_pos-1));
+    aentries = searchInput.substr(header_marksep_pos+1, (footer_marksep_pos-header_marksep_pos-1));
     footer = searchInput.substr(footer_marksep_pos+1, (input.size()-footer_marksep_pos));
 
     bool is_ok = true;
@@ -1331,7 +1372,7 @@ ParseReturn MPARC::parse(std::string input){
 
     // Parse the entries
     {
-        stat = parse_entries(*this, entries);
+        stat = parse_entries(*this, aentries);
         is_ok = isParseReturnOk(stat);
         if(!is_ok){
             this->my_code = Status::Code::PARSE_FAIL;
@@ -1653,13 +1694,14 @@ static Status construct_header(MPARC& archive, std::string& output, MPARC::versi
     return stat;
 }
 
-static Status construct_entries(MPARC& archive, std::string& output, MPARC::version_type ver){
+static Status construct_entries(MPARC& archive, std::string& output, MPARC::version_type ver, int worker_threads){
     std::stringstream ssb;
-    std::vector<std::string> entries;
+    std::map<std::string, Entry> mentries;
     Status stat;
 
     // A typedef to make it less verbose
     using jty = std::pair<json, crc_t>; // The first side is the JSON document. The second side is the checksum of the JSON document (CRC32).
+    using jtyret = std::pair<Status, jty>; // The first side is the Status of the construction of the specified entry. The second side is the jty document itself.
 
     // Sort function
     static auto sortcmp = [](const jty& lh, const jty rh){
@@ -1671,24 +1713,19 @@ static Status construct_entries(MPARC& archive, std::string& output, MPARC::vers
 
     // List the archive
     {
-        stat = archive.list(entries);
+        stat = archive.list(mentries);
         if(!stat){
             return stat;
         }
     }
 
-    // Loop over the entries
-    std::vector<jty> jentries;
-    for(std::string entry : entries){
+    static std::function<jtyret(std::string)> construct_entry = [&mentries, &archive, &ver](std::string entry) -> jtyret {
+        jty jentriy;
+
         json jentry;
         Entry entreh;
         // Read the entry
-        {
-            stat = archive.peek(entry, entreh);
-            if(!stat){
-                return stat;
-            }
-        }
+        entreh = mentries[entry];
 
         // Get the contents
         std::string strcontent = Utils::ByteArrayToString(entreh.content);
@@ -1770,7 +1807,7 @@ static Status construct_entries(MPARC& archive, std::string& output, MPARC::vers
             if(ver >= MPARC::CAMELLIA_UPDATE_VERSION && !Camellia_k.empty() && !estrcontent.empty()){
                 int ckbl = Camellia_kbl;
                 int ret = camellia_keysize(&ckbl);
-                if(ret == CRYPT_INVALID_KEYSIZE) return static_cast<Status::Code>(Status::Code::CRYPT_ERROR | Status::Code::CRYPT_MISUSE);
+                if(ret == CRYPT_INVALID_KEYSIZE) return std::make_pair(static_cast<Status::Code>(Status::Code::CRYPT_ERROR | Status::Code::CRYPT_MISUSE), jentriy);
 
                 int num_rounds_camellia  = ((ckbl == 16) ? 18 : 24);
 
@@ -1779,12 +1816,15 @@ static Status construct_entries(MPARC& archive, std::string& output, MPARC::vers
                 memset(&camellia_key, '\0', sizeof(camellia_key));
                 int setup_result = camellia_setup(&Camellia_k[0], ckbl, num_rounds_camellia, &camellia_key);
                 if (setup_result != CRYPT_OK) {
-                    return static_cast<Status::Code>(Status::Code::CRYPT_ERROR | Status::Code::CRYPT_FAIL);
+                    return std::make_pair(static_cast<Status::Code>(Status::Code::CRYPT_ERROR | Status::Code::CRYPT_FAIL), jentriy);
                 }
 
                 {
                     ByteArray ciphertext;
-                    camellia_encrypt(estrcontent, ciphertext, &camellia_key, ckbl);
+                    int rc = camellia_encrypt(estrcontent, ciphertext, &camellia_key, MPARC::encrypt_block_size);
+                    if(rc != CRYPT_OK){
+                        return std::make_pair(static_cast<Status::Code>(Status::Code::CRYPT_ERROR | Status::Code::CRYPT_FAIL), jentriy);
+                    }
                     estrcontent = Utils::ByteArrayToString(ciphertext);
                 }
 
@@ -1851,7 +1891,6 @@ static Status construct_entries(MPARC& archive, std::string& output, MPARC::vers
             }
         }
 
-        jty jentriy;
         { // Calculate the JSON's checksum, not the invidual content
             crc_t crc = crc_init();
 
@@ -1862,7 +1901,82 @@ static Status construct_entries(MPARC& archive, std::string& output, MPARC::vers
             jentriy = std::make_pair(jentry, crc);
         }
 
-        jentries.push_back(jentriy);
+        return std::make_pair(Status(Status::Code::OK), jentriy);
+    };
+
+    // Loop over the entries
+    std::vector<jty> jentries;
+    if(worker_threads != 1 || worker_threads < 0){
+        using futjtyret = std::pair<Status, std::vector<jtyret>>;
+        std::vector<std::future<futjtyret>> jfutures;
+        { // worker thread job splitting
+            std::vector<std::string> jentri;
+            for(auto& p : mentries){
+                jentri.push_back(p.first);
+            }
+
+            decltype(jentri)::size_type chunk_size = jentri.size() / worker_threads;
+            for(decltype(chunk_size) i = 0; i < static_cast<decltype(chunk_size)>(worker_threads); i++){
+                auto start = std::next(jentri.begin(), i * chunk_size);
+                auto end = std::next(start, chunk_size);
+
+                if(i == static_cast<decltype(chunk_size)>(worker_threads - 1)){
+                    end = jentri.end();
+                }
+
+                std::vector<std::string> worker_chunk(start, end);
+                std::future<futjtyret> fut = std::async(std::launch::async, [](std::vector<std::string> jentrchunk, std::function<jtyret(std::string)> make_entry) -> futjtyret {
+                    std::vector<jtyret> jtyrets;
+                    for(std::string entryname : jentrchunk) {
+                        try{
+                            jtyret retinol = make_entry(entryname);
+                            jtyrets.push_back(retinol);
+                        }
+                        catch(...){
+                            return std::make_pair(Status(Status::Code::CONSTRUCT_FAIL), jtyrets);
+                        }
+
+                    }
+                    return std::make_pair(Status(Status::Code::OK), jtyrets);
+                }, worker_chunk, construct_entry);
+                jfutures.push_back(std::move(fut));
+            }
+        }
+
+        for(auto& futs : jfutures){
+            futs.wait();
+        }
+
+        for(auto& futs : jfutures){
+            futjtyret jretinol = futs.get();
+            if(!(jretinol.first).isOK()){
+                return jretinol.first;
+            }
+            for(jtyret jretty : jretinol.second) {
+                if(!(jretty.first).isOK()){
+                    return jretty.first;
+                }
+                jty jretval = jretty.second;
+                jentries.push_back(jretval);
+            }
+        }
+    }
+    else{
+        std::vector<std::string> jentri;
+        for(auto& p : mentries){
+            jentri.push_back(p.first);
+        }
+
+        jtyret rjet;
+        for(std::string entri : jentri){
+            rjet = construct_entry(entri);
+            if(!(rjet.first).isOK()){
+                return rjet.first;
+            }
+
+            jty jet = rjet.second;
+            jentries.push_back(jet);
+        }
     }
 
     try{ // Sort the JSONs
@@ -1991,8 +2105,8 @@ static ParseReturn parse_header(MPARC& archive, std::string header_input){
 
                 std::map<std::string, std::string> extras;
 
-                for(auto meta : j[b64::to_base64(MPARC::extra_meta_field)].items()){
-                    extras[b64::from_base64(meta.key())] = b64::from_base64(meta.value());
+                for(auto methanol : j[b64::to_base64(MPARC::extra_meta_field)].items()){
+                    extras[b64::from_base64(methanol.key())] = b64::from_base64(methanol.value());
                 }
                 archive.extra_metadata(MPARC::dummy_extra_metadata, extras);
             }
@@ -2186,7 +2300,11 @@ static ParseReturn parse_entries(MPARC& archive, std::string entry_input){
                         {
                             ByteArray ciphertext = Utils::StringToByteArray(ecrypt_str);
                             std::string plaintext = "";
-                            camellia_decrypt(ciphertext, plaintext, &camellia_key, ckbl);
+                            int rc = camellia_decrypt(ciphertext, plaintext, &camellia_key, MPARC::encrypt_block_size);
+                            if(rc != CRYPT_OK){
+                                entryerr[filename] = static_cast<Status::Code>(Status::Code::CRYPT_ERROR | Status::Code::CRYPT_FAIL);
+                                continue;
+                            }
                             ecrypt_str = plaintext;
                         }
 

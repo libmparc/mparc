@@ -788,17 +788,17 @@ namespace{
        return CRYPT_OK;
     }
 
-    void pad_plaintext(const std::string& plaintext, std::vector<unsigned char>& padded_plaintext, int block_size) {
+    void pad_plaintext(const std::string& plaintext, std::vector<unsigned char>& padded_plaintext, int block_size) { // PKCS7
         int plaintext_size = plaintext.size();
         int padding_length = block_size - (plaintext_size % block_size);
         padded_plaintext.resize(plaintext_size + padding_length);
         std::copy(plaintext.begin(), plaintext.end(), padded_plaintext.begin());
-        std::fill(padded_plaintext.begin() + plaintext_size, padded_plaintext.end(), padding_length);
+        std::fill(padded_plaintext.begin() + plaintext_size, padded_plaintext.end(), (unsigned char) padding_length);
     }
 
-    void unpad_plaintext(const std::vector<unsigned char>& padded_plaintext, std::string& plaintext) {
+    void unpad_plaintext(const std::vector<unsigned char>& padded_plaintext, std::string& plaintext) { // PKCS7
         int padded_plaintext_size = padded_plaintext.size();
-        int padding_length = padded_plaintext[padded_plaintext_size - 1];
+        int padding_length = (int) padded_plaintext[padded_plaintext_size - 1];
         plaintext.assign(padded_plaintext.begin(), padded_plaintext.begin() + padded_plaintext_size - padding_length);
     }
 
@@ -1028,11 +1028,11 @@ namespace{
 
 
     void do_nothing_crypt(){ // Store unused encryption
-        UNUSED((xtea_setup));
-        UNUSED((xtea_encrypt));
-        UNUSED((xtea_decrypt));
-        UNUSED((xtea_done));
-        UNUSED((xtea_keysize));
+        static_cast<void>(xtea_setup);
+        static_cast<void>(xtea_encrypt);
+        static_cast<void>(xtea_decrypt);
+        static_cast<void>(xtea_done);
+        static_cast<void>(xtea_keysize);
     }
 }
 
