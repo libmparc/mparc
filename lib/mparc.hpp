@@ -125,6 +125,7 @@ struct Entry {
     std::map<std::string, std::string> metadata;
 }; // eantraeh
 
+/// @brief A class representing the return status of an MPAR related function.
 class Status {
 public:
     /// @brief Code enumeration for error values
